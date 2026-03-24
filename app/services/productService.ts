@@ -6,9 +6,6 @@ const products: Record<string, Product> = {
   "1003": { barcode: "1003", name: "Chese and Onion Sausage 500g", price: 650 },
   "1004": { barcode: "1004", name: "Chicken Meat Balls 500g ", price: 750 },
   "1005": { barcode: "1005", name: "Chandi Sausage", price: 250 },
-  // { barcode: "1003", name: "Chese and Onion Sausage 500g", price: 650, qty: 1 },
-  // { barcode: "1004", name: "Chicken Meat Balls 500g ", price: 750, qty: 2 },
-  // { barcode: "1005", name: "Chandi Sausage", price: 250, qty: 1 },
 };
 
 export const fetchProduct = (barcode: string): Product | null => {
