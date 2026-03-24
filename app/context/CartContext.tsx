@@ -8,7 +8,9 @@ interface CartContextType {
   setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
 }
 
-export const CartContext = createContext<CartContextType | undefined>(undefined);
+export const CartContext = createContext<CartContextType | undefined>(
+  undefined,
+);
 
 interface Props {
   children: ReactNode;
@@ -29,5 +31,9 @@ export const CartProvider = ({ children }: Props) => {
     }
   }, [cart]);
 
-  return <CartContext.Provider value={{ cart, setCart }}>{children}</CartContext.Provider>;
+  return (
+    <CartContext.Provider value={{ cart, setCart }}>
+      {children}
+    </CartContext.Provider>
+  );
 };

@@ -12,13 +12,7 @@ import { CartItem } from "./types";
 export default function Home() {
   const [barcode, setBarcode] = useState<string>("");
   const { cart, setCart } = useContext(CartContext)!;
-
-  useEffect(() => {
-  setCart([
-    { barcode: "1001", name: "Chicken 1kg", price: 1200, qty: 2 },
-    { barcode: "1002", name: "Sausage Pack", price: 800, qty: 3 },
-  ]);
-}, []);
+  // const [cart, setCart] = useState<CartItem[]>([]);
 
   const handleAdd = () => {
     const product = fetchProduct(barcode);
@@ -28,8 +22,8 @@ export default function Home() {
     if (existing) {
       setCart(
         cart.map((item) =>
-          item.barcode === barcode ? { ...item, qty: item.qty + 1 } : item
-        )
+          item.barcode === barcode ? { ...item, qty: item.qty + 1 } : item,
+        ),
       );
     } else {
       setCart([...cart, { ...product, qty: 1 } as CartItem]);
@@ -45,17 +39,30 @@ export default function Home() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-5">POS System - Next.js + Tailwind + TS</h1>
+      <h1 className="text-3xl text-center font-sans font-bold mb-5">
+        Weehena farm Shop
+      </h1>
 
-      <BarcodeInput barcode={barcode} setBarcode={setBarcode} handleAdd={handleAdd} />
+      <BarcodeInput
+        barcode={barcode}
+        setBarcode={setBarcode}
+        handleAdd={handleAdd}
+      />
 
       <CartTable cart={cart} />
+      {/* <CartTable cart={sampleCart} /> */}
 
       <TotalDisplay cart={cart} />
+      {/* <TotalDisplay cart={sampleCart} /> */}
 
       <div className="mt-4">
         <Button onClick={handlePay}>Pay</Button>
-        <Button onClick={() => setCart([])} className="bg-red-500 hover:bg-red-600">Clear</Button>
+        <Button
+          onClick={() => setCart([])}
+          className="bg-red-500 hover:bg-red-600"
+        >
+          Clear
+        </Button>
       </div>
     </div>
   );

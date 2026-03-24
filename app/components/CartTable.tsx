@@ -10,7 +10,8 @@ export default function CartTable({ cart }: Props) {
   return (
     <table className="w-full mt-5 border-collapse border border-gray-300">
       <thead>
-        <tr className="bg-gray-200">
+        <tr className="">
+          <th className="border border-gray-300 p-2">Barcode</th>
           <th className="border border-gray-300 p-2">Name</th>
           <th className="border border-gray-300 p-2">Qty</th>
           <th className="border border-gray-300 p-2">Price</th>
@@ -19,7 +20,8 @@ export default function CartTable({ cart }: Props) {
       </thead>
       <tbody>
         {cart.map((item, idx) => (
-          <tr key={idx} className="even:bg-gray-50">
+          <tr key={idx} className="">
+            <td className="border border-gray-300 p-2">{item.barcode}</td>
             <td className="border border-gray-300 p-2">{item.name}</td>
             <td className="border border-gray-300 p-2 text-center">
               {item.qty}

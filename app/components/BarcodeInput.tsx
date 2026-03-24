@@ -6,7 +6,11 @@ type BarcodeInputProps = {
   handleAdd: () => void;
 };
 
-export default function BarcodeInput({ barcode, setBarcode, handleAdd }: BarcodeInputProps) {
+export default function BarcodeInput({
+  barcode,
+  setBarcode,
+  handleAdd,
+}: BarcodeInputProps) {
   return (
     <input
       type="text"
