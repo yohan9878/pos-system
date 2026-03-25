@@ -7,27 +7,22 @@ import CartTable from "./components/CartTable";
 import TotalDisplay from "./components/TotalDisplay";
 import Button from "./components/Button";
 import { fetchProduct } from "./services/productService";
-import { CartItem } from "./types";
+import { CartItem, Product } from "./types";
+import QuantityModal from "./components/QuantityModal";
 
 export default function Home() {
   const [barcode, setBarcode] = useState<string>("");
   const { cart, setCart } = useContext(CartContext)!;
-  // const [cart, setCart] = useState<CartItem[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const handleAdd = () => {
     const product = fetchProduct(barcode);
     if (!product) return alert("Product not found");
 
-    const existing = cart.find((item) => item.barcode === barcode);
-    if (existing) {
-      setCart(
-        cart.map((item) =>
-          item.barcode === barcode ? { ...item, qty: item.qty + 1 } : item,
-        ),
-      );
-    } else {
-      setCart([...cart, { ...product, qty: 1 } as CartItem]);
-    }
+    // Open modal for ANY scan
+    setSelectedProduct(product);
+    setModalOpen(true);
 
     setBarcode("");
   };
@@ -35,6 +30,28 @@ export default function Home() {
   const handlePay = () => {
     alert("Payment Done");
     setCart([]);
+  };
+
+  const handleConfirmQty = (qty: number) => {
+    if (!selectedProduct) return;
+
+    const existing = cart.find(
+      (item) => item.barcode === selectedProduct.barcode,
+    );
+
+    if (existing) {
+      // Add to existing quantity
+      setCart(
+        cart.map((item) =>
+          item.barcode === selectedProduct.barcode
+            ? { ...item, qty: item.qty + qty }
+            : item,
+        ),
+      );
+    } else {
+      // Add new item with entered qty
+      setCart([...cart, { ...selectedProduct, qty }]);
+    }
   };
 
   return (
@@ -53,7 +70,6 @@ export default function Home() {
       {/* <CartTable cart={sampleCart} /> */}
 
       <TotalDisplay cart={cart} />
-      {/* <TotalDisplay cart={sampleCart} /> */}
 
       <div className="mt-4">
         <Button onClick={handlePay}>Pay</Button>
@@ -64,6 +80,14 @@ export default function Home() {
           Clear
         </Button>
       </div>
+
+      <QuantityModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={handleConfirmQty}
+        initialQty={1}
+        productName={selectedProduct?.name || ""}
+      />
     </div>
   );
 }
