@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 
 interface Props {
   isOpen: boolean;
@@ -19,9 +19,13 @@ export default function QuantityModal({
 }: Props) {
   const [qty, setQty] = useState<number>(initialQty);
 
+  const updateQty = useEffectEvent((initialQty: number) => {
+    setQty(initialQty);
+  });
+
   // Reset qty when modal opens
   useEffect(() => {
-    if (isOpen) setQty(initialQty);
+    if (isOpen) updateQty(initialQty);
   }, [isOpen, initialQty]);
 
   if (!isOpen) return null;
@@ -36,7 +40,11 @@ export default function QuantityModal({
         <input
           type="number"
           value={qty}
-          onChange={(e) => setQty(parseInt(e.target.value))}
+          // onChange={(e) => setQty(parseInt(e.target.value))}
+          onChange={(e) => {
+            const value = parseInt(e.target.value);
+            setQty(isNaN(value) ? 0 : value);
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               if (!qty || qty <= 0) return;
