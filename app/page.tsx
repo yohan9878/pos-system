@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import { CartContext } from "./context/CartContext";
 import BarcodeInput from "./components/BarcodeInput";
 import CartTable from "./components/CartTable";
 import TotalDisplay from "./components/TotalDisplay";
 import Button from "./components/Button";
 import { fetchProduct } from "./services/productService";
-import { CartItem, Product } from "./types";
+import { Product } from "./types";
 import QuantityModal from "./components/QuantityModal";
 
 export default function Home() {
@@ -54,6 +54,10 @@ export default function Home() {
     }
   };
 
+  const handleDelete = (barcode: string) => {
+  setCart(cart.filter((item) => item.barcode !== barcode));
+};
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-3xl text-center font-sans font-bold mb-5">
@@ -66,7 +70,7 @@ export default function Home() {
         handleAdd={handleAdd}
       />
 
-      <CartTable cart={cart} />
+      <CartTable cart={cart} onDelete={handleDelete} />
       {/* <CartTable cart={sampleCart} /> */}
 
       <TotalDisplay cart={cart} />
