@@ -26,8 +26,8 @@ export default function CartTable({ cart, onDelete }: Props) {
           <th className="border border-gray-300 p-2 w-30">Barcode</th>
           <th className="border border-gray-300 p-2 w-100">Name</th>
           <th className="border border-gray-300 p-2">Qty</th>
-          <th className="border border-gray-300 p-2">Price</th>
-          <th className="border border-gray-300 p-2 w-20">Total</th>
+          <th className="border border-gray-300 p-2 w-30">Price (Rs.)</th>
+          <th className="border border-gray-300 p-2 w-30">Total (Rs.)</th>
           <th className="border border-gray-300 p-2">Action</th>
         </tr>
       </thead>
