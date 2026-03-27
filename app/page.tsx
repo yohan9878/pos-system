@@ -9,6 +9,7 @@ import Button from "./components/Button";
 import { fetchProduct } from "./services/productService";
 import { Product } from "./types";
 import QuantityModal from "./components/QuantityModal";
+import Invoice from "./components/Invoice";
 
 export default function Home() {
   const [barcode, setBarcode] = useState<string>("");
@@ -55,8 +56,8 @@ export default function Home() {
   };
 
   const handleDelete = (barcode: string) => {
-  setCart(cart.filter((item) => item.barcode !== barcode));
-};
+    setCart(cart.filter((item) => item.barcode !== barcode));
+  };
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -92,6 +93,11 @@ export default function Home() {
         initialQty={1}
         productName={selectedProduct?.name || ""}
       />
+
+      <div id="invoice">
+        <Invoice items={cart} />
+      </div>
+      <button onClick={() => window.print()}>Print Invoice</button>
     </div>
   );
 }
