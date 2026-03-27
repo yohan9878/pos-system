@@ -44,7 +44,7 @@ export default function QuantityModal({
   return (
     isClient && (
       <div
-        className="fixed inset-0 rounded-2xl bg-black/50 backdrop-blur-sm   items-center justify-center w-full flex mx-auto"
+        className="fixed inset-0 rounded-2xl bg-black/50 backdrop-blur-sm   items-center justify-center w-full flex mx-auto transition-all duration-200 font-poppins"
         onClick={onClose}
       >
         <div
@@ -57,6 +57,7 @@ export default function QuantityModal({
 
           <input
             type="number"
+            min="0"
             value={qty}
             // onChange={(e) => setQty(parseInt(e.target.value))}
             onChange={(e) => {
