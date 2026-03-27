@@ -9,7 +9,7 @@ import Button from "./components/Button";
 import { fetchProduct } from "./services/productService";
 import { Product } from "./types";
 import QuantityModal from "./components/QuantityModal";
-import Invoice from "./components/Invoice";
+import Receipt from "./components/Receipt";
 
 export default function Home() {
   const [barcode, setBarcode] = useState<string>("");
@@ -85,19 +85,36 @@ export default function Home() {
           Clear
         </Button>
       </div>
-
-      <QuantityModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onConfirm={handleConfirmQty}
-        initialQty={1}
-        productName={selectedProduct?.name || ""}
-      />
-
-      <div id="invoice">
-        <Invoice items={cart} />
+      <div className="flex items-center my-10 border-t">
+        <QuantityModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          onConfirm={handleConfirmQty}
+          initialQty={1}
+          productName={selectedProduct?.name || ""}
+        />
       </div>
-      <button onClick={() => window.print()}>Print Invoice</button>
+
+      {/* <div id="invoice" className="flex flex-col items-center invoice-print">
+        <Invoice items={cart} />
+        <Button
+          className="mt-4 bg-green-700 hover:bg-green-600 print:hidden"
+          onClick={() => window.print()}
+        >
+          Print Invoice
+        </Button>
+      </div> */}
+
+      <div className=" flex flex-col items-center invoice-print">
+        <Receipt items={cart} invoiceNo="INV-001" />
+
+        <Button
+          onClick={() => window.print()}
+          className="mt-4 px-4 py-2 bg-green-700 hover:bg-green-600 text-white print:hidden"
+        >
+          Print Bill
+        </Button>
+      </div>
     </div>
   );
 }
