@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useEffectEvent, useState } from "react";
+import Button from "./Button";
 
 interface Props {
   isOpen: boolean;
@@ -42,8 +43,14 @@ export default function QuantityModal({
 
   return (
     isClient && (
-      <div className="fixed inset-0 bg-black bg-opacity-40 items-center justify-center ">
-        <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+      <div
+        className="fixed inset-0 rounded-2xl bg-black/50 backdrop-blur-sm   items-center justify-center w-full flex mx-auto"
+        onClick={onClose}
+      >
+        <div
+          className="bg-white p-6 rounded-lg shadow-lg w-80 mx-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
           <h2 className="text-black text-xl font-bold mb-4">Update Quantity</h2>
 
           <p className="mb-2 text-gray-900">{productName}</p>
@@ -72,15 +79,15 @@ export default function QuantityModal({
             className="w-full p-2 border rounded mb-4 text-gray-900"
           />
 
-          <div className="flex justify-end gap-2">
-            <button
+          <div className="flex justify-center gap-2">
+            <Button
               onClick={onClose}
               className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded"
             >
               Cancel
-            </button>
+            </Button>
 
-            <button
+            <Button
               onClick={() => {
                 if (!qty || qty <= 0) return;
                 onConfirm(qty);
@@ -89,7 +96,7 @@ export default function QuantityModal({
               className="px-4 py-2 bg-blue-500 text-white rounded"
             >
               Update
-            </button>
+            </Button>
           </div>
         </div>
       </div>
