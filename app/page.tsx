@@ -103,6 +103,7 @@ export default function Home() {
       <CartTable cart={cart} onDelete={handleDelete} />
 
       <TotalDisplay
+        discountAmount={discountAmount}
         subtotal={subtotal}
         total={total}
         discount={discount}
@@ -113,16 +114,16 @@ export default function Home() {
         <Button onClick={handlePay}>Pay</Button>
 
         <button
-          className="mr-3 mt-4 px-4 py-2 bg-amber-500 hover:bg-amber-300 rounded text-white"
+          className="mr-3 mt-4 px-4 py-2 bg-amber-500 hover:bg-amber-600 rounded text-white"
           onClick={() => setDiscountModalOpen(true)}
         >
           Discount
         </button>
         <Button
           onClick={() => window.print()}
-          className=" mt-4 px-4 py-2 bg-green-700 hover:bg-green-600 text-white print:hidden"
+          className=" mt-4 px-4 py-2 bg-green-700 hover:bg-green-800 text-white print:hidden"
         >
-          Print Bill
+          Print Invoice
         </Button>
         <Button
           onClick={() => {
@@ -132,7 +133,7 @@ export default function Home() {
           }}
           className="bg-red-500 hover:bg-red-600"
         >
-          Clear
+          Clear Cart
         </Button>
       </div>
       <div className="flex items-center my-10 border-t">

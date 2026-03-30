@@ -7,6 +7,7 @@ interface Props {
   total: number;
   discount: number;
   discountType: "percentage" | "fixed";
+  discountAmount: number;
 }
 
 export default function TotalDisplay({
@@ -14,6 +15,7 @@ export default function TotalDisplay({
   total,
   discount,
   discountType,
+  discountAmount,
 }: Props) {
   const [isClient, setIsClient] = useState(false);
 
@@ -28,10 +30,17 @@ export default function TotalDisplay({
   return (
     isClient && (
       <div className="mt-4">
-        <h2>Subtotal: Rs. {subtotal.toFixed(2)}</h2>
-        <h2>
-          Discount: {discount} {discountType === "percentage" ? "%" : "Rs"}
-        </h2>
+        <h2>Subtotal : Rs. {subtotal.toFixed(2)}</h2>
+        {discountType === "percentage" ? (
+          <h2>
+            Discount : {discount} %
+          </h2>
+        ) : (
+          <h2 hidden={true}>
+            Discount (Rs.): {discount} 
+          </h2>
+        )}
+        <h2>Discount Amount : Rs. {discountAmount.toFixed(2)}</h2>
         <h2 className="text-2xl font-bold">Total: Rs. {total.toFixed(2)}</h2>
       </div>
     )
