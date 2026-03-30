@@ -1,0 +1,93 @@
+"use client";
+
+import { useEffect, useEffectEvent, useState } from "react";
+import { CartItem } from "../types";
+
+interface Props {
+  cart: CartItem[];
+  subtotal: number;
+  discount: number;
+  discountType: "percentage" | "fixed";
+  discountAmount: number;
+  total: number;
+  invoiceNo: string;
+}
+
+export default function Receipt({
+  cart,
+  subtotal,
+  discountAmount,
+  total,
+  invoiceNo,
+}: Props) {
+  const [isClient, setIsClient] = useState(false);
+
+  // hydration fix: only render on client side
+  const updateIsClient = useEffectEvent((isClient: boolean) => {
+    setIsClient(isClient);
+  });
+
+  useEffect(() => {
+    updateIsClient(true);
+  }, []);
+
+  const date = new Date().toLocaleString();
+
+  return (
+    isClient && (
+      <div
+        id="invoice"
+        className="receipt mx-auto bg-white w-100 max-w-sm text-black text-[12px] font-mono p-5 border shadow"
+      >
+        {/* Header */}
+        <div className="text-center">
+          <h1 className="font-bold text-sm">Weehena Farm Shop</h1>
+          <p>Katunayake, Sri Lanka</p>
+          <p>Tel: 077-1234567</p>
+        </div>
+
+        <div className="border-t border-dashed my-2" />
+
+        {/* Invoice Info */}
+        <div>
+          <p>Invoice: {invoiceNo}</p>
+          <p>Date: {date}</p>
+        </div>
+
+        <div className="border-t border-dashed my-2" />
+
+        {/* Items */}
+        <div>
+          {cart.map((item, i) => (
+            <div key={i} className="flex justify-between">
+              <span>
+                {item.name} x{item.qty}
+              </span>
+              <span>{(item.qty * item.price).toFixed(2)}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="border-t border-dashed my-2" />
+
+        {/* Total */}
+        <div className="grid grid-cols-2 justify-between font-semibold">
+          <span className="text-left">SUBTOTAL Rs.</span>
+          <span className="text-right"> {subtotal.toFixed(2)}</span>
+          <span className="text-left">DISCOUNT Rs.</span>
+          <span className="text-right"> {discountAmount.toFixed(2)}</span>
+          <span className="text-left">TOTAL Rs.</span>
+          <span className="text-right"> {total.toFixed(2)}</span>
+        </div>
+
+        <div className="border-t border-dashed my-2" />
+
+        {/* Footer */}
+        <div className="text-center">
+          <p>Thank You!</p>
+          <p>Come Again 🙏</p>
+        </div>
+      </div>
+    )
+  );
+}

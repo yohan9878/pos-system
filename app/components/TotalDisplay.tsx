@@ -1,27 +1,39 @@
 "use client";
 
 import { useEffect, useEffectEvent, useState } from "react";
-import { CartItem } from "../types";
 
 interface Props {
-  cart: CartItem[];
+  subtotal: number;
+  total: number;
+  discount: number;
+  discountType: "percentage" | "fixed";
 }
 
-export default function TotalDisplay({ cart }: Props) {
+export default function TotalDisplay({
+  subtotal,
+  total,
+  discount,
+  discountType,
+}: Props) {
   const [isClient, setIsClient] = useState(false);
 
- const updateIsClient = useEffectEvent((isClient: boolean ) => {
-     setIsClient(isClient);
-    });
- 
-   useEffect(() => {
-     updateIsClient(true)
-   }, [])
+  const updateIsClient = useEffectEvent((isClient: boolean) => {
+    setIsClient(isClient);
+  });
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0).toFixed(2);
-  return (isClient &&
-    <div>
-      <h2 className="text-2xl font-bold mt-4"> Sub Total: Rs. {total}</h2>
-    </div>
+  useEffect(() => {
+    updateIsClient(true);
+  }, []);
+
+  return (
+    isClient && (
+      <div className="mt-4">
+        <h2>Subtotal: Rs. {subtotal.toFixed(2)}</h2>
+        <h2>
+          Discount: {discount} {discountType === "percentage" ? "%" : "Rs"}
+        </h2>
+        <h2 className="text-2xl font-bold">Total: Rs. {total.toFixed(2)}</h2>
+      </div>
+    )
   );
 }

@@ -23,18 +23,18 @@ export default function CartTable({ cart, onDelete }: Props) {
     <table className=" w-full mt-5 border-collapse border border-gray-300">
       <thead>
         <tr>
-          <th className="border border-gray-300 p-2 w-30">Barcode</th>
+          <th className="border border-gray-300 p-2 w-50">Barcode</th>
           <th className="border border-gray-300 p-2 w-100">Name</th>
           <th className="border border-gray-300 p-2">Qty</th>
-          <th className="border border-gray-300 p-2">Price</th>
-          <th className="border border-gray-300 p-2 w-20">Total</th>
+          <th className="border border-gray-300 p-2 w-30">Price (Rs.)</th>
+          <th className="border border-gray-300 p-2 w-30">Total (Rs.)</th>
           <th className="border border-gray-300 p-2">Action</th>
         </tr>
       </thead>
       <tbody>
         {cart.map((item, idx) => (
           <tr key={idx}>
-            <td className="border border-gray-300 p-2 text-center">{item.barcode}</td>
+            <td className="border border-gray-300 p-2">{item.barcode}</td>
             <td className="border border-gray-300 p-2">{item.name}</td>
             <td className="border border-gray-300 p-2 text-center">
               {item.qty}

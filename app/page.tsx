@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useContext } from "react";
+import { useState, useContext, useRef } from "react";
 import { CartContext } from "./context/CartContext";
 import BarcodeInput from "./components/BarcodeInput";
 import CartTable from "./components/CartTable";
@@ -9,13 +9,30 @@ import Button from "./components/Button";
 import { fetchProduct } from "./services/productService";
 import { Product } from "./types";
 import QuantityModal from "./components/QuantityModal";
-import Invoice from "./components/Invoice";
+import Receipt from "./components/Receipt";
+import DiscountModal from "./components/DiscountModal";
+import { calculateTotal } from "./utils/calculateTotal";
+import generateInvoiceNumber from "./utils/generateInvoiceNumber";
 
 export default function Home() {
   const [barcode, setBarcode] = useState<string>("");
   const { cart, setCart } = useContext(CartContext)!;
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  const [discountModalOpen, setDiscountModalOpen] = useState(false);
+  const [discount, setDiscount] = useState(0);
+  const [discountType, setDiscountType] = useState<"percentage" | "fixed">(
+    "percentage",
+  );
+  const [invoiceNo, setInvoiceNo] = useState<string>("");
+  const { subtotal, total, discountAmount } = calculateTotal(
+    cart,
+    discount,
+    discountType,
+  );
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleAdd = () => {
     const product = fetchProduct(barcode);
@@ -29,8 +46,10 @@ export default function Home() {
   };
 
   const handlePay = () => {
-    alert("Payment Done");
-    setCart([]);
+    const newInvoice = generateInvoiceNumber();
+    setInvoiceNo(newInvoice);
+
+    alert(`Payment Done\nInvoice: ${newInvoice}`);
   };
 
   const handleConfirmQty = (qty: number) => {
@@ -53,15 +72,24 @@ export default function Home() {
       // Add new item with entered qty
       setCart([...cart, { ...selectedProduct, qty }]);
     }
+
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
   };
 
   const handleDelete = (barcode: string) => {
     setCart(cart.filter((item) => item.barcode !== barcode));
   };
 
+  const handleApplyDiscount = (value: number, type: "percentage" | "fixed") => {
+    setDiscount(value);
+    setDiscountType(type);
+  };
+
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl text-center font-serif font-semibold mb-5">
+    <div className="p-6 max-w-4xl mx-auto font-poppins">
+      <h1 className="text-3xl text-center font-popins font-semibold mb-5">
         Weehena Farm Shop
       </h1>
 
@@ -69,35 +97,75 @@ export default function Home() {
         barcode={barcode}
         setBarcode={setBarcode}
         handleAdd={handleAdd}
+        inputRef={inputRef}
       />
 
       <CartTable cart={cart} onDelete={handleDelete} />
-      {/* <CartTable cart={sampleCart} /> */}
 
-      <TotalDisplay cart={cart} />
+      <TotalDisplay
+        subtotal={subtotal}
+        total={total}
+        discount={discount}
+        discountType={discountType}
+      />
 
       <div className="mt-4">
         <Button onClick={handlePay}>Pay</Button>
+
+        <button
+          className="mr-3 mt-4 px-4 py-2 bg-amber-500 hover:bg-amber-300 rounded text-white"
+          onClick={() => setDiscountModalOpen(true)}
+        >
+          Discount
+        </button>
         <Button
-          onClick={() => setCart([])}
+          onClick={() => window.print()}
+          className=" mt-4 px-4 py-2 bg-green-700 hover:bg-green-600 text-white print:hidden"
+        >
+          Print Bill
+        </Button>
+        <Button
+          onClick={() => {
+            setCart([]);
+            setInvoiceNo("");
+            setDiscount(0);
+          }}
           className="bg-red-500 hover:bg-red-600"
         >
           Clear
         </Button>
       </div>
-
-      <QuantityModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onConfirm={handleConfirmQty}
-        initialQty={1}
-        productName={selectedProduct?.name || ""}
+      <div className="flex items-center my-10 border-t">
+        <QuantityModal
+          isOpen={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            setTimeout(() => {
+              inputRef.current?.focus();
+            }, 0);
+          }}
+          onConfirm={handleConfirmQty}
+          initialQty={1}
+          productName={selectedProduct?.name || ""}
+        />
+      </div>
+      <DiscountModal
+        isOpen={discountModalOpen}
+        onClose={() => setDiscountModalOpen(false)}
+        onApply={handleApplyDiscount}
       />
 
-      <div id="invoice">
-        <Invoice items={cart} />
+      <div className=" flex flex-col items-center invoice-print">
+        <Receipt
+          cart={cart}
+          invoiceNo={invoiceNo}
+          subtotal={subtotal}
+          discount={discount}
+          discountType={discountType}
+          discountAmount={discountAmount}
+          total={total}
+        />
       </div>
-      <button onClick={() => window.print()}>Print Invoice</button>
     </div>
   );
 }
