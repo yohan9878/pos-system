@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useContext } from "react";
+import { useState, useContext, useRef } from "react";
 import { CartContext } from "./context/CartContext";
 import BarcodeInput from "./components/BarcodeInput";
 import CartTable from "./components/CartTable";
@@ -12,6 +12,7 @@ import QuantityModal from "./components/QuantityModal";
 import Receipt from "./components/Receipt";
 import DiscountModal from "./components/DiscountModal";
 import { calculateTotal } from "./utils/calculateTotal";
+import generateInvoiceNumber from "./utils/generateInvoiceNumber";
 
 export default function Home() {
   const [barcode, setBarcode] = useState<string>("");
@@ -24,8 +25,14 @@ export default function Home() {
   const [discountType, setDiscountType] = useState<"percentage" | "fixed">(
     "percentage",
   );
+  const [invoiceNo, setInvoiceNo] = useState<string>("");
+  const { subtotal, total, discountAmount } = calculateTotal(
+    cart,
+    discount,
+    discountType,
+  );
 
-  const { subtotal, total } = calculateTotal(cart, discount, discountType);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleAdd = () => {
     const product = fetchProduct(barcode);
@@ -39,8 +46,10 @@ export default function Home() {
   };
 
   const handlePay = () => {
-    alert("Payment Done");
-    setCart([]);
+    const newInvoice = generateInvoiceNumber();
+    setInvoiceNo(newInvoice);
+
+    alert(`Payment Done\nInvoice: ${newInvoice}`);
   };
 
   const handleConfirmQty = (qty: number) => {
@@ -63,6 +72,10 @@ export default function Home() {
       // Add new item with entered qty
       setCart([...cart, { ...selectedProduct, qty }]);
     }
+
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
   };
 
   const handleDelete = (barcode: string) => {
@@ -84,6 +97,7 @@ export default function Home() {
         barcode={barcode}
         setBarcode={setBarcode}
         handleAdd={handleAdd}
+        inputRef={inputRef}
       />
 
       <CartTable cart={cart} onDelete={handleDelete} />
@@ -97,18 +111,39 @@ export default function Home() {
 
       <div className="mt-4">
         <Button onClick={handlePay}>Pay</Button>
+
+        <button
+          className="mr-3 mt-4 px-4 py-2 bg-amber-500 hover:bg-amber-300 rounded text-white"
+          onClick={() => setDiscountModalOpen(true)}
+        >
+          Discount
+        </button>
         <Button
-          onClick={() => setCart([])}
+          onClick={() => window.print()}
+          className=" mt-4 px-4 py-2 bg-green-700 hover:bg-green-600 text-white print:hidden"
+        >
+          Print Bill
+        </Button>
+        <Button
+          onClick={() => {
+            setCart([]);
+            setInvoiceNo("");
+            setDiscount(0);
+          }}
           className="bg-red-500 hover:bg-red-600"
         >
           Clear
         </Button>
-        <Button onClick={() => setDiscountModalOpen(true)}>Discount</Button>
       </div>
       <div className="flex items-center my-10 border-t">
         <QuantityModal
           isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
+          onClose={() => {
+            setModalOpen(false);
+            setTimeout(() => {
+              inputRef.current?.focus();
+            }, 0);
+          }}
           onConfirm={handleConfirmQty}
           initialQty={1}
           productName={selectedProduct?.name || ""}
@@ -121,14 +156,15 @@ export default function Home() {
       />
 
       <div className=" flex flex-col items-center invoice-print">
-        <Receipt items={cart} invoiceNo="INV-001" />
-
-        <Button
-          onClick={() => window.print()}
-          className="mt-4 px-4 py-2 bg-green-700 hover:bg-green-600 text-white print:hidden"
-        >
-          Print Bill
-        </Button>
+        <Receipt
+          cart={cart}
+          invoiceNo={invoiceNo}
+          subtotal={subtotal}
+          discount={discount}
+          discountType={discountType}
+          discountAmount={discountAmount}
+          total={total}
+        />
       </div>
     </div>
   );
