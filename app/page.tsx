@@ -10,12 +10,22 @@ import { fetchProduct } from "./services/productService";
 import { Product } from "./types";
 import QuantityModal from "./components/QuantityModal";
 import Receipt from "./components/Receipt";
+import DiscountModal from "./components/DiscountModal";
+import { calculateTotal } from "./utils/calculateTotal";
 
 export default function Home() {
   const [barcode, setBarcode] = useState<string>("");
   const { cart, setCart } = useContext(CartContext)!;
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  const [discountModalOpen, setDiscountModalOpen] = useState(false);
+  const [discount, setDiscount] = useState(0);
+  const [discountType, setDiscountType] = useState<"percentage" | "fixed">(
+    "percentage",
+  );
+
+  const { subtotal, total } = calculateTotal(cart, discount, discountType);
 
   const handleAdd = () => {
     const product = fetchProduct(barcode);
@@ -59,6 +69,11 @@ export default function Home() {
     setCart(cart.filter((item) => item.barcode !== barcode));
   };
 
+  const handleApplyDiscount = (value: number, type: "percentage" | "fixed") => {
+    setDiscount(value);
+    setDiscountType(type);
+  };
+
   return (
     <div className="p-6 max-w-4xl mx-auto font-poppins">
       <h1 className="text-3xl text-center font-popins font-semibold mb-5">
@@ -72,9 +87,13 @@ export default function Home() {
       />
 
       <CartTable cart={cart} onDelete={handleDelete} />
-      {/* <CartTable cart={sampleCart} /> */}
 
-      <TotalDisplay cart={cart} />
+      <TotalDisplay
+        subtotal={subtotal}
+        total={total}
+        discount={discount}
+        discountType={discountType}
+      />
 
       <div className="mt-4">
         <Button onClick={handlePay}>Pay</Button>
@@ -84,6 +103,7 @@ export default function Home() {
         >
           Clear
         </Button>
+        <Button onClick={() => setDiscountModalOpen(true)}>Discount</Button>
       </div>
       <div className="flex items-center my-10 border-t">
         <QuantityModal
@@ -94,16 +114,11 @@ export default function Home() {
           productName={selectedProduct?.name || ""}
         />
       </div>
-
-      {/* <div id="invoice" className="flex flex-col items-center invoice-print">
-        <Invoice items={cart} />
-        <Button
-          className="mt-4 bg-green-700 hover:bg-green-600 print:hidden"
-          onClick={() => window.print()}
-        >
-          Print Invoice
-        </Button>
-      </div> */}
+      <DiscountModal
+        isOpen={discountModalOpen}
+        onClose={() => setDiscountModalOpen(false)}
+        onApply={handleApplyDiscount}
+      />
 
       <div className=" flex flex-col items-center invoice-print">
         <Receipt items={cart} invoiceNo="INV-001" />
