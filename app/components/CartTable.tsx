@@ -48,9 +48,9 @@ export default function CartTable({ cart, onDelete }: Props) {
             <td className="border border-gray-300 p-2 text-center">
               <button
                 onClick={() => onDelete(item.barcode)}
-                className=" text-white px-3 py-1 rounded hover:bg-red-600"
+                className=" text-white bg-red-600 px-3 py-1 rounded hover:bg-red-700"
               >
-                ❌
+                X
               </button>
             </td>
           </tr>
