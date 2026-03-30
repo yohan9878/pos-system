@@ -3,22 +3,22 @@ import { CartItem } from "../types";
 export const calculateTotal = (
   cart: CartItem[],
   discount: number,
-  discountType: "percentage" | "fixed"
+  discountType: "percentage" | "fixed",
 ) => {
-  const subtotal = cart.reduce(
-    (sum, item) => sum + item.price * item.qty,
-    0
-  );
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
   let total = subtotal;
+  let discountAmount = 0;
 
   if (discountType === "percentage") {
-    total = subtotal - (subtotal * discount) / 100;
+    discountAmount = parseFloat(((subtotal * discount) / 100).toFixed(2));
+    total = parseFloat((subtotal - discountAmount).toFixed(2));
   } else {
-    total = subtotal - discount;
+    total = parseFloat((subtotal - discount).toFixed(2));
+    discountAmount = parseFloat(discount.toFixed(2));
   }
 
   if (total < 0) total = 0;
 
-  return { subtotal, total };
+  return { subtotal, total, discountAmount };
 };

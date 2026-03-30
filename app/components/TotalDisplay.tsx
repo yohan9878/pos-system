@@ -28,11 +28,11 @@ export default function TotalDisplay({
   return (
     isClient && (
       <div className="mt-4">
-        <h2>Subtotal: Rs. {subtotal}</h2>
+        <h2>Subtotal: Rs. {subtotal.toFixed(2)}</h2>
         <h2>
           Discount: {discount} {discountType === "percentage" ? "%" : "Rs"}
         </h2>
-        <h2 className="text-2xl font-bold">Total: Rs. {total}</h2>
+        <h2 className="text-2xl font-bold">Total: Rs. {total.toFixed(2)}</h2>
       </div>
     )
   );
