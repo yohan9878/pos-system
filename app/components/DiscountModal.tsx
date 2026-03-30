@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useEffectEvent } from "react";
+import Button from "./Button";
 
 interface Props {
   isOpen: boolean;
@@ -83,13 +84,13 @@ export default function DiscountModal({ isOpen, onClose, onApply }: Props) {
         </div>
 
         <div className="flex justify-end gap-2">
-          <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded">
+          <Button onClick={onClose} className="bg-red-500 hover:bg-red-600 rounded">
             Cancel
-          </button>
+          </Button>
 
           <button
             onClick={handleApply}
-            className="px-4 py-2 bg-green-500 text-white rounded"
+            className="px-4 py-2 bg-yellow-500 hover:bg-amber-400 text-white rounded"
           >
             Apply
           </button>
