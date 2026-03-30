@@ -1,19 +1,27 @@
 "use client";
 
+import { RefObject, useEffect } from "react";
+
 type BarcodeInputProps = {
   barcode: string;
   setBarcode: (value: string) => void;
   handleAdd: () => void;
+   inputRef: RefObject<HTMLInputElement | null>;
 };
 
 export default function BarcodeInput({
   barcode,
   setBarcode,
   handleAdd,
+  inputRef
 }: BarcodeInputProps) {
+  useEffect(() => {
+  inputRef.current?.focus();
+}, []);
   return (
     <input
       type="text"
+      ref={inputRef}
       value={barcode}
       onChange={(e) => setBarcode(e.target.value)}
       onKeyDown={(e) => e.key === "Enter" && handleAdd()}
