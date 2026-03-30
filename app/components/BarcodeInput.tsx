@@ -6,18 +6,18 @@ type BarcodeInputProps = {
   barcode: string;
   setBarcode: (value: string) => void;
   handleAdd: () => void;
-   inputRef: RefObject<HTMLInputElement | null>;
+  inputRef: RefObject<HTMLInputElement | null>;
 };
 
 export default function BarcodeInput({
   barcode,
   setBarcode,
   handleAdd,
-  inputRef
+  inputRef,
 }: BarcodeInputProps) {
   useEffect(() => {
-  inputRef.current?.focus();
-}, []);
+    inputRef.current?.focus();
+  }, []);
   return (
     <input
       type="text"
