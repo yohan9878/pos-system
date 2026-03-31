@@ -23,32 +23,32 @@ export default function CartTable({ cart, onDelete }: Props) {
     <table className=" w-full mt-5 border-collapse border border-gray-300">
       <thead>
         <tr>
-          <th className="border border-gray-300 p-2 w-50">Barcode</th>
-          <th className="border border-gray-300 p-2 w-100">Name</th>
-          <th className="border border-gray-300 p-2">Qty</th>
-          <th className="border border-gray-300 p-2 w-30">Price (Rs.)</th>
-          <th className="border border-gray-300 p-2 w-30">Total (Rs.)</th>
-          <th className="border border-gray-300 p-2">Action</th>
+          <th className="border border-gray-400 text-red-950 p-2 w-50">Barcode</th>
+          <th className="border border-gray-400 text-red-950 p-2 w-100">Name</th>
+          <th className="border border-gray-400 text-red-950 p-2">Qty</th>
+          <th className="border border-gray-400 text-red-950 p-2 w-30">Price (Rs.)</th>
+          <th className="border border-gray-400 text-red-950 p-2 w-30">Total (Rs.)</th>
+          <th className="border border-gray-400 text-red-950 p-2 w-40">Remove</th>
         </tr>
       </thead>
       <tbody>
         {cart.map((item, idx) => (
           <tr key={idx}>
-            <td className="border border-gray-300 p-2">{item.barcode}</td>
-            <td className="border border-gray-300 p-2">{item.name}</td>
-            <td className="border border-gray-300 p-2 text-center">
+            <td className="border text-gray-700 border-gray-400 p-2">{item.barcode}</td>
+            <td className="border text-gray-700 border-gray-400 p-2">{item.name}</td>
+            <td className="border text-gray-700 border-gray-400 p-2 text-center">
               {item.qty}
             </td>
-            <td className="border border-gray-300 p-2 text-right">
+            <td className="border text-gray-700 border-gray-400 p-2 text-right">
               {item.price.toFixed(2)}
             </td>
-            <td className="border border-gray-300 p-2 text-right">
+            <td className="border text-gray-700 border-gray-400 p-2 text-right">
               {(item.price * item.qty).toFixed(2)}
             </td>
-            <td className="border border-gray-300 p-2 text-center">
+            <td className="border text-gray-700 border-gray-400 p-2 text-center">
               <button
                 onClick={() => onDelete(item.barcode)}
-                className=" text-white bg-red-600 px-3 py-1 rounded hover:bg-red-700"
+                className=" text-white bg-red-700 px-3 py-1 rounded hover:bg-red-600"
               >
                 X
               </button>

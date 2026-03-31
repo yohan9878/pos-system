@@ -57,13 +57,21 @@ export default function Receipt({
         <div className="border-t border-dashed my-2" />
 
         {/* Items */}
-        <div>
+        <div className="">
+          <div className="flex justify-between font-semibold">
+            <span>Item</span>
+             <span className="w-24 text-center">Qty</span>
+             <span>Price</span>
+             <span>Total</span>
+          </div>
           {cart.map((item, i) => (
-            <div key={i} className="flex justify-between">
-              <span>
-                {item.name} x{item.qty}
+            <div key={i} className="flex gap-2 justify-between mt-2 mb-2">
+              <span className="w-24 ">
+                {item.name}
               </span>
-              <span>{(item.qty * item.price).toFixed(2)}</span>
+              <span className="w-24 text-center">*{item.qty}</span>
+              <span className="w-24 text-right"> {item.price.toFixed(2)}</span>
+              <span className="w-24 text-right">{(item.qty * item.price).toFixed(2)}</span>
             </div>
           ))}
         </div>

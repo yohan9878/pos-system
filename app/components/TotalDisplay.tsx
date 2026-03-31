@@ -29,7 +29,7 @@ export default function TotalDisplay({
 
   return (
     isClient && (
-      <div className="mt-4">
+      <div className="mt-4 text-red-900 font-semibold">
         <h2>Subtotal : Rs. {subtotal.toFixed(2)}</h2>
         {discountType === "percentage" ? (
           <h2>
