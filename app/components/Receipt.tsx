@@ -49,7 +49,7 @@ export default function Receipt({
         <div className="border-t border-dashed my-2" />
 
         {/* Invoice Info */}
-        <div className="flex flex-col">
+        <div>
           <p>Invoice: {invoiceNo}</p>
           <p>Date: {date}</p>
         </div>
@@ -58,21 +58,20 @@ export default function Receipt({
 
         {/* Items */}
         <div className="">
-          <div className="flex justify-between gap-2 font-semibold">
-            <span className="w-48 ">Item</span>
-            <span className="w-10 text-right">Qty</span>
-            <span className="w-16 text-right">Price</span>
-            <span className="w-16 text-right">Total</span>
+          <div className="flex justify-between font-semibold">
+            <span>Item</span>
+             <span className="w-24 text-center">Qty</span>
+             <span>Price</span>
+             <span>Total</span>
           </div>
           {cart.map((item, i) => (
-            <div
-              key={i}
-              className="flex gap-2 text-right text-[10px] justify-between mt-2 mb-2"
-            >
-              <span className="w-48 text-left">{item.name}</span>
-              <span className="w-10">*{item.qty}</span>
-              <span className="w-16"> {item.price.toFixed(2)}</span>
-              <span className="w-16">{(item.qty * item.price).toFixed(2)}</span>
+            <div key={i} className="flex gap-2 justify-between mt-2 mb-2">
+              <span className="w-24 ">
+                {item.name}
+              </span>
+              <span className="w-24 text-center">*{item.qty}</span>
+              <span className="w-24 text-right"> {item.price.toFixed(2)}</span>
+              <span className="w-24 text-right">{(item.qty * item.price).toFixed(2)}</span>
             </div>
           ))}
         </div>
@@ -80,7 +79,7 @@ export default function Receipt({
         <div className="border-t border-dashed my-2" />
 
         {/* Total */}
-        <div className="grid grid-cols-2 justify-between">
+        <div className="grid grid-cols-2 justify-between font-semibold">
           <span className="text-left">SUBTOTAL Rs.</span>
           <span className="text-right"> {subtotal.toFixed(2)}</span>
           <span className="text-left">DISCOUNT Rs.</span>
@@ -92,7 +91,7 @@ export default function Receipt({
         <div className="border-t border-dashed my-2" />
 
         {/* Footer */}
-        <div className="text-center font-bold">
+        <div className="text-center">
           <p>Thank You!</p>
           <p>Come Again 🙏</p>
         </div>

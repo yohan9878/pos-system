@@ -1,51 +1,13 @@
 import { Product } from "../types";
 
-const API_URL = "http://localhost:8080/api/products";
-
-export interface ProductItems {
-  id: number;
-  name: string;
-  barcode: string;
-  price: number;
-}
-
-// Get all stock
-export const getProducts = async (): Promise<ProductItems[]> => {
-  const res = await fetch(API_URL);
-  if (!res.ok) throw new Error("Failed to fetch stock");
-  return res.json();
+const products: Record<string, Product> = {
+  "1001": { barcode: "1001", name: "Chicken 1kg", price: 1200.00 },
+  "1002": { barcode: "1002", name: "Sausage Pack 1kg", price: 800.00 },
+  "1003": { barcode: "1003", name: "Chese and Onion Sausage 500g", price: 650.00 },
+  "1004": { barcode: "1004", name: "Chicken Meat Balls 500g ", price: 750.00 },
+  "1005": { barcode: "1005", name: "Chandi Sausage", price: 250.00 },
 };
 
-// Add product
-export const addProduct = async (product: Omit<ProductItems, "id">) => {
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(product),
-  });
-  if (!res.ok) throw new Error("Failed to add product");
-  return res.json();
-};
-
-// Delete product
-export const deleteProduct = async (id: number) => {
-  const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete product");
-};
-
-// Fetch product by barcode
-export const fetchProduct = async (barcode: string): Promise<Product> => {
-  try {
-    const res = await fetch(`http://localhost:8080/api/products/${barcode}`);
-
-    if (!res.ok) throw new Error("Product not found");
-
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching product:", error);
-
-    alert("Failed to fetch product");
-    throw new Error("Failed to fetch product");
-  }
+export const fetchProduct = (barcode: string): Product | null => {
+  return products[barcode] || null;
 };

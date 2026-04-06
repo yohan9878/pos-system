@@ -20,15 +20,15 @@ export default function CartTable({ cart, onDelete }: Props) {
   }, [])
  
   return ( isClient &&
-    <table className=" w-full mt-5 border-collapse  border border-gray-300 shadow-lg">
-      <thead className="bg-red-700">
+    <table className=" w-full mt-5 border-collapse border border-gray-300">
+      <thead>
         <tr>
-          <th className="border font-medium border-gray-400 p-2 w-50">Barcode</th>
-          <th className="border font-medium border-gray-400 p-2 w-100">Name</th>
-          <th className="border font-medium border-gray-400 p-2">Qty</th>
-          <th className="border font-medium border-gray-400 p-2 w-30">Price (Rs.)</th>
-          <th className="border font-medium border-gray-400 p-2 w-30">Total (Rs.)</th>
-          <th className="border font-medium border-gray-400 p-2 w-40">Remove</th>
+          <th className="border border-gray-400 text-red-950 p-2 w-50">Barcode</th>
+          <th className="border border-gray-400 text-red-950 p-2 w-100">Name</th>
+          <th className="border border-gray-400 text-red-950 p-2">Qty</th>
+          <th className="border border-gray-400 text-red-950 p-2 w-30">Price (Rs.)</th>
+          <th className="border border-gray-400 text-red-950 p-2 w-30">Total (Rs.)</th>
+          <th className="border border-gray-400 text-red-950 p-2 w-40">Remove</th>
         </tr>
       </thead>
       <tbody>
