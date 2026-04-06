@@ -20,12 +20,12 @@ export default function OfficeLayout({ children }: Props) {
   return (
     <div className="min-h-screen flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-white  shadow-2xl">
-        <h1 className="text-xl text-center text-red-950  p-2 font-semibold  mx-auto">
+      <aside className="w-64 bg-white drop-shadow-gray-400  drop-shadow-xl/50">
+        <h1 className="text-xl text-center mb-4 bg-red-800 text-white p-3  mx-auto">
           Office Dashboard
         </h1>
 
-        <nav className="flex flex-col gap-0">
+        <nav className="flex flex-col gap-0 mt-4">
           {navItems.map((item) => {
             const isActive = pathname.includes(item.path);
 
@@ -33,10 +33,10 @@ export default function OfficeLayout({ children }: Props) {
               <Link
                 key={item.name}
                 href={`/office${item.path}`}
-                className={`p-2 text-center text-red-900 transition ${
+                className={`px-5 py-2 w-54 ml-4 rounded-md text-smd text-left text-red-900 transition ${
                   isActive
-                    ? "bg-red-900 text-white font-semibold"
-                    : "hover:bg-gray-200 hover:text-red-900 font-semibold"
+                    ? "bg-red-200 text-red-600 font-semibold"
+                    : "hover:bg-gray-100 hover:text-red-900 font-semibold"
                 }`}
               >
                 {item.name}
@@ -48,9 +48,7 @@ export default function OfficeLayout({ children }: Props) {
 
       {/* Main Content */}
       <main className="flex-1 bg-red-50 p-6">
-        <div className="bg-white p-6 rounded-lg shadow-2xl">
-          {children}
-        </div>
+        <div className="bg-white p-6 rounded-lg shadow-2xl">{children}</div>
       </main>
     </div>
   );
