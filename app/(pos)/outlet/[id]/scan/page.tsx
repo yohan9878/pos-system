@@ -34,8 +34,8 @@ export default function ScanPage() {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleAdd = () => {
-    const product = fetchProduct(barcode);
+  const handleAdd = async () => {
+    const product = await fetchProduct(barcode);
     if (!product) return alert("Product not found");
 
     // Open modal for ANY scan
@@ -89,9 +89,9 @@ export default function ScanPage() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto font-poppins">
-      <h1 className="text-3xl text-red-950 text-center font-popins font-semibold mb-5">
+      {/* <h1 className="text-4xl text-red-700 text-center font-popins font-semibold mb-14">
         Weehena Farm Shop
-      </h1>
+      </h1> */}
 
       <BarcodeInput
         barcode={barcode}
