@@ -1,5 +1,5 @@
 export type Stock = {
   productId: number;
-  outletId: string; // "katunayake"
+  outletId: string;
   quantity: number;
 };
