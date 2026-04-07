@@ -2,22 +2,37 @@
 
 import Button from "@/app/components/Button";
 import { useEffect, useEffectEvent, useState } from "react";
-import { getStock, addStock, updateStock, deleteStock, StockItem } from "@/app/services/stockService";
+import {
+  getStock,
+  addStock,
+  updateStock,
+  deleteStock,
+  StockItem,
+} from "@/app/services/stockService";
+import QuantityModal from "@/app/components/QuantityModal";
 
 export default function StockPage() {
   const [stockList, setStockList] = useState<StockItem[]>([]);
   const [search, setSearch] = useState("");
 
   const [productName, setProductName] = useState("");
-  const [productId, setProductId] = useState("");
+  const [barcode, setBarcode] = useState("");
   const [outletId, setOutletId] = useState("");
   const [qty, setQty] = useState("");
+
+  const [selectedStock, setSelectedStock] = useState<StockItem | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   // Load stock from backend
   const loadStock = async () => {
     try {
       const data = await getStock();
-      setStockList(data);
+      //SORT BY BARCODE (ASCENDING)
+      const sortedData = data.sort((a: StockItem, b: StockItem) =>
+        a.barcode.toString().localeCompare(b.barcode.toString()),
+      );
+
+      setStockList(sortedData);
     } catch (err) {
       console.error("Failed to fetch stock:", err);
     }
@@ -27,18 +42,22 @@ export default function StockPage() {
     loadStock();
   });
 
-
   useEffect(() => {
     updateLoadStock();
   }, []);
 
+  const handleQtyClick = (item: StockItem) => {
+    setSelectedStock(item);
+    setModalOpen(true);
+  };
+
   // Add new stock
   const handleAddStock = async () => {
-    if (!productName || !productId || !outletId || !qty) return;
+    if (!productName || !barcode || !outletId || !qty) return;
 
     const newStock = {
       productName,
-      productId,
+      barcode,
       outletId,
       quantity: parseInt(qty),
     };
@@ -47,24 +66,12 @@ export default function StockPage() {
       await addStock(newStock);
       await loadStock(); // refresh list
       setProductName("");
-      setProductId("");
+      setBarcode("");
       setOutletId("");
       setQty("");
     } catch (err) {
       console.error("Failed to add stock:", err);
       alert("Failed to add stock");
-    }
-  };
-
-  // Update quantity
-  const handleUpdateQty = async (id: number, newQty: number) => {
-    if (newQty <= 0) return;
-    try {
-      await updateStock(id, newQty);
-      await loadStock();
-    } catch (err) {
-      console.error("Failed to update quantity:", err);
-      alert("Failed to update stock quantity");
     }
   };
 
@@ -82,11 +89,26 @@ export default function StockPage() {
     }
   };
 
-const filteredStock = stockList.filter((item) =>
-  item.productId?.toString().includes(search) ||
-  item.productName?.toLowerCase().includes(search.toLowerCase())
-);
+  const filteredStock = stockList.filter(
+    (item) =>
+      item.barcode?.toString().includes(search) ||
+      item.productName?.toLowerCase().includes(search.toLowerCase()) ||
+      item.outletId?.toLowerCase().includes(search.toLowerCase()),
+  );
 
+  const handleConfirmQty = async (qty: number) => {
+    if (!selectedStock) return;
+
+    try {
+      await updateStock(selectedStock.id, qty);
+      setModalOpen(false);
+      setSelectedStock(null);
+      await loadStock();
+    } catch (err) {
+      console.error("Failed to update quantity:", err);
+      alert("Failed to update stock quantity");
+    }
+  };
 
   return (
     <div>
@@ -94,38 +116,38 @@ const filteredStock = stockList.filter((item) =>
 
       {/* Search */}
       <input
-        placeholder="Search by barcode or product name"
+        placeholder="Search by barcode, product name or outlet ID"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="p-2 border mb-4 w-90 border-gray-300 text-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
+        className="p-2 border mb-4 w-full bg-blue-50 border-gray-300 text-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
       />
 
       {/* Add Stock */}
       <div className="rounded mb-6 flex gap-2 flex-wrap">
         <input
           placeholder="Barcode"
-          value={productId}
-          onChange={(e) => setProductId(e.target.value)}
-          className="text-gray-700 w-50 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
+          value={barcode}
+          onChange={(e) => setBarcode(e.target.value)}
+          className="bg-green-50 text-gray-700 w-40 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
         />
         <input
           placeholder="Product Name"
           value={productName}
           onChange={(e) => setProductName(e.target.value)}
-          className="text-gray-700 w-88 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
+          className="bg-green-50 text-gray-700 w-86 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
         />
         <input
           placeholder="Outlet ID"
           value={outletId}
           onChange={(e) => setOutletId(e.target.value)}
-          className="text-gray-700 w-50 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
+          className="bg-green-50 text-gray-700 w-40 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
         />
         <input
           type="number"
           placeholder="Quantity"
           value={qty}
           onChange={(e) => setQty(e.target.value)}
-          className="text-gray-700 p-2 border border-gray-300 rounded w-32 focus:outline-none focus:ring-2 focus:ring-red-800"
+          className="bg-green-50 text-gray-700 p-2 border border-gray-300 rounded w-32 focus:outline-none focus:ring-2 focus:ring-red-800"
         />
         <Button
           onClick={handleAddStock}
@@ -139,11 +161,21 @@ const filteredStock = stockList.filter((item) =>
       <table className="w-full border">
         <thead>
           <tr>
-            <th className="border border-gray-800 text-red-900 w-50 p-2">Barcode</th>
-            <th className="border border-gray-800 text-red-900 w-90 p-2">Product</th>
-            <th className="border border-gray-800 text-red-900 w-40 p-2">Quantity</th>
-            <th className="border border-gray-800 text-red-900 p-2 w-60">Outlet</th>
-            <th className="border border-gray-800 text-red-900 w-30 p-2 mx-auto">Action</th>
+            <th className=" border-gray-800 text-left text-red-900 w-40 p-2">
+              Barcode
+            </th>
+            <th className=" border-gray-800 text-left text-red-900 w-90 p-2">
+              Product
+            </th>
+            <th className=" border-gray-800 text-center text-red-900 w-40 p-2">
+              Quantity
+            </th>
+            <th className=" border-gray-800 text-center text-red-900 p-2 w-60">
+              Outlet
+            </th>
+            <th className=" border-gray-800 text-center text-red-900 w-30 p-2 mx-auto">
+              Action
+            </th>
           </tr>
         </thead>
 
@@ -151,24 +183,30 @@ const filteredStock = stockList.filter((item) =>
           {filteredStock.map((item) => (
             <tr
               key={item.id}
-              className={`text-center ${item.quantity < 5 ? "bg-red-100" : ""}`}
+              className={`${item.quantity < 5 ? "bg-red-100" : "odd:bg-gray-200 even:bg-white"}`}
             >
-              <td className="border text-left border-gray-800 text-gray-900 font-medium p-2">{item.productId}</td>
-              <td className="border text-left border-gray-800 text-gray-900 font-medium p-2">{item.productName}</td>
-
-              {/* Editable Quantity */}
-              <td className="border border-gray-800 p-2">
-                <input
-                  type="number"
-                  value={item.quantity}
-                  onChange={(e) => handleUpdateQty(item.id, parseInt(e.target.value))}
-                  className="w-20 text-center border text-gray-900 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-                />
+              <td className="text-left border-gray-800 text-gray-900 font-medium p-2">
+                {item.barcode}
+              </td>
+              <td className=" border-gray-800 text-gray-900 font-medium p-2">
+                {item.productName}
               </td>
 
-              <td className="border border-gray-800 text-gray-900 font-medium w-60 p-2">{item.outletId}</td>
+              {/* Editable Quantity */}
+              <td className=" border-gray-800 p-2">
+                <div
+                  onClick={() => handleQtyClick(item)}
+                  className="cursor-pointer text-center bg-red-200 px-3 py-1 rounded hover:bg-gray-300 text-red-800 font-semibold"
+                >
+                  {item.quantity}
+                </div>
+              </td>
 
-              <td className="border border-gray-800 p-2">
+              <td className=" border-gray-800 text-center text-gray-900 font-medium w-60 p-2">
+                {item.outletId}
+              </td>
+
+              <td className=" border-gray-800 p-2">
                 <Button
                   onClick={() => handleDelete(item.id)}
                   className="bg-red-800 text-white px-2 py-1 ml-4 rounded hover:bg-red-700"
@@ -180,6 +218,16 @@ const filteredStock = stockList.filter((item) =>
           ))}
         </tbody>
       </table>
+      <QuantityModal
+        isOpen={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+          setSelectedStock(null);
+        }}
+        onConfirm={handleConfirmQty}
+        initialQty={selectedStock?.quantity || 1}
+        productName={selectedStock?.productName || ""}
+      />
     </div>
   );
 }
