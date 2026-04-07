@@ -3,7 +3,7 @@ const API_URL = "http://localhost:8080/api/stock";
 export interface StockItem {
   id: number;
   productName: string;
-  productId: string;
+  barcode: string;
   quantity: number;
   outletId: string;
 }
