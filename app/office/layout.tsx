@@ -44,6 +44,9 @@ export default function OfficeLayout({ children }: Props) {
             );
           })}
         </nav>
+        <Link href={'/'} className="absolute text-center w-54 bottom-4 left-4 bg-red-700 text-white px-4 py-2 rounded-md hover:bg-red-600">
+          Back to home
+        </Link>
       </aside>
 
       {/* Main Content */}
