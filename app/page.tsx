@@ -3,9 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { getStock } from "./services/stockService";
 
 export default function Home() {
   const [time, setTime] = useState("");
+  const [outletId, setOutletId] = useState("");
+  const [outlets, setOutlets] = useState<string[]>([]);
 
   useEffect(() => {
     const updateTime = () => {
@@ -15,6 +18,16 @@ export default function Home() {
     updateTime();
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    async function loadOutlets() {
+      const stock = await getStock();
+      const unique = Array.from(new Set(stock.map((item) => item.outletId)));
+      setOutlets(unique);
+      setOutletId(unique[0] ?? "");
+    }
+    loadOutlets().catch(console.error);
   }, []);
 
   return (
@@ -34,20 +47,37 @@ export default function Home() {
         <p className="text-md text-gray-800 font-sans font-normal">{time}</p>
       </div>
 
-      <div className="flex flex-col gap-4 mt-6">
-        <Link
-          href="/outlet/katunayake/scan"
-          className="w-56 text-center shadow drop-shadow-xl shadow-gray-500 bg-red-700 text-sm hover:bg-red-600 font-medium text-white px-6 py-3 rounded-xl"
+      <div className="flex flex-col gap-4 mt-6 mx-auto items-center">
+        <label className="text-md text-gray-800 font-sans font-normal">
+          Select your outlet to start selling
+        </label>
+        <select
+          value={outletId}
+          onChange={(e) => setOutletId(e.target.value)}
+          className=" flex shadow drop-shadow-lg shadow-gray-500 p-2 text-normal text-center  text-white bg-red-700 rounded-xl w-56 hover:bg-red-600 "
         >
-          Go to POS (Katunayake)
+          {outlets.map((id) => (
+            <option key={id} value={id}>
+              {id}
+            </option>
+          ))}
+        </select>
+        <Link
+          href={outletId ? `/outlet/${outletId}/scan` : "#"}
+          className={`w-56 text-center shadow drop-shadow-xl shadow-gray-500 bg-red-700 text-sm font-medium text-white px-6 py-3 rounded-xl ${
+            outletId ? "hover:bg-red-600" : "cursor-not-allowed opacity-50"
+          }`}
+        >
+          {outletId ? `Go to POS (${outletId})` : "No outlet available"}
         </Link>
         <Link
-          href="/office/products"
+          href="/office/stock"
           className="w-56 text-center shadow drop-shadow-lg shadow-gray-600 bg-red-700 text-sm hover:bg-red-600 font-medium text-white px-6 py-3 rounded-xl"
         >
           Office Dashboard
         </Link>
       </div>
+      
     </div>
   );
 }
