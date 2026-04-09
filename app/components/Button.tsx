@@ -11,7 +11,7 @@ export default function Button({ onClick, children, className }: Props) {
   return (
     <button
       onClick={onClick}
-      className={`px-5 py-2 mr-3 bg-blue-700 text-white rounded hover:bg-blue-600 transition ${className}`}
+      className={`px-5 py-2 mr-3 text-white rounded transition ${className}`}
     >
       {children}
     </button>
