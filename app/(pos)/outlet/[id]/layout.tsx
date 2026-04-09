@@ -6,11 +6,13 @@ import Link from "next/link";
 
 interface Props {
   children: ReactNode;
+  params: Promise<{ id: string }>;
 }
 
-export default function ScanLayout({ children }: Props) {
+export default async function ScanLayout ({ children, params }: Props) {
+  const { id } = await params;
   return (
-    <div className="min-h-screen">
+    <div className="min-h-full">
       {/* Optional Header */}
       <div className="flex gap-2 bg-red-700 text-xl text-white p-4 font-semibold">
         <Link href="/" className="flex items-center gap-2">
@@ -22,7 +24,7 @@ export default function ScanLayout({ children }: Props) {
             className="inline-block mr-3 size-10 bg-white rounded-full"
           />
         </Link>
-        <p className="my-auto"> Weehena Farm Shop</p>
+        <p className="my-auto"> Weehena Farm Shop - ({id})</p>
 
         <Link
           href="/"
