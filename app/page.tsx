@@ -1,170 +1,81 @@
 "use client";
 
-import { useState, useContext, useRef } from "react";
-import { CartContext } from "./context/CartContext";
-import BarcodeInput from "./components/BarcodeInput";
-import CartTable from "./components/CartTable";
-import TotalDisplay from "./components/TotalDisplay";
-import Button from "./components/Button";
-import { fetchProduct } from "./services/productService";
-import { Product } from "./types";
-import QuantityModal from "./components/QuantityModal";
-import Receipt from "./components/Receipt";
-import DiscountModal from "./components/DiscountModal";
-import { calculateTotal } from "./utils/calculateTotal";
-import generateInvoiceNumber from "./utils/generateInvoiceNumber";
+import Link from "next/link";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { getStock } from "./services/stockService";
 
 export default function Home() {
-  const [barcode, setBarcode] = useState<string>("");
-  const { cart, setCart } = useContext(CartContext)!;
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [time, setTime] = useState("");
+  const [outletId, setOutletId] = useState("");
+  const [outlets, setOutlets] = useState<string[]>([]);
 
-  const [discountModalOpen, setDiscountModalOpen] = useState(false);
-  const [discount, setDiscount] = useState(0);
-  const [discountType, setDiscountType] = useState<"percentage" | "fixed">(
-    "percentage",
-  );
-  const [invoiceNo, setInvoiceNo] = useState<string>("");
-  const { subtotal, total, discountAmount } = calculateTotal(
-    cart,
-    discount,
-    discountType,
-  );
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      setTime(now.toLocaleTimeString("en-US", { timeStyle: "medium" }));
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleAdd = () => {
-    const product = fetchProduct(barcode);
-    if (!product) return alert("Product not found");
-
-    // Open modal for ANY scan
-    setSelectedProduct(product);
-    setModalOpen(true);
-
-    setBarcode("");
-  };
-
-  const handlePay = () => {
-    const newInvoice = generateInvoiceNumber();
-    setInvoiceNo(newInvoice);
-
-    alert(`Payment Done\nInvoice: ${newInvoice}`);
-  };
-
-  const handleConfirmQty = (qty: number) => {
-    if (!selectedProduct) return;
-
-    const existing = cart.find(
-      (item) => item.barcode === selectedProduct.barcode,
-    );
-
-    if (existing) {
-      // Add to existing quantity
-      setCart(
-        cart.map((item) =>
-          item.barcode === selectedProduct.barcode
-            ? { ...item, qty: item.qty + qty }
-            : item,
-        ),
-      );
-    } else {
-      // Add new item with entered qty
-      setCart([...cart, { ...selectedProduct, qty }]);
+  useEffect(() => {
+    async function loadOutlets() {
+      const stock = await getStock();
+      const unique = Array.from(new Set(stock.map((item) => item.outletId)));
+      setOutlets(unique);
+      setOutletId(unique[0] ?? "");
     }
-
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 0);
-  };
-
-  const handleDelete = (barcode: string) => {
-    setCart(cart.filter((item) => item.barcode !== barcode));
-  };
-
-  const handleApplyDiscount = (value: number, type: "percentage" | "fixed") => {
-    setDiscount(value);
-    setDiscountType(type);
-  };
+    loadOutlets().catch(console.error);
+  }, []);
 
   return (
-    <div className="p-6 max-w-4xl mx-auto font-poppins">
-      <h1 className="text-3xl text-center font-popins font-semibold mb-5">
-        Weehena Farm Shop
-      </h1>
-
-      <BarcodeInput
-        barcode={barcode}
-        setBarcode={setBarcode}
-        handleAdd={handleAdd}
-        inputRef={inputRef}
-      />
-
-      <CartTable cart={cart} onDelete={handleDelete} />
-
-      <TotalDisplay
-        subtotal={subtotal}
-        total={total}
-        discount={discount}
-        discountType={discountType}
-      />
-
-      <div className="mt-4">
-        <Button onClick={handlePay}>Pay</Button>
-
-        <button
-          className="mr-3 mt-4 px-4 py-2 bg-amber-500 hover:bg-amber-300 rounded text-white"
-          onClick={() => setDiscountModalOpen(true)}
-        >
-          Discount
-        </button>
-        <Button
-          onClick={() => window.print()}
-          className=" mt-4 px-4 py-2 bg-green-700 hover:bg-green-600 text-white print:hidden"
-        >
-          Print Bill
-        </Button>
-        <Button
-          onClick={() => {
-            setCart([]);
-            setInvoiceNo("");
-            setDiscount(0);
-          }}
-          className="bg-red-500 hover:bg-red-600"
-        >
-          Clear
-        </Button>
-      </div>
-      <div className="flex items-center my-10 border-t">
-        <QuantityModal
-          isOpen={modalOpen}
-          onClose={() => {
-            setModalOpen(false);
-            setTimeout(() => {
-              inputRef.current?.focus();
-            }, 0);
-          }}
-          onConfirm={handleConfirmQty}
-          initialQty={1}
-          productName={selectedProduct?.name || ""}
+    <div className="h-screen bg-white flex flex-col items-center justify-center">
+      <div className="flex flex-col mx-aut items-center gap-2">
+        <Image
+          src="/weehenaLogo.png"
+          alt="Weehena Farm Shop Logo"
+          width={150}
+          height={150}
+          className="size-18"
         />
+        <h1 className="text-2xl text-black font-bold">Weehena Farm Shop</h1>
+        <p className="text-md text-gray-800 font-sans font-normal">
+          {new Date().toLocaleDateString("en-US", { dateStyle: "full" })}
+        </p>
+        <p className="text-md text-gray-800 font-sans font-normal">{time}</p>
       </div>
-      <DiscountModal
-        isOpen={discountModalOpen}
-        onClose={() => setDiscountModalOpen(false)}
-        onApply={handleApplyDiscount}
-      />
 
-      <div className=" flex flex-col items-center invoice-print">
-        <Receipt
-          cart={cart}
-          invoiceNo={invoiceNo}
-          subtotal={subtotal}
-          discount={discount}
-          discountType={discountType}
-          discountAmount={discountAmount}
-          total={total}
-        />
+      <div className="flex flex-col gap-4 mt-6 mx-auto items-center">
+        <label className="text-md text-gray-800 font-sans font-medium">
+          Select your outlet to start selling
+        </label>
+        <select
+          value={outletId}
+          onChange={(e) => setOutletId(e.target.value)}
+          className="shadow drop-shadow-md shadow-gray-500 p-2 text-normal text-left text-white bg-red-700 rounded-xl w-56 focus:outline-none focus:ring-2 focus:ring-red-800 transition"
+        >
+          {outlets.map((id) => (
+            <option key={id} value={id} className="bg-red-50 text-gray-800">
+              {id}
+            </option>
+          ))}
+        </select>
+        <Link
+          href={outletId ? `/outlet/${outletId}/scan` : "#"}
+          className={`w-56 text-center shadow drop-shadow-xl shadow-gray-500 bg-red-700 text-sm font-medium text-white px-6 py-3 rounded-xl ${
+            outletId ? "hover:bg-red-600" : "cursor-not-allowed opacity-50"
+          }`}
+        >
+          {outletId ? `Go to POS (${outletId})` : "No outlet available"}
+        </Link>
+        <Link
+          href="/office/products"
+          className="w-56 text-center shadow drop-shadow-lg shadow-gray-600 bg-red-700 text-sm hover:bg-red-600 font-medium text-white px-6 py-3 rounded-xl"
+        >
+          Office Dashboard
+        </Link>
       </div>
     </div>
   );

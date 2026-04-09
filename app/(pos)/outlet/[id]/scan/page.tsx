@@ -1,0 +1,220 @@
+"use client";
+
+import { useState, useContext, useRef } from "react";
+import { CartContext } from "@/app/context/CartContext";
+import BarcodeInput from "@/app/components/BarcodeInput";
+import CartTable from "@/app/components/CartTable";
+import TotalDisplay from "@/app/components/TotalDisplay";
+import Button from "@/app/components/Button";
+import { fetchProduct } from "@/app/services/productService";
+import { Product } from "@/app/types";
+import QuantityModal from "@/app/components/QuantityModal";
+import Receipt from "@/app/components/Receipt";
+import DiscountModal from "@/app/components/DiscountModal";
+import { calculateTotal } from "@/app/utils/calculateTotal";
+import generateInvoiceNumber from "@/app/utils/generateInvoiceNumber";
+import { processSale } from "@/app/services/saleService";
+import { useParams } from "next/navigation";
+
+export default function ScanPage() {
+  const [barcode, setBarcode] = useState<string>("");
+  const { cart, setCart } = useContext(CartContext)!;
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  const [discountModalOpen, setDiscountModalOpen] = useState(false);
+  const [discount, setDiscount] = useState(0);
+  const [discountType, setDiscountType] = useState<"percentage" | "fixed">(
+    "percentage",
+  );
+  const [invoiceNo, setInvoiceNo] = useState<string>("");
+  const { subtotal, total, discountAmount } = calculateTotal(
+    cart,
+    discount,
+    discountType,
+  );
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const [loading, setLoading] = useState(false);
+  const params = useParams();
+  const outletId = params.id as string;
+
+  const handleAdd = async () => {
+    const product = await fetchProduct(barcode);
+    if (!product) return alert("Product not found");
+
+    // Open modal for ANY scan
+    setSelectedProduct(product);
+    setModalOpen(true);
+
+    setBarcode("");
+  };
+
+  // const handlePay = () => {
+  //   const newInvoice = generateInvoiceNumber();
+  //   setInvoiceNo(newInvoice);
+
+  //   alert(`Payment Done\nInvoice: ${newInvoice}`);
+  // };
+
+  const handleConfirmQty = (qty: number) => {
+    if (!selectedProduct) return;
+
+    const existing = cart.find(
+      (item) => item.barcode === selectedProduct.barcode,
+    );
+
+    if (existing) {
+      // Add to existing quantity
+      setCart(
+        cart.map((item) =>
+          item.barcode === selectedProduct.barcode
+            ? { ...item, qty: item.qty + qty }
+            : item,
+        ),
+      );
+    } else {
+      // Add new item with entered qty
+      setCart([...cart, { ...selectedProduct, qty }]);
+    }
+
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+  };
+
+  const handleDelete = (barcode: string) => {
+    setCart(cart.filter((item) => item.barcode !== barcode));
+  };
+
+  const handleApplyDiscount = (value: number, type: "percentage" | "fixed") => {
+    setDiscount(value);
+    setDiscountType(type);
+  };
+
+  const buildSaleRequest = () => {
+    return {
+      invoiceNo: `INV-${Date.now()}`,
+      outletId: outletId,
+      date: new Date().toLocaleDateString(),
+      total: cart.reduce((sum, item) => sum + item.price * item.qty, 0),
+      items: cart.map((item) => ({
+        barcode: item.barcode,
+        qty: item.qty,
+      })),
+    };
+  };
+
+  const handlePay = async () => {
+    if (cart.length === 0) return;
+
+    try {
+      setLoading(true);
+
+      const saleData = buildSaleRequest();
+
+      await processSale(saleData);
+
+        
+      const newInvoice = generateInvoiceNumber();
+      setInvoiceNo(newInvoice);
+      alert(`Payment Done\nInvoice: ${newInvoice}`);
+
+      // 🧹 Clear cart after success
+      // setCart([]);
+    } catch (error: unknown) {
+      console.error(error);
+      alert("Payment Failed ❌ " + (error as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="p-6 max-w-4xl mx-auto font-poppins">
+      <BarcodeInput
+        barcode={barcode}
+        setBarcode={setBarcode}
+        handleAdd={handleAdd}
+        inputRef={inputRef}
+      />
+
+      <CartTable cart={cart} onDelete={handleDelete} />
+
+      <TotalDisplay
+        discountAmount={discountAmount}
+        subtotal={subtotal}
+        total={total}
+        discount={discount}
+        discountType={discountType}
+      />
+
+      <div className="mt-4">
+        <Button
+          onClick={() => {
+            if (cart.length === 0 || loading) return;
+            handlePay();
+          }}
+          className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded disabled:bg-gray-400"
+        >
+          {loading ? "Processing..." : "Pay"}
+        </Button>
+
+        <Button
+          onClick={() => setDiscountModalOpen(true)}
+          className=" mr-3 mt-4 px-4 py-2 bg-amber-500 hover:bg-amber-400 rounded text-white"
+        >
+          Discount
+        </Button>
+        <Button
+          onClick={() => window.print()}
+          className="mt-4 px-4 py-2 bg-green-800 hover:bg-green-700 text-white print:hidden"
+        >
+          Print Invoice
+        </Button>
+        <Button
+          onClick={() => {
+            setCart([]);
+            setInvoiceNo("");
+            setDiscount(0);
+          }}
+          className="bg-red-800 hover:bg-red-700"
+        >
+          Clear Cart
+        </Button>
+      </div>
+      <div className="flex items-center my-10 border-t">
+        <QuantityModal
+          isOpen={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            setTimeout(() => {
+              inputRef.current?.focus();
+            }, 0);
+          }}
+          onConfirm={handleConfirmQty}
+          initialQty={1}
+          productName={selectedProduct?.name || ""}
+        />
+      </div>
+      <DiscountModal
+        isOpen={discountModalOpen}
+        onClose={() => setDiscountModalOpen(false)}
+        onApply={handleApplyDiscount}
+      />
+
+      <div className=" flex flex-col items-center invoice-print">
+        <Receipt
+          cart={cart}
+          invoiceNo={invoiceNo}
+          subtotal={subtotal}
+          discount={discount}
+          discountType={discountType}
+          discountAmount={discountAmount}
+          total={total}
+        />
+      </div>
+    </div>
+  );
+}

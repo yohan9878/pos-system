@@ -7,7 +7,7 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (qty: number) => void;
-  initialQty: number;
+  initialQty: number | null;
   productName: string;
 }
 
@@ -18,7 +18,7 @@ export default function QuantityModal({
   initialQty,
   productName,
 }: Props) {
-  const [qty, setQty] = useState<number>(initialQty);
+  const [qty, setQty] = useState<number | null>(initialQty);
   const [isClient, setIsClient] = useState(false);
 
   // hydration fix: only render on client side
@@ -30,7 +30,7 @@ export default function QuantityModal({
     updateIsClient(true);
   }, []);
 
-  const updateQty = useEffectEvent((initialQty: number) => {
+  const updateQty = useEffectEvent((initialQty: number | null) => {
     setQty(initialQty);
   });
 
@@ -57,9 +57,7 @@ export default function QuantityModal({
 
           <input
             type="number"
-            min="0"
-            value={qty}
-            // onChange={(e) => setQty(parseInt(e.target.value))}
+            value={qty !== null ? qty : ""}
             onChange={(e) => {
               const value = parseInt(e.target.value);
               setQty(isNaN(value) ? 0 : value);
