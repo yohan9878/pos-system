@@ -8,6 +8,23 @@ export interface StockItem {
   outletId: string;
 }
 
+export interface StockHistoryItem {
+  id: number;
+  barcode: string;
+  productName: string;
+  oldQuantity: number;
+  updatedQty: number;
+  newQuantity: number;
+  changedBy: string;
+  changedAt: string;
+}
+
+export interface StockRequest {
+  barcode: number;
+  outletId: string;
+  quantity: number;
+}
+
 // Get all stock
 export const getStock = async (): Promise<StockItem[]> => {
   const res = await fetch(API_URL);
@@ -15,8 +32,8 @@ export const getStock = async (): Promise<StockItem[]> => {
   return res.json();
 };
 
-// Add stock
-export const addStock = async (stock: Omit<StockItem, "id">) => {
+// Add stock Omit<StockItem, "id"
+export const addStock = async (stock: StockRequest ) => {
   const res = await fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -26,10 +43,15 @@ export const addStock = async (stock: Omit<StockItem, "id">) => {
   return res.json();
 };
 
-// Update stock quantity (optional: create an endpoint in backend for this)
+// Update stock quantity
 export const updateStock = async (id: number, quantity: number) => {
   const res = await fetch(`${API_URL}/${id}?quantity=${quantity}`, {
     method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      quantity: quantity,
+      user: "Admin", // 🔥 later from login
+    }),
   });
   if (!res.ok) throw new Error("Failed to update stock");
   return res.json();
