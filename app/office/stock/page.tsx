@@ -1,6 +1,5 @@
 "use client";
 
-import Button from "@/app/components/Button";
 import { useEffect, useEffectEvent, useState } from "react";
 import {
   getStock,
@@ -10,12 +9,13 @@ import {
   StockItem,
 } from "@/app/services/stockService";
 import QuantityModal from "@/app/components/QuantityModal";
+import Button from "@/app/components/Button";
 
 export default function StockPage() {
   const [stockList, setStockList] = useState<StockItem[]>([]);
   const [search, setSearch] = useState("");
 
-  const [productName, setProductName] = useState("");
+  // const [productName, setProductName] = useState("");
   const [barcode, setBarcode] = useState("");
   const [outletId, setOutletId] = useState("");
   const [qty, setQty] = useState("");
@@ -53,11 +53,12 @@ export default function StockPage() {
 
   // Add new stock
   const handleAddStock = async () => {
-    if (!productName || !barcode || !outletId || !qty) return;
+    // if (!productName || !barcode || !outletId || !qty) return;
+    if (!barcode || !outletId || !qty) return;
 
     const newStock = {
-      productName,
-      barcode,
+      // productName,
+      barcode: parseInt(barcode),
       outletId,
       quantity: parseInt(qty),
     };
@@ -65,7 +66,7 @@ export default function StockPage() {
     try {
       await addStock(newStock);
       await loadStock(); // refresh list
-      setProductName("");
+      // setProductName("");
       setBarcode("");
       setOutletId("");
       setQty("");
@@ -111,8 +112,8 @@ export default function StockPage() {
   };
 
   return (
-    <div>
-      <h1 className="text-2xl text-red-950 font-bold mb-4">Stock Management</h1>
+    <div className="min-h-screen text-xs">
+      <h1 className="text-xl text-red-950 font-bold mb-4">Stock Management</h1>
 
       {/* Search */}
       <input
@@ -130,12 +131,12 @@ export default function StockPage() {
           onChange={(e) => setBarcode(e.target.value)}
           className="bg-green-50 text-gray-700 w-40 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
         />
-        <input
+        {/* <input
           placeholder="Product Name"
           value={productName}
           onChange={(e) => setProductName(e.target.value)}
           className="bg-green-50 text-gray-700 w-86 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
+        /> */}
         <input
           placeholder="Outlet ID"
           value={outletId}
@@ -155,10 +156,11 @@ export default function StockPage() {
         >
           Add Stock
         </Button>
+        {/* <AddStockForm /> */}
       </div>
 
       {/* Stock Table */}
-      <table className="w-full border">
+      <table className="w-fit border text-xs">
         <thead>
           <tr>
             <th className=" border-gray-800 text-left text-red-900 w-40 p-2">
@@ -183,7 +185,7 @@ export default function StockPage() {
           {filteredStock.map((item) => (
             <tr
               key={item.id}
-              className={`${item.quantity < 5 ? "bg-red-100" : "odd:bg-gray-200 even:bg-white"}`}
+              className={`${item.quantity < 5 ? "bg-red-100" : ""} odd:bg-gray-200 even:bg-white`}
             >
               <td className="text-left border-gray-800 text-gray-900 font-medium p-2">
                 {item.barcode}
@@ -206,7 +208,7 @@ export default function StockPage() {
                 {item.outletId}
               </td>
 
-              <td className=" border-gray-800 p-2">
+              <td className=" border-gray-800 w-30 p-2">
                 <Button
                   onClick={() => handleDelete(item.id)}
                   className="bg-red-800 text-white px-2 py-1 ml-4 rounded hover:bg-red-700"
@@ -225,7 +227,7 @@ export default function StockPage() {
           setSelectedStock(null);
         }}
         onConfirm={handleConfirmQty}
-        initialQty={selectedStock?.quantity || 1}
+        initialQty={null}
         productName={selectedStock?.productName || ""}
       />
     </div>
