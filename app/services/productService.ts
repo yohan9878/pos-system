@@ -12,7 +12,7 @@ export interface ProductItems {
 // Get all stock
 export const getProducts = async (): Promise<ProductItems[]> => {
   const res = await fetch(API_URL);
-  if (!res.ok) throw new Error("Failed to fetch stock");
+  if (!res.ok) throw new Error("Failed to fetch product");
   return res.json();
 };
 
@@ -45,7 +45,7 @@ export const fetchProduct = async (barcode: string): Promise<Product> => {
   } catch (error) {
     console.error("Error fetching product:", error);
 
-    alert("Failed to fetch product");
+    alert("Product not found");
     throw new Error("Failed to fetch product");
   }
 };
