@@ -73,20 +73,24 @@ export default function ProductPage() {
     }
   };
 
-  const filteredProducts = products.filter((p) => p.barcode.includes(search));
+  const filteredProducts = products.filter((item) =>
+      item.barcode?.toString().includes(search) ||
+      item.name?.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="text-white rounded">
-      <h1 className="text-2xl text-red-950 font-bold mb-4">
+      <h1 className="text-xl text-red-950 font-bold mb-4">
         Product Management
       </h1>
-      <input
-        placeholder="Search by barcode..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="p-2 border mb-4 w-full bg-blue-50 border-gray-300 text-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-      />
-      <div className="rounded mb-6 flex gap-2 flex-wrap ">
+
+      <div className="rounded mb-4 flex gap-2 flex-wrap text-xs">
+        <input
+          placeholder="Search by barcode..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="p-2 mb-2 border w-full bg-blue-50 border-gray-300 text-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
+        />
         <input
           placeholder="Barcode"
           value={barcode}
@@ -113,7 +117,7 @@ export default function ProductPage() {
         </Button>
       </div>
 
-      <table className="w-full border border-gray-200">
+      <table className="w-full border border-gray-200 text-xs">
         <thead>
           <tr>
             <th className="text-red-900 text-left border-gray-800 p-2 w-50">
@@ -125,9 +129,7 @@ export default function ProductPage() {
             <th className="text-red-900 text-right border-gray-800 p-2 w-50">
               Price (Rs.)
             </th>
-            <th className="text-red-900 border-gray-800 p-2 w-38">
-              Action
-            </th>
+            <th className="text-red-900 border-gray-800 p-2 w-38">Action</th>
           </tr>
         </thead>
         <tbody>
