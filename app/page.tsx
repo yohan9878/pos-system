@@ -48,16 +48,16 @@ export default function Home() {
       </div>
 
       <div className="flex flex-col gap-4 mt-6 mx-auto items-center">
-        <label className="text-md text-gray-800 font-sans font-normal">
+        <label className="text-md text-gray-800 font-sans font-medium">
           Select your outlet to start selling
         </label>
         <select
           value={outletId}
           onChange={(e) => setOutletId(e.target.value)}
-          className=" flex shadow drop-shadow-lg shadow-gray-500 p-2 text-normal text-center  text-white bg-red-700 rounded-xl w-56 hover:bg-red-600 "
+          className="shadow drop-shadow-md shadow-gray-500 p-2 text-normal text-left text-white bg-red-700 rounded-xl w-56 focus:outline-none focus:ring-2 focus:ring-red-800 transition"
         >
           {outlets.map((id) => (
-            <option key={id} value={id}>
+            <option key={id} value={id} className="bg-red-50 text-gray-800">
               {id}
             </option>
           ))}
@@ -71,13 +71,12 @@ export default function Home() {
           {outletId ? `Go to POS (${outletId})` : "No outlet available"}
         </Link>
         <Link
-          href="/office/stock"
+          href="/office/products"
           className="w-56 text-center shadow drop-shadow-lg shadow-gray-600 bg-red-700 text-sm hover:bg-red-600 font-medium text-white px-6 py-3 rounded-xl"
         >
           Office Dashboard
         </Link>
       </div>
-      
     </div>
   );
 }
