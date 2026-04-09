@@ -13,6 +13,8 @@ import Receipt from "@/app/components/Receipt";
 import DiscountModal from "@/app/components/DiscountModal";
 import { calculateTotal } from "@/app/utils/calculateTotal";
 import generateInvoiceNumber from "@/app/utils/generateInvoiceNumber";
+import { processSale } from "@/app/services/saleService";
+import { useParams } from "next/navigation";
 
 export default function ScanPage() {
   const [barcode, setBarcode] = useState<string>("");
@@ -34,6 +36,10 @@ export default function ScanPage() {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const [loading, setLoading] = useState(false);
+  const params = useParams();
+  const outletId = params.id as string;
+
   const handleAdd = async () => {
     const product = await fetchProduct(barcode);
     if (!product) return alert("Product not found");
@@ -45,12 +51,12 @@ export default function ScanPage() {
     setBarcode("");
   };
 
-  const handlePay = () => {
-    const newInvoice = generateInvoiceNumber();
-    setInvoiceNo(newInvoice);
+  // const handlePay = () => {
+  //   const newInvoice = generateInvoiceNumber();
+  //   setInvoiceNo(newInvoice);
 
-    alert(`Payment Done\nInvoice: ${newInvoice}`);
-  };
+  //   alert(`Payment Done\nInvoice: ${newInvoice}`);
+  // };
 
   const handleConfirmQty = (qty: number) => {
     if (!selectedProduct) return;
@@ -87,6 +93,44 @@ export default function ScanPage() {
     setDiscountType(type);
   };
 
+  const buildSaleRequest = () => {
+    return {
+      invoiceNo: `INV-${Date.now()}`,
+      outletId: outletId,
+      date: new Date().toLocaleDateString(),
+      total: cart.reduce((sum, item) => sum + item.price * item.qty, 0),
+      items: cart.map((item) => ({
+        barcode: item.barcode,
+        qty: item.qty,
+      })),
+    };
+  };
+
+  const handlePay = async () => {
+    if (cart.length === 0) return;
+
+    try {
+      setLoading(true);
+
+      const saleData = buildSaleRequest();
+
+      await processSale(saleData);
+
+        
+      const newInvoice = generateInvoiceNumber();
+      setInvoiceNo(newInvoice);
+      alert(`Payment Done\nInvoice: ${newInvoice}`);
+
+      // 🧹 Clear cart after success
+      // setCart([]);
+    } catch (error: unknown) {
+      console.error(error);
+      alert("Payment Failed ❌ " + (error as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="p-6 max-w-4xl mx-auto font-poppins">
       <BarcodeInput
@@ -107,17 +151,25 @@ export default function ScanPage() {
       />
 
       <div className="mt-4">
-        <Button onClick={handlePay}>Pay</Button>
+        <Button
+          onClick={() => {
+            if (cart.length === 0 || loading) return;
+            handlePay();
+          }}
+          className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded disabled:bg-gray-400"
+        >
+          {loading ? "Processing..." : "Pay"}
+        </Button>
 
-        <button
-          className="mr-3 mt-4 px-4 py-2 bg-amber-600 hover:bg-amber-500 rounded text-white"
+        <Button
           onClick={() => setDiscountModalOpen(true)}
+          className=" mr-3 mt-4 px-4 py-2 bg-amber-500 hover:bg-amber-400 rounded text-white"
         >
           Discount
-        </button>
+        </Button>
         <Button
           onClick={() => window.print()}
-          className=" mt-4 px-4 py-2 bg-green-800 hover:bg-green-700 text-white print:hidden"
+          className="mt-4 px-4 py-2 bg-green-800 hover:bg-green-700 text-white print:hidden"
         >
           Print Invoice
         </Button>
