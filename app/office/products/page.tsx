@@ -16,7 +16,7 @@ export default function ProductPage() {
   const [bulkPrice, setBulkPrice] = useState("");
   const [retailPrice, setRetailPrice] = useState("");
   const [packPrice, setPackPrice] = useState("");
-  const [packWeight, setPackWeight] = useState("");
+  // const [packWeight, setPackWeight] = useState("");
   const [pricePerKg, setPricePerKg] = useState("");
   const [weighted, setWeighted] = useState("false");
 
@@ -50,7 +50,7 @@ export default function ProductPage() {
       !bulkPrice ||
       !retailPrice ||
       !packPrice ||
-      !packWeight ||
+      // !packWeight ||
       !pricePerKg
     )
       return;
@@ -61,7 +61,7 @@ export default function ProductPage() {
       bulkPrice: parseFloat(bulkPrice),
       retailPrice: parseFloat(retailPrice),
       packPrice: parseFloat(packPrice),
-      packWeight: parseFloat(packWeight),
+      // packWeight: parseFloat(packWeight),
       pricePerKg: parseFloat(pricePerKg),
       weighted: weighted === "true",
     };
@@ -74,7 +74,7 @@ export default function ProductPage() {
       setBulkPrice("");
       setRetailPrice("");
       setPackPrice("");
-      setPackWeight("");
+      // setPackWeight("");
       setPricePerKg("");
       setWeighted("false");
     } catch (err) {
