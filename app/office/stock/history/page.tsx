@@ -34,13 +34,13 @@ export default function HistoryPage() {
               Product
             </th>
             <th className="border-gray-800 text-center text-red-900 w-30 p-2">
-              Old Qty
+              Previous Stock
             </th>
             <th className="border-gray-800 text-center text-red-900 w-30 p-2">
-              Updated Qty
+              Updated Stock
             </th>
             <th className="border-gray-800 text-center text-red-900 w-30 p-2">
-              New Qty
+              Current Stock
             </th>
             <th className="border-gray-800 text-left text-red-900 w-30 p-2">
               User
@@ -61,13 +61,19 @@ export default function HistoryPage() {
                 {h.productName}
               </td>
               <td className="text-center border-gray-800 text-gray-900 font-medium p-2">
-                <div className="bg-blue-300 p-1 rounded-lg w-20 mx-auto">{h.oldQuantity}</div>
+                <div className="bg-blue-300 p-1 rounded-lg w-20 mx-auto">
+                  {h.oldStock}
+                </div>
               </td>
               <td className="text-center border-gray-800 text-gray-900 font-medium p-2">
-                <div className="bg-amber-100 p-1 rounded-lg w-20 mx-auto">{h.updatedQty}</div>
+                <div className="bg-amber-100 p-1 rounded-lg w-20 mx-auto">
+                  {h.updatedStock}
+                </div>
               </td>
               <td className="text-center border-gray-800 text-gray-900 font-medium p-2">
-                <div className="bg-green-300 p-1 rounded-lg w-20 mx-auto">{h.newQuantity}</div>
+                <div className="bg-green-300 p-1 rounded-lg w-20 mx-auto">
+                  {h.newStock}
+                </div>
               </td>
               <td className="text-left border-gray-800 text-gray-900 font-medium p-2">
                 {h.changedBy}
