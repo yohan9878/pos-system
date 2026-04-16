@@ -6,23 +6,35 @@ export interface StockItem {
   barcode: string;
   quantity: number;
   outletId: string;
+  lowStockThresholdQty: number;
+  lowStockThresholdWeight: number;
+  weight: number;
+  weighted: boolean;
 }
 
 export interface StockHistoryItem {
   id: number;
   barcode: string;
   productName: string;
-  oldQuantity: number;
-  updatedQty: number;
-  newQuantity: number;
+  oldStock: number;
+  updatedStock: number;
+  newStock: number;
   changedBy: string;
   changedAt: string;
 }
 
 export interface StockRequest {
   barcode: number;
+  lowStockThresholdQty: number;
+  lowStockThresholdWeight: number;
   outletId: string;
   quantity: number;
+  weight: number;
+}
+
+export interface StockUpdateRequest {
+  value: number;
+  user: string; // 🔥 later from login
 }
 
 // Get all stock
@@ -33,7 +45,7 @@ export const getStock = async (): Promise<StockItem[]> => {
 };
 
 // Add stock Omit<StockItem, "id"
-export const addStock = async (stock: StockRequest ) => {
+export const addStock = async (stock: StockRequest) => {
   const res = await fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -44,16 +56,27 @@ export const addStock = async (stock: StockRequest ) => {
 };
 
 // Update stock quantity
-export const updateStock = async (id: number, quantity: number) => {
-  const res = await fetch(`${API_URL}/${id}?quantity=${quantity}`, {
+// export const updateStock = async (id: number, value: number ) => {
+//   const res = await fetch(`${API_URL}/${id}?quantity=${value}`, {
+//     method: "PUT",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify({
+//       value: value,
+//       user: "Admin", // 🔥 later from login
+//     }),
+//   });
+//   if (!res.ok) throw new Error("Failed to update stock");
+//   return res.json();
+// };
+export const updateStock = async (id: number, body: StockUpdateRequest) => {
+  const res = await fetch(`http://localhost:8080/api/stock/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      quantity: quantity,
-      user: "Admin", // 🔥 later from login
-    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error("Failed to update stock");
+
   return res.json();
 };
 
