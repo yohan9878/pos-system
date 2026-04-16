@@ -55,19 +55,6 @@ export const addStock = async (stock: StockRequest) => {
   return res.json();
 };
 
-// Update stock quantity
-// export const updateStock = async (id: number, value: number ) => {
-//   const res = await fetch(`${API_URL}/${id}?quantity=${value}`, {
-//     method: "PUT",
-//     headers: { "Content-Type": "application/json" },
-//     body: JSON.stringify({
-//       value: value,
-//       user: "Admin", // 🔥 later from login
-//     }),
-//   });
-//   if (!res.ok) throw new Error("Failed to update stock");
-//   return res.json();
-// };
 export const updateStock = async (id: number, body: StockUpdateRequest) => {
   const res = await fetch(`http://localhost:8080/api/stock/${id}`, {
     method: "PUT",
