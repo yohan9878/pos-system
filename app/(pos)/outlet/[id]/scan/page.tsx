@@ -15,19 +15,30 @@ import { calculateTotal } from "@/app/utils/calculateTotal";
 import generateInvoiceNumber from "@/app/utils/generateInvoiceNumber";
 import { processSale } from "@/app/services/saleService";
 import { useParams } from "next/navigation";
+import WeightModal from "@/app/components/WeightModal";
 
 export default function ScanPage() {
   const [barcode, setBarcode] = useState<string>("");
   const { cart, setCart } = useContext(CartContext)!;
+
+  // Quantity Modal State
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
+  //Discount Modal State
   const [discountModalOpen, setDiscountModalOpen] = useState(false);
   const [discount, setDiscount] = useState(0);
   const [discountType, setDiscountType] = useState<"percentage" | "fixed">(
     "percentage",
   );
+
+  // Weight Modal State (for future use)
+  const [weightModalOpen, setWeightModalOpen] = useState(false);
+
+  // Invoice State
   const [invoiceNo, setInvoiceNo] = useState<string>("");
+
+  // Calculate totals whenever cart or discount changes
   const { subtotal, total, discountAmount } = calculateTotal(
     cart,
     discount,
@@ -46,7 +57,12 @@ export default function ScanPage() {
 
     // Open modal for ANY scan
     setSelectedProduct(product);
-    setModalOpen(true);
+
+    if (product.weighted) {
+      setWeightModalOpen(true); // open weight modal for weighted items
+    } else {
+      setModalOpen(true); // open quantity modal for non-weighted items
+    }
 
     setBarcode("");
   };
@@ -58,6 +74,7 @@ export default function ScanPage() {
   //   alert(`Payment Done\nInvoice: ${newInvoice}`);
   // };
 
+  // Quantity Hnadler
   const handleConfirmQty = (qty: number) => {
     if (!selectedProduct) return;
 
@@ -70,13 +87,38 @@ export default function ScanPage() {
       setCart(
         cart.map((item) =>
           item.barcode === selectedProduct.barcode
-            ? { ...item, qty: item.qty + qty }
+            ? { ...item, value: item.value + qty }
             : item,
         ),
       );
     } else {
       // Add new item with entered qty
-      setCart([...cart, { ...selectedProduct, qty }]);
+      setCart([...cart, { ...selectedProduct, value: qty }]);
+    }
+
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+  };
+
+  // weight handler
+  const handleConfirmWeight = (weight: number) => {
+    if (!selectedProduct) return;
+
+    const existing = cart.find(
+      (item) => item.barcode === selectedProduct.barcode,
+    );
+
+    if (existing) {
+      setCart(
+        cart.map((item) =>
+          item.barcode === selectedProduct.barcode
+            ? { ...item, value: item.value + weight } // 👈 reuse qty field as value
+            : item,
+        ),
+      );
+    } else {
+      setCart([...cart, { ...selectedProduct, value: weight }]);
     }
 
     setTimeout(() => {
@@ -98,10 +140,10 @@ export default function ScanPage() {
       invoiceNo: `INV-${Date.now()}`,
       outletId: outletId,
       date: new Date().toLocaleDateString(),
-      total: cart.reduce((sum, item) => sum + item.price * item.qty, 0),
       items: cart.map((item) => ({
         barcode: item.barcode,
-        qty: item.qty,
+        value: item.value,
+        priceType: "RETAIL",
       })),
     };
   };
@@ -116,13 +158,9 @@ export default function ScanPage() {
 
       await processSale(saleData);
 
-        
       const newInvoice = generateInvoiceNumber();
       setInvoiceNo(newInvoice);
       alert(`Payment Done\nInvoice: ${newInvoice}`);
-
-      // 🧹 Clear cart after success
-      // setCart([]);
     } catch (error: unknown) {
       console.error(error);
       alert("Payment Failed ❌ " + (error as Error).message);
@@ -195,6 +233,20 @@ export default function ScanPage() {
           }}
           onConfirm={handleConfirmQty}
           initialQty={1}
+          productName={selectedProduct?.name || ""}
+        />
+      </div>
+      <div className="flex items-center my-10 border-t">
+        <WeightModal
+          isOpen={weightModalOpen}
+          onClose={() => {
+            setWeightModalOpen(false);
+            setTimeout(() => {
+              inputRef.current?.focus();
+            }, 0);
+          }}
+          onConfirm={handleConfirmWeight}
+          initialWeight={1}
           productName={selectedProduct?.name || ""}
         />
       </div>
