@@ -1,9 +1,11 @@
 export interface Product {
   barcode: string;
   name: string;
-  price: number;
+  packPrice: number;
+  pricePerKg: number;
+  weighted: boolean;
 }
 
 export interface CartItem extends Product {
-  qty: number;
+  value: number;
 }
