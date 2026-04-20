@@ -9,53 +9,74 @@ interface Props {
 }
 
 export default function CartTable({ cart, onDelete }: Props) {
-   const [isClient, setIsClient] = useState(false)
+  const [isClient, setIsClient] = useState(false);
 
-   const updateIsClient = useEffectEvent((isClient: boolean ) => {
+  const updateIsClient = useEffectEvent((isClient: boolean) => {
     setIsClient(isClient);
-   });
+  });
 
   useEffect(() => {
-    updateIsClient(true)
-  }, [])
- 
-  return ( isClient &&
-    <table className=" w-full mt-5 border-collapse  border border-gray-300 shadow-lg">
-      <thead className="bg-red-700">
-        <tr>
-          <th className="border font-medium border-gray-400 p-2 w-50">Barcode</th>
-          <th className="border font-medium border-gray-400 p-2 w-100">Name</th>
-          <th className="border font-medium border-gray-400 p-2">Qty</th>
-          <th className="border font-medium border-gray-400 p-2 w-30">Price (Rs.)</th>
-          <th className="border font-medium border-gray-400 p-2 w-30">Total (Rs.)</th>
-          <th className="border font-medium border-gray-400 p-2 w-40">Remove</th>
-        </tr>
-      </thead>
-      <tbody>
-        {cart.map((item, idx) => (
-          <tr key={idx}>
-            <td className="border text-gray-700 border-gray-400 p-2">{item.barcode}</td>
-            <td className="border text-gray-700 border-gray-400 p-2">{item.name}</td>
-            <td className="border text-gray-700 border-gray-400 p-2 text-center">
-              {item.qty}
-            </td>
-            <td className="border text-gray-700 border-gray-400 p-2 text-right">
-              {item.price.toFixed(2)}
-            </td>
-            <td className="border text-gray-700 border-gray-400 p-2 text-right">
-              {(item.price * item.qty).toFixed(2)}
-            </td>
-            <td className="border text-gray-700 border-gray-400 p-2 text-center">
-              <button
-                onClick={() => onDelete(item.barcode)}
-                className=" text-white bg-red-700 px-3 py-1 rounded hover:bg-red-600"
-              >
-                X
-              </button>
-            </td>
+    updateIsClient(true);
+  }, []);
+
+  return (
+    isClient && (
+      <table className=" w-full mt-5 border-collapse  border border-gray-300 shadow-lg">
+        <thead className="bg-red-700">
+          <tr>
+            <th className="border font-medium border-gray-400 p-2 w-50">
+              Barcode
+            </th>
+            <th className="border font-medium border-gray-400 p-2 w-100">
+              Name
+            </th>
+            <th className="border font-medium border-gray-400 p-2 w-40">Qty</th>
+            <th className="border font-medium border-gray-400 p-2 w-40">
+              Price (Rs.)
+            </th>
+            <th className="border font-medium border-gray-400 p-2 w-30">
+              Total (Rs.)
+            </th>
+            <th className="border font-medium border-gray-400 p-2 w-40">
+              Remove
+            </th>
           </tr>
-        ))}
-      </tbody>
-    </table>
- );
+        </thead>
+        <tbody>
+          {cart.map((item, idx) => (
+            <tr key={idx}>
+              <td className="border text-gray-700 border-gray-400 p-2">
+                {item.barcode}
+              </td>
+              <td className="border text-gray-700 border-gray-400 p-2">
+                {item.name}
+              </td>
+              <td className="border text-gray-700 border-gray-400 p-2 text-center">
+                {item.weighted ? `${item.value.toFixed(1)} kg` : `${item.value} PCs`}
+              </td>
+              <td className="border text-gray-700 border-gray-400 p-2 text-right">
+                {item.weighted
+                  ? item.pricePerKg.toFixed(2)
+                  : item.packPrice.toFixed(2)}
+              </td>
+              <td className="border text-gray-700 border-gray-400 p-2 text-right">
+                {item.weighted
+                  ? (item.pricePerKg * item.value).toFixed(2)
+                  : (item.packPrice * item.value).toFixed(2)}
+                {/* {(item.packPrice * item.value).toFixed(2)} */}
+              </td>
+              <td className="border text-gray-700 border-gray-400 p-2 text-center">
+                <button
+                  onClick={() => onDelete(item.barcode)}
+                  className=" text-white bg-red-700 px-3 py-1 rounded hover:bg-red-600"
+                >
+                  X
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )
+  );
 }
