@@ -1,14 +1,14 @@
 const BASE_URL = "http://localhost:8080/api";
 
 interface SaleData {
-date: string,
-invoiceNo: string,
-outletId: string,
-total: number,
-items: {
-  barcode: string,
-  qty: number
-}[]
+  date: string;
+  invoiceNo: string;
+  outletId: string;
+  items: {
+    barcode: string;
+    value: number;
+    priceType: string;
+  }[];
 }
 
 export const processSale = async (saleData: SaleData) => {
