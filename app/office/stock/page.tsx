@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useEffectEvent, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import {
   getStock,
   addStock,
@@ -10,6 +10,7 @@ import {
 } from "@/app/services/stockService";
 import QuantityModal from "@/app/components/QuantityModal";
 import Button from "@/app/components/Button";
+import WeightModal from "@/app/components/WeightModal";
 
 export default function StockPage() {
   const [stockList, setStockList] = useState<StockItem[]>([]);
@@ -24,7 +25,12 @@ export default function StockPage() {
   const [weight, setWeight] = useState("");
 
   const [selectedStock, setSelectedStock] = useState<StockItem | null>(null);
+
   const [modalOpen, setModalOpen] = useState(false);
+
+  const [weightModalOpen, setWeightModalOpen] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Load stock from backend
   const loadStock = async () => {
@@ -49,9 +55,16 @@ export default function StockPage() {
     updateLoadStock();
   }, []);
 
+  // Quantity Modal opens when click on update stock quantity
   const handleQtyClick = (item: StockItem) => {
     setSelectedStock(item);
     setModalOpen(true);
+  };
+
+  // Weight Modal opens when click on update Stock weight
+  const handleWeightClick = (item: StockItem) => {
+    setSelectedStock(item);
+    setWeightModalOpen(true);
   };
 
   // Add new stock
@@ -113,20 +126,6 @@ export default function StockPage() {
       item.outletId?.toLowerCase().includes(search.toLowerCase()),
   );
 
-  // const handleConfirmQty = async (qty: number) => {
-  //   if (!selectedStock) return;
-
-  //   try {
-  //     await updateStock(selectedStock.id, qty);
-  //     setModalOpen(false);
-  //     setSelectedStock(null);
-  //     await loadStock();
-  //   } catch (err) {
-  //     console.error("Failed to update quantity:", err);
-  //     alert("Failed to update stock quantity");
-  //   }
-  // };
-
   const handleConfirmValue = async (value: number) => {
     if (!selectedStock) return;
 
@@ -137,6 +136,23 @@ export default function StockPage() {
       });
 
       setModalOpen(false);
+      setSelectedStock(null);
+      await loadStock();
+    } catch (err) {
+      console.error("Failed to update stock:", err);
+      alert("Failed to update stock");
+    }
+  };
+  const handleConfirmValueforWeight = async (value: number) => {
+    if (!selectedStock) return;
+
+    try {
+      await updateStock(selectedStock.id, {
+        value: value,
+        user: "admin",
+      });
+
+      setWeightModalOpen(false);
       setSelectedStock(null);
       await loadStock();
     } catch (err) {
@@ -165,12 +181,6 @@ export default function StockPage() {
           onChange={(e) => setBarcode(e.target.value)}
           className="bg-green-50 text-gray-700 w-40 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
         />
-        {/* <input
-          placeholder="Product Name"
-          value={productName}
-          onChange={(e) => setProductName(e.target.value)}
-          className="bg-green-50 text-gray-700 w-86 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-        /> */}
         <input
           placeholder="Outlet ID"
           value={outletId}
@@ -263,8 +273,6 @@ export default function StockPage() {
               {/* Editable Quantity */}
               <td className=" border-gray-800 p-2">
                 <div
-                  // onClick={() => handleQtyClick(item)}
-                  // className="cursor-pointer text-center bg-red-200 px-3 py-1 rounded hover:bg-red-100 text-red-900 font-semibold"
                   onClick={() => {
                     if (!item.weighted) {
                       handleQtyClick(item);
@@ -281,11 +289,9 @@ export default function StockPage() {
               </td>
               <td className=" border-gray-800 p-2">
                 <div
-                  // onClick={() => handleQtyClick(item)}
-                  // className="cursor-pointer text-center bg-red-200 px-3 py-1 rounded hover:bg-red-100 text-red-900 font-semibold"
                   onClick={() => {
                     if (item.weighted) {
-                      handleQtyClick(item);
+                      handleWeightClick(item);
                     }
                   }}
                   className={`text-center px-3 py-1 rounded font-semibold ${
@@ -322,7 +328,40 @@ export default function StockPage() {
           ))}
         </tbody>
       </table>
-      <QuantityModal
+      {selectedStock ? (
+        selectedStock.weighted ? (
+          <WeightModal
+            isOpen={weightModalOpen}
+            onClose={() => {
+              setWeightModalOpen(false);
+              setSelectedStock(null);
+              setTimeout(() => {
+                inputRef.current?.focus();
+              }, 0);
+            }}
+            onConfirm={handleConfirmValueforWeight}
+            initialWeight={null}
+            productName={selectedStock ? selectedStock.productName : ""}
+          />
+        ) : (
+          <QuantityModal
+            isOpen={modalOpen}
+            onClose={() => {
+              setModalOpen(false);
+              setSelectedStock(null);
+              setTimeout(() => {
+                inputRef.current?.focus();
+              }, 0);
+            }}
+            onConfirm={handleConfirmValue}
+            initialQty={null}
+            productName={selectedStock ? selectedStock.productName : ""}
+          />
+        )
+      ) : (
+        ""
+      )}
+      {/* <QuantityModal
         isOpen={modalOpen}
         onClose={() => {
           setModalOpen(false);
@@ -337,7 +376,7 @@ export default function StockPage() {
               : `${selectedStock.productName} (Enter Quantity)`
             : ""
         }
-      />
+      /> */}
     </div>
   );
 }
