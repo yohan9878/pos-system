@@ -9,7 +9,6 @@ export interface ProductItems {
   bulkPrice: number;
   retailPrice: number;
   packPrice: number;
-  // packWeight: number | null;
   pricePerKg: number;
   weighted: boolean;
 }
@@ -20,7 +19,6 @@ export interface ProductRequest {
   bulkPrice: number;
   retailPrice: number;
   packPrice: number;
-  // packWeight: number;
   pricePerKg: number;
   weighted: boolean;
 }
