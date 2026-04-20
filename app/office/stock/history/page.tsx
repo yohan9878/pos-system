@@ -22,7 +22,9 @@ export default function HistoryPage() {
 
   return (
     <div className="">
-      <h1 className="text-xl text-red-950 font-bold mb-4">Stock History</h1>
+      <h1 className="text-xl text-red-950 font-bold mb-4">
+        Stock Update History
+      </h1>
 
       <table className="w-full border border-gray-200 text-xs">
         <thead>
