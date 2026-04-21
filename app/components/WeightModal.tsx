@@ -6,72 +6,75 @@ import Button from "./Button";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (qty: number) => void;
-  initialQty: number | null;
+  onConfirm: (weight: number) => void;
+  initialWeight: number | null;
   productName: string;
   heading: string;
 }
 
-export default function QuantityModal({
+export default function WeightModal({
   isOpen,
   onClose,
   onConfirm,
-  initialQty,
+  initialWeight,
   productName,
-  heading
+  heading,
 }: Props) {
-  const [qty, setQty] = useState<number | null>(initialQty);
+  const [weight, setWeight] = useState<number | null>(initialWeight);
   const [isClient, setIsClient] = useState(false);
 
-  // hydration fix: only render on client side
-  const updateIsClient = useEffectEvent((isClient: boolean) => {
-    setIsClient(isClient);
+  // hydration fix
+  const updateIsClient = useEffectEvent((val: boolean) => {
+    setIsClient(val);
   });
 
   useEffect(() => {
     updateIsClient(true);
   }, []);
 
-  const updateQty = useEffectEvent((initialQty: number | null) => {
-    setQty(initialQty);
+  const updateWeight = useEffectEvent((val: number | null) => {
+    setWeight(val);
   });
 
-  // Reset qty when modal opens
+  // reset when modal opens
   useEffect(() => {
-    if (isOpen) updateQty(initialQty);
-  }, [isOpen, initialQty]);
+    if (isOpen) updateWeight(initialWeight);
+  }, [isOpen, initialWeight]);
 
   if (!isOpen) return null;
 
   return (
     isClient && (
       <div
-        className="fixed inset-0 rounded-2xl bg-black/50 backdrop-blur-sm   items-center justify-center w-full flex mx-auto transition-all duration-200 font-poppins"
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center"
         onClick={onClose}
       >
         <div
-          className="bg-white p-6 rounded-lg shadow-lg w-80 mx-auto"
+          className="bg-white p-6 rounded-lg shadow-lg w-80"
           onClick={(e) => e.stopPropagation()}
         >
-          <h2 className="text-black text-xl font-bold mb-4">{heading}</h2>
+          <h2 className="text-black text-xl font-bold mb-4">
+            {heading}
+          </h2>
 
           <p className="mb-2 text-gray-900">{productName}</p>
 
           <input
             type="number"
-            value={qty !== null ? qty : ""}
+            step="0.1"
+            min="1"
+            value={weight !== null ? weight : ""}
             onChange={(e) => {
-              const value = parseInt(e.target.value);
-              setQty(isNaN(value) ? 0 : value);
+              const val = parseFloat(e.target.value);
+              setWeight(isNaN(val) ? 0 : val);
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                if (!qty || qty <= 0) return;
-                onConfirm(qty);
+                if (weight === null || weight <= 0) return;
+                onConfirm(weight);
                 onClose();
               }
 
-              // Optional: ESC to close
               if (e.key === "Escape") {
                 onClose();
               }
@@ -90,8 +93,8 @@ export default function QuantityModal({
 
             <Button
               onClick={() => {
-                if (!qty || qty <= 0) return;
-                onConfirm(qty);
+                if (weight === null || weight <= 0) return;
+                onConfirm(weight);
                 onClose();
               }}
               className="px-4 py-2 bg-blue-500 text-white rounded"

@@ -5,7 +5,14 @@ export const calculateTotal = (
   discount: number,
   discountType: "percentage" | "fixed",
 ) => {
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const subtotal = cart.reduce(
+    (sum, item) =>
+      sum +
+      (item.weighted
+        ? item.pricePerKg * item.value // weight * price per kg
+        : item.packPrice * item.value), //qty * price per pack
+    0,
+  );
 
   let total = subtotal;
   let discountAmount = 0;

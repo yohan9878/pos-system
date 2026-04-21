@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useEffectEvent, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import {
   getStock,
   addStock,
@@ -10,6 +10,7 @@ import {
 } from "@/app/services/stockService";
 import QuantityModal from "@/app/components/QuantityModal";
 import Button from "@/app/components/Button";
+import WeightModal from "@/app/components/WeightModal";
 
 export default function StockPage() {
   const [stockList, setStockList] = useState<StockItem[]>([]);
@@ -19,9 +20,17 @@ export default function StockPage() {
   const [barcode, setBarcode] = useState("");
   const [outletId, setOutletId] = useState("");
   const [qty, setQty] = useState("");
+  const [lowStockThresholdQty, setLowStockThresholdQty] = useState("");
+  const [lowStockThresholdWeight, setLowStockThresholdWeight] = useState("");
+  const [weight, setWeight] = useState("");
 
   const [selectedStock, setSelectedStock] = useState<StockItem | null>(null);
+
   const [modalOpen, setModalOpen] = useState(false);
+
+  const [weightModalOpen, setWeightModalOpen] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Load stock from backend
   const loadStock = async () => {
@@ -46,21 +55,38 @@ export default function StockPage() {
     updateLoadStock();
   }, []);
 
+  // Quantity Modal opens when click on update stock quantity
   const handleQtyClick = (item: StockItem) => {
     setSelectedStock(item);
     setModalOpen(true);
   };
 
+  // Weight Modal opens when click on update Stock weight
+  const handleWeightClick = (item: StockItem) => {
+    setSelectedStock(item);
+    setWeightModalOpen(true);
+  };
+
   // Add new stock
   const handleAddStock = async () => {
-    // if (!productName || !barcode || !outletId || !qty) return;
-    if (!barcode || !outletId || !qty) return;
+    if (
+      !barcode ||
+      !lowStockThresholdQty ||
+      !lowStockThresholdWeight ||
+      !outletId ||
+      !qty ||
+      !weight
+    )
+      return;
 
     const newStock = {
       // productName,
       barcode: parseInt(barcode),
       outletId,
       quantity: parseInt(qty),
+      lowStockThresholdQty: parseInt(lowStockThresholdQty),
+      lowStockThresholdWeight: parseInt(lowStockThresholdWeight),
+      weight: parseInt(weight),
     };
 
     try {
@@ -70,6 +96,9 @@ export default function StockPage() {
       setBarcode("");
       setOutletId("");
       setQty("");
+      setLowStockThresholdQty("");
+      setLowStockThresholdWeight("");
+      setWeight("");
     } catch (err) {
       console.error("Failed to add stock:", err);
       alert("Failed to add stock");
@@ -97,22 +126,43 @@ export default function StockPage() {
       item.outletId?.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const handleConfirmQty = async (qty: number) => {
+  const handleConfirmValue = async (value: number) => {
     if (!selectedStock) return;
 
     try {
-      await updateStock(selectedStock.id, qty);
+      await updateStock(selectedStock.id, {
+        value: value,
+        user: "admin",
+      });
+
       setModalOpen(false);
       setSelectedStock(null);
       await loadStock();
     } catch (err) {
-      console.error("Failed to update quantity:", err);
-      alert("Failed to update stock quantity");
+      console.error("Failed to update stock:", err);
+      alert("Failed to update stock");
+    }
+  };
+  const handleConfirmValueforWeight = async (value: number) => {
+    if (!selectedStock) return;
+
+    try {
+      await updateStock(selectedStock.id, {
+        value: value,
+        user: "admin",
+      });
+
+      setWeightModalOpen(false);
+      setSelectedStock(null);
+      await loadStock();
+    } catch (err) {
+      console.error("Failed to update stock:", err);
+      alert("Failed to update stock");
     }
   };
 
   return (
-    <div className="min-h-screen text-xs">
+    <div className="text-xs">
       <h1 className="text-xl text-red-950 font-bold mb-4">Stock Management</h1>
 
       {/* Search */}
@@ -131,12 +181,6 @@ export default function StockPage() {
           onChange={(e) => setBarcode(e.target.value)}
           className="bg-green-50 text-gray-700 w-40 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
         />
-        {/* <input
-          placeholder="Product Name"
-          value={productName}
-          onChange={(e) => setProductName(e.target.value)}
-          className="bg-green-50 text-gray-700 w-86 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-        /> */}
         <input
           placeholder="Outlet ID"
           value={outletId}
@@ -148,6 +192,28 @@ export default function StockPage() {
           placeholder="Quantity"
           value={qty}
           onChange={(e) => setQty(e.target.value)}
+          className="bg-green-50 text-gray-700 p-2 border border-gray-300 rounded w-32 focus:outline-none focus:ring-2 focus:ring-red-800"
+        />
+        <input
+          type="number"
+          placeholder="Weight"
+          value={weight}
+          onChange={(e) => setWeight(e.target.value)}
+          className="bg-green-50 text-gray-700 p-2 border border-gray-300 rounded w-32 focus:outline-none focus:ring-2 focus:ring-red-800"
+        />
+        <input
+          type="number"
+          placeholder="Low Stock Threshold Qty"
+          value={lowStockThresholdQty}
+          onChange={(e) => setLowStockThresholdQty(e.target.value)}
+          className="bg-green-50 text-gray-700 p-2 border border-gray-300 rounded w-32 focus:outline-none focus:ring-2 focus:ring-red-800"
+        />
+
+        <input
+          type="number"
+          placeholder="Low Stock Threshold Weight"
+          value={lowStockThresholdWeight}
+          onChange={(e) => setLowStockThresholdWeight(e.target.value)}
           className="bg-green-50 text-gray-700 p-2 border border-gray-300 rounded w-32 focus:outline-none focus:ring-2 focus:ring-red-800"
         />
         <Button
@@ -172,9 +238,19 @@ export default function StockPage() {
             <th className=" border-gray-800 text-center text-red-900 w-40 p-2">
               Quantity
             </th>
+            <th className=" border-gray-800 text-center text-red-900 w-30 p-2 mx-auto">
+              Weight
+            </th>
             <th className=" border-gray-800 text-center text-red-900 p-2 w-60">
               Outlet
             </th>
+            <th className=" border-gray-800 text-center text-red-900 w-30 p-2 mx-auto">
+              Low Stock Threshold Qty
+            </th>
+            <th className=" border-gray-800 text-center text-red-900 w-30 p-2 mx-auto">
+              Low Stock Threshold Weight
+            </th>
+
             <th className=" border-gray-800 text-center text-red-900 w-30 p-2 mx-auto">
               Action
             </th>
@@ -185,7 +261,7 @@ export default function StockPage() {
           {filteredStock.map((item) => (
             <tr
               key={item.id}
-              className={`${item.quantity < 5 ? "bg-red-100" : ""} odd:bg-gray-200 even:bg-white`}
+              className={`${item.quantity < 5 ? "bg-red-100" : ""} odd:bg-blue-50 even:bg-white`}
             >
               <td className="text-left border-gray-800 text-gray-900 font-medium p-2">
                 {item.barcode}
@@ -197,15 +273,47 @@ export default function StockPage() {
               {/* Editable Quantity */}
               <td className=" border-gray-800 p-2">
                 <div
-                  onClick={() => handleQtyClick(item)}
-                  className="cursor-pointer text-center bg-red-200 px-3 py-1 rounded hover:bg-gray-300 text-red-800 font-semibold"
+                  onClick={() => {
+                    if (!item.weighted) {
+                      handleQtyClick(item);
+                    }
+                  }}
+                  className={`text-center px-3 py-1 rounded font-semibold ${
+                    item.weighted
+                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                      : "bg-red-200 hover:bg-red-100 cursor-pointer text-red-900"
+                  }`}
                 >
-                  {item.quantity}
+                  {item.quantity ? item.quantity : "N/A"}
+                </div>
+              </td>
+              <td className=" border-gray-800 p-2">
+                <div
+                  onClick={() => {
+                    if (item.weighted) {
+                      handleWeightClick(item);
+                    }
+                  }}
+                  className={`text-center px-3 py-1 rounded font-semibold ${
+                    item.weighted
+                      ? "bg-red-200 hover:bg-red-100 cursor-pointer text-red-900"
+                      : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  }`}
+                >
+                  {item.weight ? item.weight.toFixed(2) : "N/A"}
                 </div>
               </td>
 
               <td className=" border-gray-800 text-center text-gray-900 font-medium w-60 p-2">
                 {item.outletId}
+              </td>
+              <td className=" border-gray-800 text-center text-gray-900 font-medium w-30 p-2">
+                {item.lowStockThresholdQty ? item.lowStockThresholdQty : "N/A"}
+              </td>
+              <td className=" border-gray-800 text-center text-gray-900 font-medium w-30 p-2">
+                {item.lowStockThresholdWeight
+                  ? item.lowStockThresholdWeight.toFixed(2)
+                  : "N/A"}
               </td>
 
               <td className=" border-gray-800 w-30 p-2">
@@ -220,16 +328,57 @@ export default function StockPage() {
           ))}
         </tbody>
       </table>
-      <QuantityModal
+      {selectedStock ? (
+        selectedStock.weighted ? (
+          <WeightModal
+            isOpen={weightModalOpen}
+            onClose={() => {
+              setWeightModalOpen(false);
+              setSelectedStock(null);
+              setTimeout(() => {
+                inputRef.current?.focus();
+              }, 0);
+            }}
+            onConfirm={handleConfirmValueforWeight}
+            initialWeight={null}
+            productName={selectedStock ? selectedStock.productName : ""}
+            heading="Update Stock Weight (Kg)"
+          />
+        ) : (
+          <QuantityModal
+            isOpen={modalOpen}
+            onClose={() => {
+              setModalOpen(false);
+              setSelectedStock(null);
+              setTimeout(() => {
+                inputRef.current?.focus();
+              }, 0);
+            }}
+            onConfirm={handleConfirmValue}
+            initialQty={null}
+            productName={selectedStock ? selectedStock.productName : ""}
+            heading="Update Stock Quantity"
+          />
+        )
+      ) : (
+        ""
+      )}
+      {/* <QuantityModal
         isOpen={modalOpen}
         onClose={() => {
           setModalOpen(false);
           setSelectedStock(null);
         }}
-        onConfirm={handleConfirmQty}
+        onConfirm={handleConfirmValue}
         initialQty={null}
-        productName={selectedStock?.productName || ""}
-      />
+        productName={
+          selectedStock
+            ? selectedStock.weighted
+              ? `${selectedStock.productName} (Enter Weight)`
+              : `${selectedStock.productName} (Enter Quantity)`
+            : ""
+        }
+      /> */}
     </div>
   );
 }

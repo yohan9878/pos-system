@@ -1,21 +1,22 @@
 "use client";
 
 import Button from "@/app/components/Button";
+import ProductForm from "@/app/components/ProductForm";
 import {
-  addProduct,
   deleteProduct,
   getProducts,
   ProductItems,
 } from "@/app/services/productService";
-import { useEffect, useEffectEvent, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 
 export default function ProductPage() {
   const [products, setProducts] = useState<ProductItems[]>([]);
-  const [name, setName] = useState("");
-  const [barcode, setBarcode] = useState("");
-  const [price, setPrice] = useState("");
+
+  const [formOpen, setFormOpen] = useState(false);
 
   const [search, setSearch] = useState("");
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Load products from backend
   const loadProducts = async () => {
@@ -38,27 +39,6 @@ export default function ProductPage() {
     updateLoadProducts();
   }, []);
 
-  const handleAddProduct = async () => {
-    if (!name || !barcode || !price) return;
-
-    const newProduct = {
-      name,
-      barcode,
-      price: parseFloat(price),
-    };
-
-    try {
-      await addProduct(newProduct);
-      await loadProducts(); // refresh list
-      setName("");
-      setBarcode("");
-      setPrice("");
-    } catch (err) {
-      console.error("Failed to add product:", err);
-      alert("Failed to add product");
-    }
-  };
-
   // Delete product
   const handleDelete = async (id: number) => {
     const confirmDelete = confirm("Are you sure to delete this product?");
@@ -73,9 +53,10 @@ export default function ProductPage() {
     }
   };
 
-  const filteredProducts = products.filter((item) =>
+  const filteredProducts = products.filter(
+    (item) =>
       item.barcode?.toString().includes(search) ||
-      item.name?.toLowerCase().includes(search.toLowerCase())
+      item.name?.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -84,37 +65,33 @@ export default function ProductPage() {
         Product Management
       </h1>
 
-      <div className="rounded mb-4 flex gap-2 flex-wrap text-xs">
+      <div className="relative rounded mb-4 flex gap-2 flex-wrap text-xs">
         <input
+          id="search"
           placeholder="Search by barcode..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="p-2 mb-2 border w-full bg-blue-50 border-gray-300 text-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-        <input
-          placeholder="Barcode"
-          value={barcode}
-          onChange={(e) => setBarcode(e.target.value)}
-          className="w-50 bg-green-50 p-2 text-md text-gray-700 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-        <input
-          placeholder="Product Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-96 bg-green-50 p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-        <input
-          placeholder="Price"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          className="w-50 bg-green-50 p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
+          className="p-2 mb-2 border w-60 bg-blue-50 border-gray-300 text-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
         />
         <Button
-          onClick={handleAddProduct}
-          className=" bg-green-900 hover:bg-green-700"
+          onClick={() => setFormOpen(true)}
+          className="absolute right-0 bg-green-900 hover:bg-green-700"
         >
           Add Product
         </Button>
+
+        {/* Product Form Modal */}
+        <ProductForm
+          isOpen={formOpen}
+          onClose={() => {
+            setFormOpen(false);
+            setTimeout(() => {
+              inputRef.current?.focus();
+            }, 0);
+          }}
+          onAddSuccess={() => loadProducts()}
+          heading="Add New Product"
+        />
       </div>
 
       <table className="w-full border border-gray-200 text-xs">
@@ -124,10 +101,19 @@ export default function ProductPage() {
               Barcode
             </th>
             <th className="text-red-900 text-left border-gray-800 p-2 w-100">
-              Name
+              Product Name
             </th>
-            <th className="text-red-900 text-right border-gray-800 p-2 w-50">
-              Price (Rs.)
+            <th className="text-red-900 text-right border-gray-800 p-2 w-30">
+              Bulk Price
+            </th>
+            <th className="text-red-900 text-right border-gray-800 p-2 w-30">
+              Retail Price
+            </th>
+            <th className="text-red-900 text-right border-gray-800 p-2 w-30">
+              Pack Price
+            </th>
+            <th className="text-red-900 text-right border-gray-800 p-2 w-30">
+              Price per Kg
             </th>
             <th className="text-red-900 border-gray-800 p-2 w-38">Action</th>
           </tr>
@@ -141,8 +127,17 @@ export default function ProductPage() {
               <td className="text-gray-950 border-gray-500 font-medium p-2">
                 {p.name}
               </td>
-              <td className="text-gray-950 border-gray-500 font-medium p-2 text-right">
-                {p.price.toFixed(2)}
+              <td className="text-gray-950 border-gray-500 p-2 text-right">
+                {p.bulkPrice.toFixed(2)}
+              </td>
+              <td className="text-gray-950 border-gray-500 p-2 text-right">
+                {p.retailPrice.toFixed(2)}
+              </td>
+              <td className="text-gray-950 border-gray-500 p-2 text-right">
+                {p.packPrice ? p.packPrice.toFixed(2) : "N/A"}
+              </td>
+              <td className="text-gray-950 border-gray-500 p-2 text-right">
+                {p.pricePerKg ? p.pricePerKg.toFixed(2) : "N/A"}
               </td>
               <td className="text-gray-950 border-gray-500 p-2 text-center w-fit">
                 <Button

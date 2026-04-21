@@ -6,7 +6,21 @@ export interface ProductItems {
   id: number;
   name: string;
   barcode: string;
-  price: number;
+  bulkPrice: number;
+  retailPrice: number;
+  packPrice: number;
+  pricePerKg: number;
+  weighted: boolean;
+}
+
+export interface ProductRequest {
+  name: string;
+  barcode: string;
+  bulkPrice: number;
+  retailPrice: number;
+  packPrice: number;
+  pricePerKg: number;
+  weighted: boolean;
 }
 
 // Get all stock
@@ -17,7 +31,7 @@ export const getProducts = async (): Promise<ProductItems[]> => {
 };
 
 // Add product
-export const addProduct = async (product: Omit<ProductItems, "id">) => {
+export const addProduct = async (product: ProductRequest) => {
   const res = await fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

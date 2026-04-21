@@ -37,7 +37,7 @@ export default function Receipt({
     isClient && (
       <div
         id="invoice"
-        className="receipt mx-auto bg-white w-100 max-w-sm text-black text-[12px] font-mono p-5 border shadow"
+        className="receipt mx-auto bg-white w-75.5 max-w-sm text-black text-[12px] font-mono font-stretch-condensed p-4 border shadow"
       >
         {/* Header */}
         <div className="text-center">
@@ -59,8 +59,8 @@ export default function Receipt({
         {/* Items */}
         <div className="">
           <div className="flex justify-between gap-2 font-semibold">
+            <span className="w-12 text-left">Qty</span>
             <span className="w-48 ">Item</span>
-            <span className="w-10 text-right">Qty</span>
             <span className="w-16 text-right">Price</span>
             <span className="w-16 text-right">Total</span>
           </div>
@@ -69,10 +69,10 @@ export default function Receipt({
               key={i}
               className="flex gap-2 text-right text-[10px] justify-between mt-2 mb-2"
             >
+              <span className="w-12 text-[10px] text-left">{item.weighted ? `${item.value}Kg`: `${item.value} `}</span>
               <span className="w-48 text-left">{item.name}</span>
-              <span className="w-10">*{item.qty}</span>
-              <span className="w-16"> {item.price.toFixed(2)}</span>
-              <span className="w-16">{(item.qty * item.price).toFixed(2)}</span>
+              <span className="w-16"> {item.weighted ? item.pricePerKg : item.packPrice}</span>
+              <span className="w-16">{item.weighted ? (item.pricePerKg * item.value).toFixed(2) : (item.packPrice * item.value).toFixed(2)}</span>
             </div>
           ))}
         </div>
