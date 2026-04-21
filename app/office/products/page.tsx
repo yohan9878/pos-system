@@ -1,26 +1,22 @@
 "use client";
 
 import Button from "@/app/components/Button";
+import ProductForm from "@/app/components/ProductForm";
 import {
-  addProduct,
   deleteProduct,
   getProducts,
   ProductItems,
 } from "@/app/services/productService";
-import { useEffect, useEffectEvent, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 
 export default function ProductPage() {
   const [products, setProducts] = useState<ProductItems[]>([]);
-  const [name, setName] = useState("");
-  const [barcode, setBarcode] = useState("");
-  const [bulkPrice, setBulkPrice] = useState("");
-  const [retailPrice, setRetailPrice] = useState("");
-  const [packPrice, setPackPrice] = useState("");
-  // const [packWeight, setPackWeight] = useState("");
-  const [pricePerKg, setPricePerKg] = useState("");
-  const [weighted, setWeighted] = useState("false");
+
+  const [formOpen, setFormOpen] = useState(false);
 
   const [search, setSearch] = useState("");
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Load products from backend
   const loadProducts = async () => {
@@ -42,46 +38,6 @@ export default function ProductPage() {
   useEffect(() => {
     updateLoadProducts();
   }, []);
-
-  const handleAddProduct = async () => {
-    if (
-      !name ||
-      !barcode ||
-      !bulkPrice ||
-      !retailPrice ||
-      !packPrice ||
-      // !packWeight ||
-      !pricePerKg
-    )
-      return;
-
-    const newProduct = {
-      name,
-      barcode,
-      bulkPrice: parseFloat(bulkPrice),
-      retailPrice: parseFloat(retailPrice),
-      packPrice: parseFloat(packPrice),
-      // packWeight: parseFloat(packWeight),
-      pricePerKg: parseFloat(pricePerKg),
-      weighted: weighted === "true",
-    };
-
-    try {
-      await addProduct(newProduct);
-      await loadProducts(); // refresh list
-      setName("");
-      setBarcode("");
-      setBulkPrice("");
-      setRetailPrice("");
-      setPackPrice("");
-      // setPackWeight("");
-      setPricePerKg("");
-      setWeighted("false");
-    } catch (err) {
-      console.error("Failed to add product:", err);
-      alert("Failed to add product");
-    }
-  };
 
   // Delete product
   const handleDelete = async (id: number) => {
@@ -109,78 +65,33 @@ export default function ProductPage() {
         Product Management
       </h1>
 
-      <div className="rounded mb-4 flex gap-2 flex-wrap text-xs">
+      <div className="relative rounded mb-4 flex gap-2 flex-wrap text-xs">
         <input
           id="search"
           placeholder="Search by barcode..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="p-2 mb-2 border w-full bg-blue-50 border-gray-300 text-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
+          className="p-2 mb-2 border w-60 bg-blue-50 border-gray-300 text-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
         />
-        <input
-          id="barcode"
-          placeholder="Barcode"
-          value={barcode}
-          onChange={(e) => setBarcode(e.target.value)}
-          className="w-50 bg-green-50 p-2 text-md text-gray-700 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-        <input
-          id="productName"
-          placeholder="Product Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-96 bg-green-50 p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-        <input
-          id="bulkPrice"
-          placeholder="Bulk Price"
-          value={bulkPrice}
-          onChange={(e) => setBulkPrice(e.target.value)}
-          className="w-40 bg-green-50 p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-        <input
-          id="retailPrice"
-          placeholder="Retail Price"
-          value={retailPrice}
-          onChange={(e) => setRetailPrice(e.target.value)}
-          className="w-40 bg-green-50 p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-        <input
-          id="packPrice"
-          placeholder="Pack Price"
-          value={packPrice}
-          onChange={(e) => setPackPrice(e.target.value)}
-          className="w-40 bg-green-50 p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-        {/* <input
-          id="packWeight"
-          placeholder="Pack Weight"
-          value={packWeight}
-          onChange={(e) => setPackWeight(e.target.value)}
-          className="w-40 bg-green-50 p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-        /> */}
-        <input
-          id="pricePerKg"
-          placeholder="Price per Kg"
-          value={pricePerKg}
-          onChange={(e) => setPricePerKg(e.target.value)}
-          className="w-40 bg-green-50 p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-        <select
-          id="weighted"
-          value={weighted}
-          onChange={(e) => setWeighted(e.target.value)}
-          className="w-40 bg-green-50 p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-        >
-          <option value="false">Not Weighted</option>
-          <option value="true">Weighted</option>
-        </select>
         <Button
-          onClick={handleAddProduct}
-          className=" bg-green-900 hover:bg-green-700"
+          onClick={() => setFormOpen(true)}
+          className="absolute right-0 bg-green-900 hover:bg-green-700"
         >
           Add Product
         </Button>
+
+        {/* Product Form Modal */}
+        <ProductForm
+          isOpen={formOpen}
+          onClose={() => {
+            setFormOpen(false);
+            setTimeout(() => {
+              inputRef.current?.focus();
+            }, 0);
+          }}
+          onAddSuccess={() => loadProducts()}
+          heading="Add New Product"
+        />
       </div>
 
       <table className="w-full border border-gray-200 text-xs">
@@ -190,7 +101,7 @@ export default function ProductPage() {
               Barcode
             </th>
             <th className="text-red-900 text-left border-gray-800 p-2 w-100">
-              Name
+              Product Name
             </th>
             <th className="text-red-900 text-right border-gray-800 p-2 w-30">
               Bulk Price
@@ -201,9 +112,6 @@ export default function ProductPage() {
             <th className="text-red-900 text-right border-gray-800 p-2 w-30">
               Pack Price
             </th>
-            {/* <th className="text-red-900 text-right border-gray-800 p-2 w-30">
-              Pack Weight
-            </th> */}
             <th className="text-red-900 text-right border-gray-800 p-2 w-30">
               Price per Kg
             </th>
@@ -228,9 +136,6 @@ export default function ProductPage() {
               <td className="text-gray-950 border-gray-500 p-2 text-right">
                 {p.packPrice ? p.packPrice.toFixed(2) : "N/A"}
               </td>
-              {/* <td className="text-gray-950 border-gray-500 p-2 text-right">
-                {p.packWeight ? p.packWeight.toFixed(2) : "N/A"}
-              </td> */}
               <td className="text-gray-950 border-gray-500 p-2 text-right">
                 {p.pricePerKg ? p.pricePerKg.toFixed(2) : "N/A"}
               </td>
