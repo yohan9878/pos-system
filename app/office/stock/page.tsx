@@ -342,6 +342,7 @@ export default function StockPage() {
             onConfirm={handleConfirmValueforWeight}
             initialWeight={null}
             productName={selectedStock ? selectedStock.productName : ""}
+            heading="Update Stock Weight (Kg)"
           />
         ) : (
           <QuantityModal
@@ -356,6 +357,7 @@ export default function StockPage() {
             onConfirm={handleConfirmValue}
             initialQty={null}
             productName={selectedStock ? selectedStock.productName : ""}
+            heading="Update Stock Quantity"
           />
         )
       ) : (
