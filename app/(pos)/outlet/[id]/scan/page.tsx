@@ -140,6 +140,7 @@ export default function ScanPage() {
       invoiceNo: `INV-${Date.now()}`,
       outletId: outletId,
       date: new Date().toLocaleDateString(),
+      discountAmount:discountAmount,
       items: cart.map((item) => ({
         barcode: item.barcode,
         value: item.value,
@@ -234,6 +235,7 @@ export default function ScanPage() {
           onConfirm={handleConfirmQty}
           initialQty={1}
           productName={selectedProduct?.name || ""}
+          heading="Enter Quantity"
         />
       </div>
       <div className="flex items-center my-10 border-t">
@@ -246,8 +248,9 @@ export default function ScanPage() {
             }, 0);
           }}
           onConfirm={handleConfirmWeight}
-          initialWeight={1}
+          initialWeight={null}
           productName={selectedProduct?.name || ""}
+          heading="Enter Weight (Kg)"
         />
       </div>
       <DiscountModal
