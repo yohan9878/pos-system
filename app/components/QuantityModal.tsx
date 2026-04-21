@@ -9,6 +9,7 @@ interface Props {
   onConfirm: (qty: number) => void;
   initialQty: number | null;
   productName: string;
+  heading: string;
 }
 
 export default function QuantityModal({
@@ -17,6 +18,7 @@ export default function QuantityModal({
   onConfirm,
   initialQty,
   productName,
+  heading
 }: Props) {
   const [qty, setQty] = useState<number | null>(initialQty);
   const [isClient, setIsClient] = useState(false);
@@ -51,7 +53,7 @@ export default function QuantityModal({
           className="bg-white p-6 rounded-lg shadow-lg w-80 mx-auto"
           onClick={(e) => e.stopPropagation()}
         >
-          <h2 className="text-black text-xl font-bold mb-4">Update Quantity</h2>
+          <h2 className="text-black text-xl font-bold mb-4">{heading}</h2>
 
           <p className="mb-2 text-gray-900">{productName}</p>
 
