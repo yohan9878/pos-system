@@ -9,6 +9,7 @@ interface Props {
   onConfirm: (weight: number) => void;
   initialWeight: number | null;
   productName: string;
+  heading: string;
 }
 
 export default function WeightModal({
@@ -17,6 +18,7 @@ export default function WeightModal({
   onConfirm,
   initialWeight,
   productName,
+  heading,
 }: Props) {
   const [weight, setWeight] = useState<number | null>(initialWeight);
   const [isClient, setIsClient] = useState(false);
@@ -52,7 +54,7 @@ export default function WeightModal({
           onClick={(e) => e.stopPropagation()}
         >
           <h2 className="text-black text-xl font-bold mb-4">
-            Update Weight
+            {heading}
           </h2>
 
           <p className="mb-2 text-gray-900">{productName}</p>
