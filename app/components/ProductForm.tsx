@@ -19,13 +19,17 @@ export default function ProductForm({
   const [formData, setFormData] = useState<ProductRequest>({
     barcode: "",
     name: "",
-    bulkPrice: 0.0,
-    retailPrice: 0.0,
-    packPrice: 0.0,
-    pricePerKg: 0.0,
-    weighted: false,
+    bulkPrice: "",
+    retailPrice: "",
+    packPrice: "",
+    pricePerKg: "",
+    weighted: "",
   });
   const [isClient, setIsClient] = useState(false);
+
+  // Determine if product type is selected and if it's weighted
+  const isTypeSelected = formData.weighted !== "";
+  const isWeighted = formData.weighted === true;
 
   // hydration fix
   const updateIsClient = useEffectEvent((val: boolean) => {
@@ -44,30 +48,41 @@ export default function ProductForm({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { id, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [id]:
-        id === "weighted"
-          ? value === "true"
-          : ["bulkPrice", "retailPrice", "packPrice", "pricePerKg"].includes(id)
-            ? value === ""
-              ? ""
-              : parseFloat(value)
-            : value,
-    }));
-  };
+    setFormData((prev) => {
+      if (id === "weighted") {
+        const parsedValue = value === "" ? "" : value === "true";
 
-  //   useEffect(() => {
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     packPrice: prev.weighted ? 0 : prev.packPrice,
-  //     pricePerKg: !prev.weighted ? 0 : prev.pricePerKg,
-  //   }));
-  // }, [formData.weighted]);
+        return {
+          ...prev,
+          weighted: parsedValue,
+          bulkPrice: "",
+          retailPrice: "",
+          packPrice: "",
+          pricePerKg: "",
+        };
+      }
+
+      // Handle price fields
+      if (
+        ["bulkPrice", "retailPrice", "packPrice", "pricePerKg"].includes(id)
+      ) {
+        return {
+          ...prev,
+          [id]: value === "" ? "" : parseFloat(value),
+        };
+      }
+
+      // Default
+      return {
+        ...prev,
+        [id]: value,
+      };
+    });
+  };
 
   const handleAddProduct = async (formDataFromForm: FormData) => {
     const product: ProductRequest = {
-      barcode: formDataFromForm.get("barcode") as string,
+      barcode: formDataFromForm.get("barcode") as number | "",
       name: formDataFromForm.get("name") as string,
       bulkPrice: parseFloat(formDataFromForm.get("bulkPrice") as string) || 0,
       retailPrice:
@@ -79,10 +94,10 @@ export default function ProductForm({
     if (
       !product.name ||
       !product.barcode ||
-      !product.bulkPrice  ||
-      !product.retailPrice ||
-      !product.packPrice ||
-      !product.pricePerKg 
+      !product.bulkPrice ||
+      !product.retailPrice
+      // !product.packPrice ||
+      // !product.pricePerKg
     ) {
       alert("Please fill in all required fields with valid values.");
       return;
@@ -124,11 +139,11 @@ export default function ProductForm({
       updateFormData({
         barcode: "",
         name: "",
-        bulkPrice: 0.0,
-        retailPrice: 0,
-        packPrice: 0,
-        pricePerKg: 0,
-        weighted: false,
+        bulkPrice: "",
+        retailPrice: "",
+        packPrice: "",
+        pricePerKg: "",
+        weighted: "",
       });
   }, [isOpen]);
 
@@ -150,10 +165,11 @@ export default function ProductForm({
             <select
               id="weighted"
               name="weighted"
-              value={formData.weighted.toString()}
+              value={formData.weighted === "" ? "" : String(formData.weighted)}
               onChange={handleChange}
               className="w-full bg-red-50 p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
             >
+              <option value="">Select Product Type</option>
               <option value="false">Sausage Product</option>
               <option value="true">Chicken Product</option>
             </select>
@@ -163,6 +179,7 @@ export default function ProductForm({
             <input
               id="barcode"
               name="barcode"
+              type="number"
               placeholder="Barcode"
               value={formData.barcode}
               onChange={handleChange}
@@ -174,6 +191,7 @@ export default function ProductForm({
             <input
               id="name"
               name="name"
+              type="text"
               placeholder="Product Name"
               value={formData.name}
               onChange={handleChange}
@@ -187,11 +205,12 @@ export default function ProductForm({
               type="number"
               name="bulkPrice"
               placeholder="Bulk Price"
+              disabled={!isTypeSelected}
               step={0.01}
               min={0}
               value={formData.bulkPrice}
               onChange={handleChange}
-              className="w-full bg-red-50 p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
+              className={`w-full ${!isTypeSelected ? "bg-gray-200" : "bg-red-50"} p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800`}
             />
 
             {/* Retail Price */}
@@ -201,11 +220,12 @@ export default function ProductForm({
               type="number"
               name="retailPrice"
               placeholder="Retail Price"
+              disabled={!isTypeSelected}
               step={0.01}
               min={0}
               value={formData.retailPrice}
               onChange={handleChange}
-              className="w-full bg-red-50 p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
+              className={`w-full ${!isTypeSelected ? "bg-gray-200" : "bg-red-50"} p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800`}
             />
 
             {/* Pack Price */}
@@ -215,12 +235,12 @@ export default function ProductForm({
               type="number"
               name="packPrice"
               placeholder="Pack Price"
-              disabled={formData.weighted}
+              disabled={!isTypeSelected || isWeighted}
               step={0.01}
               min={0}
               value={formData.packPrice}
               onChange={handleChange}
-              className={`w-full ${formData.weighted ? "bg-gray-200" : "bg-red-50"} p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800`}
+              className={`w-full ${!isTypeSelected || isWeighted ? "bg-gray-200" : "bg-red-50"} p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800`}
             />
 
             {/* Price Per Kg */}
@@ -233,9 +253,9 @@ export default function ProductForm({
               step={0.01}
               min={0}
               value={formData.pricePerKg}
-              disabled={!formData.weighted}
+              disabled={!isTypeSelected || !isWeighted}
               onChange={handleChange}
-              className={`w-full ${!formData.weighted ? "bg-gray-200" : "bg-red-50"} p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800`}
+              className={`w-full ${!isTypeSelected || !isWeighted ? "bg-gray-200" : "bg-red-50"} p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800`}
             />
 
             <div className="flex justify-center gap-2 mt-4">
