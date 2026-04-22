@@ -96,8 +96,7 @@ export default function ProductForm({
       !product.barcode ||
       !product.bulkPrice ||
       !product.retailPrice
-      // !product.packPrice ||
-      // !product.pricePerKg
+
     ) {
       alert("Please fill in all required fields with valid values.");
       return;
