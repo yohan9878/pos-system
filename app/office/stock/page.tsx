@@ -3,7 +3,6 @@
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import {
   getStock,
-  addStock,
   updateStock,
   deleteStock,
   StockItem,
@@ -11,18 +10,13 @@ import {
 import QuantityModal from "@/app/components/QuantityModal";
 import Button from "@/app/components/Button";
 import WeightModal from "@/app/components/WeightModal";
+import StockForm from "@/app/components/StockForm";
 
 export default function StockPage() {
   const [stockList, setStockList] = useState<StockItem[]>([]);
   const [search, setSearch] = useState("");
 
-  // const [productName, setProductName] = useState("");
-  const [barcode, setBarcode] = useState("");
-  const [outletId, setOutletId] = useState("");
-  const [qty, setQty] = useState("");
-  const [lowStockThresholdQty, setLowStockThresholdQty] = useState("");
-  const [lowStockThresholdWeight, setLowStockThresholdWeight] = useState("");
-  const [weight, setWeight] = useState("");
+  const [formOpen, setFormOpen] = useState(false);
 
   const [selectedStock, setSelectedStock] = useState<StockItem | null>(null);
 
@@ -67,43 +61,6 @@ export default function StockPage() {
     setWeightModalOpen(true);
   };
 
-  // Add new stock
-  const handleAddStock = async () => {
-    if (
-      !barcode ||
-      !lowStockThresholdQty ||
-      !lowStockThresholdWeight ||
-      !outletId ||
-      !qty ||
-      !weight
-    )
-      return;
-
-    const newStock = {
-      // productName,
-      barcode: parseInt(barcode),
-      outletId,
-      quantity: parseInt(qty),
-      lowStockThresholdQty: parseInt(lowStockThresholdQty),
-      lowStockThresholdWeight: parseInt(lowStockThresholdWeight),
-      weight: parseInt(weight),
-    };
-
-    try {
-      await addStock(newStock);
-      await loadStock(); // refresh list
-      // setProductName("");
-      setBarcode("");
-      setOutletId("");
-      setQty("");
-      setLowStockThresholdQty("");
-      setLowStockThresholdWeight("");
-      setWeight("");
-    } catch (err) {
-      console.error("Failed to add stock:", err);
-      alert("Failed to add stock");
-    }
-  };
 
   // Delete stock
   const handleDelete = async (id: number) => {
@@ -162,7 +119,7 @@ export default function StockPage() {
   };
 
   return (
-    <div className="text-xs">
+    <div className="relative text-xs">
       <h1 className="text-xl text-red-950 font-bold mb-4">Stock Management</h1>
 
       {/* Search */}
@@ -170,59 +127,28 @@ export default function StockPage() {
         placeholder="Search by barcode, product name or outlet ID"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="p-2 border mb-4 w-full bg-blue-50 border-gray-300 text-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
+        className="p-2 border mb-4 w-74 bg-blue-50 border-gray-300 text-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
       />
+      <Button
+        onClick={() => setFormOpen(true)}
+        className="absolute right-0 bg-green-900 hover:bg-green-700 text-white px-4 rounded"
+      >
+        Add Stock
+      </Button>
 
       {/* Add Stock */}
       <div className="rounded mb-6 flex gap-2 flex-wrap">
-        <input
-          placeholder="Barcode"
-          value={barcode}
-          onChange={(e) => setBarcode(e.target.value)}
-          className="bg-green-50 text-gray-700 w-40 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
+        <StockForm
+          onClose={() => {
+            setFormOpen(false);
+            setTimeout(() => {
+              inputRef.current?.focus();
+            }, 0);
+          }}
+          onAddSuccess={() => loadStock()}
+          isOpen={formOpen}
+          heading="Add New Stock"
         />
-        <input
-          placeholder="Outlet ID"
-          value={outletId}
-          onChange={(e) => setOutletId(e.target.value)}
-          className="bg-green-50 text-gray-700 w-40 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-        <input
-          type="number"
-          placeholder="Quantity"
-          value={qty}
-          onChange={(e) => setQty(e.target.value)}
-          className="bg-green-50 text-gray-700 p-2 border border-gray-300 rounded w-32 focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-        <input
-          type="number"
-          placeholder="Weight"
-          value={weight}
-          onChange={(e) => setWeight(e.target.value)}
-          className="bg-green-50 text-gray-700 p-2 border border-gray-300 rounded w-32 focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-        <input
-          type="number"
-          placeholder="Low Stock Threshold Qty"
-          value={lowStockThresholdQty}
-          onChange={(e) => setLowStockThresholdQty(e.target.value)}
-          className="bg-green-50 text-gray-700 p-2 border border-gray-300 rounded w-32 focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-
-        <input
-          type="number"
-          placeholder="Low Stock Threshold Weight"
-          value={lowStockThresholdWeight}
-          onChange={(e) => setLowStockThresholdWeight(e.target.value)}
-          className="bg-green-50 text-gray-700 p-2 border border-gray-300 rounded w-32 focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-        <Button
-          onClick={handleAddStock}
-          className="bg-green-900 hover:bg-green-700 text-white px-4 rounded"
-        >
-          Add Stock
-        </Button>
-        {/* <AddStockForm /> */}
       </div>
 
       {/* Stock Table */}
