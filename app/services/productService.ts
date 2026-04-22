@@ -5,7 +5,7 @@ const API_URL = "http://localhost:8080/api/products";
 export interface ProductItems {
   id: number;
   name: string;
-  barcode: string;
+  barcode: number;
   bulkPrice: number;
   retailPrice: number;
   packPrice: number;
@@ -15,7 +15,7 @@ export interface ProductItems {
 
 export interface ProductRequest {
   name: string;
-  barcode: string;
+  barcode: number | "";
   bulkPrice: number | "";
   retailPrice: number | "";
   packPrice: number | "";
