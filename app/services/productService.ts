@@ -16,11 +16,11 @@ export interface ProductItems {
 export interface ProductRequest {
   name: string;
   barcode: string;
-  bulkPrice: number;
-  retailPrice: number;
-  packPrice: number;
-  pricePerKg: number;
-  weighted: boolean;
+  bulkPrice: number | "";
+  retailPrice: number | "";
+  packPrice: number | "";
+  pricePerKg: number | "";
+  weighted: boolean | "";
 }
 
 // Get all stock
