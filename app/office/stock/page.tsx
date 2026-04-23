@@ -61,7 +61,6 @@ export default function StockPage() {
     setWeightModalOpen(true);
   };
 
-
   // Delete stock
   const handleDelete = async (id: number) => {
     const confirmDelete = confirm("Are you sure to delete this stock?");
@@ -122,19 +121,21 @@ export default function StockPage() {
     <div className="relative text-xs">
       <h1 className="text-xl text-red-950 font-bold mb-4">Stock Management</h1>
 
-      {/* Search */}
-      <input
-        placeholder="Search by barcode, product name or outlet ID"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="p-2 border mb-4 w-74 bg-blue-50 border-gray-300 text-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-      />
-      <Button
-        onClick={() => setFormOpen(true)}
-        className="absolute right-0 bg-green-900 hover:bg-green-700 text-white px-4 rounded"
-      >
-        Add Stock
-      </Button>
+      <div className="">
+        {/* Search */}
+        <input
+          placeholder="Search by barcode, product name or outlet ID"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="p-2 border w-74 bg-blue-50 border-gray-300 text-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
+        />
+        <Button
+          onClick={() => setFormOpen(true)}
+          className="absolute right-0 bg-green-900 hover:bg-green-700 text-white px-4 rounded"
+        >
+          Add Stock
+        </Button>
+      </div>
 
       {/* Add Stock */}
       <div className="rounded mb-6 flex gap-2 flex-wrap">
@@ -152,32 +153,32 @@ export default function StockPage() {
       </div>
 
       {/* Stock Table */}
-      <table className="w-fit border text-xs">
+      <table className="w-full border text-xs">
         <thead>
-          <tr>
-            <th className=" border-gray-800 text-left text-red-900 w-40 p-2">
+          <tr className="bg-red-50">
+            <th className=" border-gray-800 text-left text-red-900 w-30 p-2">
               Barcode
             </th>
             <th className=" border-gray-800 text-left text-red-900 w-90 p-2">
               Product
             </th>
-            <th className=" border-gray-800 text-center text-red-900 w-40 p-2">
+            <th className=" border-gray-800 text-center text-red-900 w-30 p-2">
               Quantity
             </th>
             <th className=" border-gray-800 text-center text-red-900 w-30 p-2 mx-auto">
               Weight
             </th>
-            <th className=" border-gray-800 text-center text-red-900 p-2 w-60">
+            <th className=" border-gray-800 text-center text-red-900 p-2 w-30">
               Outlet
             </th>
             <th className=" border-gray-800 text-center text-red-900 w-30 p-2 mx-auto">
               Low Stock Threshold Qty
             </th>
-            <th className=" border-gray-800 text-center text-red-900 w-30 p-2 mx-auto">
+            <th className=" border-gray-800 text-center text-red-900 w-40 p-2 mx-auto">
               Low Stock Threshold Weight
             </th>
 
-            <th className=" border-gray-800 text-center text-red-900 w-30 p-2 mx-auto">
+            <th className=" border-gray-800 text-center text-red-900 w-20 p-2">
               Action
             </th>
           </tr>
@@ -187,7 +188,7 @@ export default function StockPage() {
           {filteredStock.map((item) => (
             <tr
               key={item.id}
-              className={`${item.quantity < 5 ? "bg-red-100" : ""} odd:bg-blue-50 even:bg-white`}
+              className={`${item.quantity < 5 ? "bg-red-100" : ""} odd:bg-white even:bg-blue-50`}
             >
               <td className="text-left border-gray-800 text-gray-900 font-medium p-2">
                 {item.barcode}
@@ -230,22 +231,22 @@ export default function StockPage() {
                 </div>
               </td>
 
-              <td className=" border-gray-800 text-center text-gray-900 font-medium w-60 p-2">
+              <td className=" border-gray-800 text-center text-gray-900 font-medium p-2">
                 {item.outletId}
               </td>
-              <td className=" border-gray-800 text-center text-gray-900 font-medium w-30 p-2">
+              <td className=" border-gray-800 text-center text-gray-900 font-medium p-2">
                 {item.lowStockThresholdQty ? item.lowStockThresholdQty : "N/A"}
               </td>
-              <td className=" border-gray-800 text-center text-gray-900 font-medium w-30 p-2">
+              <td className=" border-gray-800 text-center text-gray-900 font-medium  p-2">
                 {item.lowStockThresholdWeight
                   ? item.lowStockThresholdWeight.toFixed(2)
                   : "N/A"}
               </td>
 
-              <td className=" border-gray-800 w-30 p-2">
+              <td className=" border-gray-800 p-2">
                 <Button
                   onClick={() => handleDelete(item.id)}
-                  className="bg-red-800 text-white px-2 py-1 ml-4 rounded hover:bg-red-700"
+                  className=" bg-red-800 text-white  rounded hover:bg-red-700"
                 >
                   Delete
                 </Button>
