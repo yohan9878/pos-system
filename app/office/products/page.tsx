@@ -96,7 +96,7 @@ export default function ProductPage() {
 
       <table className="w-full border border-gray-200 text-xs">
         <thead>
-          <tr>
+          <tr className="bg-red-50">
             <th className="text-red-900 text-left border-gray-800 p-2 w-50">
               Barcode
             </th>
@@ -120,7 +120,7 @@ export default function ProductPage() {
         </thead>
         <tbody>
           {filteredProducts.map((p) => (
-            <tr key={p.id} className="odd:bg-gray-200 even:bg-white">
+            <tr key={p.id} className="odd:bg-white even:bg-gray-100">
               <td className=" text-gray-950 border-gray-500 font-medium p-2">
                 {p.barcode}
               </td>
