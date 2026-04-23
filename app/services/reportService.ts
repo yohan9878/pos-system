@@ -3,6 +3,7 @@ const BASE_URL = "http://localhost:8080/api/reports";
 export interface reportData{
     date: string,
     outletId: string,
+    discountAmount: number,
     totalSales: number,
     totalTransactions: number
 }
