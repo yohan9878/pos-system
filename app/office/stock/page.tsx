@@ -188,7 +188,7 @@ export default function StockPage() {
           {filteredStock.map((item) => (
             <tr
               key={item.id}
-              className={`${item.quantity < 5 ? "bg-red-100" : ""} odd:bg-white even:bg-blue-50`}
+              className={`${item.weight < item.lowStockThresholdWeight ? "bg-red-300" : ""} ${item.quantity < item.lowStockThresholdQty ? "bg-red-300" : ""} `}
             >
               <td className="text-left border-gray-800 text-gray-900 font-medium p-2">
                 {item.barcode}
@@ -208,7 +208,7 @@ export default function StockPage() {
                   className={`text-center px-3 py-1 rounded font-semibold ${
                     item.weighted
                       ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                      : "bg-red-200 hover:bg-red-100 cursor-pointer text-red-900"
+                      : "bg-blue-200 hover:bg-blue-100 cursor-pointer text-blue-900"
                   }`}
                 >
                   {item.quantity ? item.quantity : "N/A"}
@@ -223,7 +223,7 @@ export default function StockPage() {
                   }}
                   className={`text-center px-3 py-1 rounded font-semibold ${
                     item.weighted
-                      ? "bg-red-200 hover:bg-red-100 cursor-pointer text-red-900"
+                      ? "bg-blue-200 hover:bg-blue-100 cursor-pointer text-blue-900"
                       : "bg-gray-200 text-gray-400 cursor-not-allowed"
                   }`}
                 >
@@ -290,22 +290,6 @@ export default function StockPage() {
       ) : (
         ""
       )}
-      {/* <QuantityModal
-        isOpen={modalOpen}
-        onClose={() => {
-          setModalOpen(false);
-          setSelectedStock(null);
-        }}
-        onConfirm={handleConfirmValue}
-        initialQty={null}
-        productName={
-          selectedStock
-            ? selectedStock.weighted
-              ? `${selectedStock.productName} (Enter Weight)`
-              : `${selectedStock.productName} (Enter Quantity)`
-            : ""
-        }
-      /> */}
     </div>
   );
 }
