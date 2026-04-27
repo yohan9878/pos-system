@@ -20,6 +20,8 @@ export default function ReportPage() {
 
   const handleFetchDailyReport = async () => {
     try {
+      setReports([]);
+      setSalesItems([]);
       setLoading(true);
       const dailyReportData = await getDailyReport(date, outlet);
       const soldItemsData = await getSoldItems(date, outlet);
@@ -45,8 +47,13 @@ export default function ReportPage() {
     loadOutlets().catch(console.error);
   }, []);
 
+  const totalValue = salesItems.reduce(
+    (sum, item) => sum + (item.saleValue || 0),
+    0,
+  );
+
   return (
-    <div className=" text-black ">
+    <div className="text-black ">
       <h1 className="text-xl text-red-950 font-bold mb-4">Daily Reports</h1>
 
       {/* Controls */}
@@ -83,98 +90,109 @@ export default function ReportPage() {
 
       {/* Table */}
       {!loading && reports.length > 0 && salesItems.length > 0 && (
-        <div id="report">
-          <div className="text-red-950 my-5 font-semibold">
-            <h1 className="text-xl">
-              Daily Report of {outlet || "All Outlets"}
+        <div id="report" className="mx-auto rounded">
+          <div className="text-gray-800 my-5 font-semibold">
+            <h1 className="text-2xl">
+              Sales Report of {outlet || "All Outlets"}
             </h1>
-            <h4 className="text-lg">{date}</h4>
+            <h4 className="text-gray-800 text-lg">{date}</h4>
+            <p className="text-sm text-gray-800">
+              Generated at: {new Date().toLocaleTimeString()}
+            </p>
           </div>
-          <table className="w-1/2 border">
-            <thead>
-              <tr>
-                <th className=" border-gray-800 text-left text-red-900 w-40 p-2">
-                  Date
-                </th>
-                <th className="border border-gray-800 text-center text-red-900 w-10 p-2">
-                  Outlet
-                </th>
-                <th className="border border-gray-800 text-center text-red-900 w-10 p-2">
-                  Transactions
-                </th>
-                <th className="border border-gray-800 text-right text-red-900 w-30 p-2">
-                  Discount Amount (LKR)
-                </th>
-                <th className="border border-gray-800 text-right text-red-900 w-30 p-2">
-                  Total Sales (LKR)
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {reports.map((r, i) => (
-                <tr key={i} className="text-center border">
-                  <td className="text-left border-gray-800 text-gray-900 font-medium p-2">
-                    {r.date}
-                  </td>
-                  <td className="border text-center border-gray-800 text-gray-900 font-medium p-2">
-                    {r.outletId}
-                  </td>
-                  <td className="border text-center border-gray-800 text-gray-900 font-medium p-2">
-                    {r.totalTransactions}
-                  </td>
-                  <td className="border text-right border-gray-800 text-gray-900 font-medium p-2">
-                    {r.discountAmount.toFixed(2)}
-                  </td>
-                  <td className="border text-right border-gray-800 text-gray-900 font-medium p-2">
-                    {r.totalSales.toFixed(2)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
 
-          <table className="w-1/2 border mt-4">
+          <div className="text-gray-800 mt-6  font-semibold">
+            <h1 className="text-lg">Sales Items</h1>
+          </div>
+
+          <table className="w-fit text-sm  mt-2 print:w-full">
             <thead>
               <tr>
-                <th className=" border-gray-800 text-left text-red-900 w-40 p-2">
+                <th className="border border-gray-800 text-left text-gray-900 w-40 p-2">
                   Barcode
                 </th>
-                <th className="border border-gray-800 text-center text-red-900 w-10 p-2">
+                <th className="border border-gray-800 text-left text-gray-900 w-50 p-2">
                   Item Name
                 </th>
-                <th className="border border-gray-800 text-center text-red-900 w-10 p-2">
+                <th className="border border-gray-800 text-center text-gray-900 w-30 p-2">
                   Qty
                 </th>
-                <th className="border border-gray-800 text-center text-red-900 w-10 p-2">
-                  Price
+                <th className="border border-gray-800 text-right text-gray-900 w-30 p-2">
+                  Sale Price
                 </th>
-                <th className="border border-gray-800 text-right text-red-900 w-30 p-2">
-                  Value
+                <th className="border border-gray-800 text-right text-gray-900 w-30 p-2">
+                  Sale Value
                 </th>
               </tr>
             </thead>
             <tbody>
               {salesItems.map((item, index) => (
                 <tr key={index}>
-                  <td className="border text-left border-gray-800 text-gray-900 font-medium p-2">
+                  <td className="border text-left border-gray-800 text-gray-900 font-medium w-40 p-2">
                     {item.barcode}
                   </td>
-                  <td className="border text-center border-gray-800 text-gray-900 font-medium p-2">
+                  <td className="border text-left border-gray-800 text-gray-900 font-medium w-50 p-2">
                     {item.itemName}
                   </td>
-                  <td className="border text-center border-gray-800 text-gray-900 font-medium p-2">
+                  <td className="border text-center border-gray-800 text-gray-900 font-medium w-30 p-2">
                     {item.saleQty}
                   </td>
-                  <td className="border text-center border-gray-800 text-gray-900 font-medium p-2">
-                    {item.salePrice}
+                  <td className="border text-right border-gray-800 text-gray-900 font-medium w-30 p-2">
+                    {item.salePrice?.toFixed(2)}
                   </td>
-                  <td className="border text-right border-gray-800 text-gray-900 font-medium p-2">
-                    {item.saleValue}
+                  <td className="border text-right border-gray-800 text-gray-900 font-medium w-30 p-2">
+                    {item.saleValue?.toFixed(2)}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+
+          <div className="text-gray-800 mt-6  font-semibold">
+            <h1 className="text-lg">Sales Summary</h1>
+          </div>
+ 
+
+         
+            {reports.map((r, i) => (
+              <div
+                key={i}
+                className="w-fit p-4 rounded text-sm text-gray-900 font-medium mt-4"
+              >
+                <div className="grid grid-cols-2 gap-y-3 gap-x-6 text-sm">
+                  <span className="text-gray-700 font-semibold">Date :</span>
+                  <span className="text-gray-900 font-medium text-right">
+                    {r.date}
+                  </span>
+
+                  <span className="text-gray-700 font-semibold">Outlet :</span>
+                  <span className="text-gray-900 font-medium text-right">
+                    {r.outletId}
+                  </span>
+
+                  <span className="text-gray-700 font-semibold">Transactions :</span>
+                  <span className="text-gray-900 font-medium text-right">
+                    {r.totalTransactions}
+                  </span>
+
+                  <span className="text-gray-700 font-semibold">Total Sales (LKR) :</span>
+                  <span className="text-gray-900 font-medium text-right">
+                    {totalValue.toFixed(2)}
+                  </span>
+
+                  <span className="text-gray-700 font-semibold">Discount (LKR) :</span>
+                  <span className="text-gray-900 font-medium text-right">
+                    {r.discountAmount?.toFixed(2)}
+                  </span>
+
+                  <span className="text-gray-700 font-semibold">Net Sales (LKR) :</span>
+                  <span className="text-gray-900 font-medium text-right">
+                    {r.totalSales?.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          
         </div>
       )}
 
