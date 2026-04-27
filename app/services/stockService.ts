@@ -16,6 +16,7 @@ export interface StockHistoryItem {
   id: number;
   barcode: string;
   productName: string;
+  outletId: string;
   oldStock: number;
   updatedStock: number;
   newStock: number;
