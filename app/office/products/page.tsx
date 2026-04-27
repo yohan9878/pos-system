@@ -60,7 +60,7 @@ export default function ProductPage() {
   );
 
   return (
-    <div className="text-white rounded">
+    <div className="">
       <h1 className="text-xl text-red-950 font-bold mb-4">
         Product Management
       </h1>
@@ -68,10 +68,10 @@ export default function ProductPage() {
       <div className="relative rounded mb-4 flex gap-2 flex-wrap text-xs">
         <input
           id="search"
-          placeholder="Search by barcode..."
+          placeholder="Search by barcode or product name"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="p-2 mb-2 border w-60 bg-blue-50 border-gray-300 text-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
+          className="p-2 mb-2 border font-medium w-60  border-gray-300 text-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
         />
         <Button
           onClick={() => setFormOpen(true)}
@@ -94,52 +94,36 @@ export default function ProductPage() {
         />
       </div>
 
-      <table className="w-full border border-gray-200 text-xs">
+      <table className="w-full border border-gray-300 text-xs">
         <thead>
           <tr className="bg-red-50">
-            <th className="text-red-900 text-left border-gray-800 p-2 w-50">
-              Barcode
-            </th>
-            <th className="text-red-900 text-left border-gray-800 p-2 w-100">
-              Product Name
-            </th>
-            <th className="text-red-900 text-right border-gray-800 p-2 w-30">
-              Bulk Price
-            </th>
-            <th className="text-red-900 text-right border-gray-800 p-2 w-30">
-              Retail Price
-            </th>
-            <th className="text-red-900 text-right border-gray-800 p-2 w-30">
-              Pack Price
-            </th>
-            <th className="text-red-900 text-right border-gray-800 p-2 w-30">
-              Price per Kg
-            </th>
-            <th className="text-red-900 border-gray-800 p-2 w-38">Action</th>
+            <th className="text-red-900 text-left p-2 w-50">Barcode</th>
+            <th className="text-red-900 text-left p-2 w-100">Product Name</th>
+            <th className="text-red-900 text-right p-2 w-30">Bulk Price</th>
+            <th className="text-red-900 text-right p-2 w-30">Retail Price</th>
+            <th className="text-red-900 text-right p-2 w-30">Pack Price</th>
+            <th className="text-red-900 text-right p-2 w-30">Price per Kg</th>
+            <th className="text-red-900 p-2 w-38">Action</th>
           </tr>
         </thead>
         <tbody>
           {filteredProducts.map((p) => (
             <tr key={p.id} className="odd:bg-white even:bg-gray-100">
-              <td className=" text-gray-950 border-gray-500 font-medium p-2">
-                {p.barcode}
-              </td>
-              <td className="text-gray-950 border-gray-500 font-medium p-2">
-                {p.name}
-              </td>
-              <td className="text-gray-950 border-gray-500 p-2 text-right">
+              <td className=" text-gray-950 font-medium p-2">{p.barcode}</td>
+              <td className="text-gray-950 font-medium p-2">{p.name}</td>
+              <td className="text-gray-950 font-medium p-2 text-right">
                 {p.bulkPrice.toFixed(2)}
               </td>
-              <td className="text-gray-950 border-gray-500 p-2 text-right">
+              <td className="text-gray-950 font-medium p-2 text-right">
                 {p.retailPrice.toFixed(2)}
               </td>
-              <td className="text-gray-950 border-gray-500 p-2 text-right">
+              <td className="text-gray-950 font-medium p-2 text-right">
                 {p.packPrice ? p.packPrice.toFixed(2) : "N/A"}
               </td>
-              <td className="text-gray-950 border-gray-500 p-2 text-right">
+              <td className="text-gray-950 font-medium p-2 text-right">
                 {p.pricePerKg ? p.pricePerKg.toFixed(2) : "N/A"}
               </td>
-              <td className="text-gray-950 border-gray-500 p-2 text-center w-fit">
+              <td className="text-gray-950 font-medium p-2 text-center w-fit">
                 <Button
                   onClick={() => handleDelete(p.id)}
                   className="bg-red-900 hover:bg-red-700 text-white ml-4"
