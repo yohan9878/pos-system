@@ -23,7 +23,7 @@ export interface ProductRequest {
   weighted: boolean | "";
 }
 
-// Get all stock
+// Get all products
 export const getProducts = async (): Promise<ProductItems[]> => {
   const res = await fetch(BASE_URL);
   if (!res.ok) throw new Error("Failed to fetch product");
