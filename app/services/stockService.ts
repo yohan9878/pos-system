@@ -3,7 +3,7 @@ const API_URL = "http://localhost:8080/api/stock";
 export interface StockItem {
   id: number;
   productName: string;
-  barcode: string;
+  barcode: number;
   quantity: number;
   outletId: string;
   lowStockThresholdQty: number;
@@ -16,6 +16,7 @@ export interface StockHistoryItem {
   id: number;
   barcode: string;
   productName: string;
+  outletId: string;
   oldStock: number;
   updatedStock: number;
   newStock: number;
@@ -24,17 +25,17 @@ export interface StockHistoryItem {
 }
 
 export interface StockRequest {
-  barcode: number;
-  lowStockThresholdQty: number;
-  lowStockThresholdWeight: number;
+  barcode: number | "";
+  lowStockThresholdQty: number | "";
+  lowStockThresholdWeight: number | "";
   outletId: string;
-  quantity: number;
-  weight: number;
+  quantity: number | "";
+  weight: number | "";
 }
 
 export interface StockUpdateRequest {
   value: number;
-  user: string; // 🔥 later from login
+  user: string; // later from login
 }
 
 // Get all stock

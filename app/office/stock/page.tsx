@@ -3,7 +3,6 @@
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import {
   getStock,
-  addStock,
   updateStock,
   deleteStock,
   StockItem,
@@ -11,18 +10,13 @@ import {
 import QuantityModal from "@/app/components/QuantityModal";
 import Button from "@/app/components/Button";
 import WeightModal from "@/app/components/WeightModal";
+import StockForm from "@/app/components/StockForm";
 
 export default function StockPage() {
   const [stockList, setStockList] = useState<StockItem[]>([]);
   const [search, setSearch] = useState("");
 
-  // const [productName, setProductName] = useState("");
-  const [barcode, setBarcode] = useState("");
-  const [outletId, setOutletId] = useState("");
-  const [qty, setQty] = useState("");
-  const [lowStockThresholdQty, setLowStockThresholdQty] = useState("");
-  const [lowStockThresholdWeight, setLowStockThresholdWeight] = useState("");
-  const [weight, setWeight] = useState("");
+  const [formOpen, setFormOpen] = useState(false);
 
   const [selectedStock, setSelectedStock] = useState<StockItem | null>(null);
 
@@ -67,44 +61,6 @@ export default function StockPage() {
     setWeightModalOpen(true);
   };
 
-  // Add new stock
-  const handleAddStock = async () => {
-    if (
-      !barcode ||
-      !lowStockThresholdQty ||
-      !lowStockThresholdWeight ||
-      !outletId ||
-      !qty ||
-      !weight
-    )
-      return;
-
-    const newStock = {
-      // productName,
-      barcode: parseInt(barcode),
-      outletId,
-      quantity: parseInt(qty),
-      lowStockThresholdQty: parseInt(lowStockThresholdQty),
-      lowStockThresholdWeight: parseInt(lowStockThresholdWeight),
-      weight: parseInt(weight),
-    };
-
-    try {
-      await addStock(newStock);
-      await loadStock(); // refresh list
-      // setProductName("");
-      setBarcode("");
-      setOutletId("");
-      setQty("");
-      setLowStockThresholdQty("");
-      setLowStockThresholdWeight("");
-      setWeight("");
-    } catch (err) {
-      console.error("Failed to add stock:", err);
-      alert("Failed to add stock");
-    }
-  };
-
   // Delete stock
   const handleDelete = async (id: number) => {
     const confirmDelete = confirm("Are you sure to delete this stock?");
@@ -132,7 +88,7 @@ export default function StockPage() {
     try {
       await updateStock(selectedStock.id, {
         value: value,
-        user: "admin",
+        user: "admin",// later from login
       });
 
       setModalOpen(false);
@@ -162,98 +118,59 @@ export default function StockPage() {
   };
 
   return (
-    <div className="text-xs">
+    <div className="relative text-xs">
       <h1 className="text-xl text-red-950 font-bold mb-4">Stock Management</h1>
 
-      {/* Search */}
-      <input
-        placeholder="Search by barcode, product name or outlet ID"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="p-2 border mb-4 w-full bg-blue-50 border-gray-300 text-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-      />
-
-      {/* Add Stock */}
-      <div className="rounded mb-6 flex gap-2 flex-wrap">
+      <div className="">
+        {/* Search */}
         <input
-          placeholder="Barcode"
-          value={barcode}
-          onChange={(e) => setBarcode(e.target.value)}
-          className="bg-green-50 text-gray-700 w-40 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-        <input
-          placeholder="Outlet ID"
-          value={outletId}
-          onChange={(e) => setOutletId(e.target.value)}
-          className="bg-green-50 text-gray-700 w-40 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-        <input
-          type="number"
-          placeholder="Quantity"
-          value={qty}
-          onChange={(e) => setQty(e.target.value)}
-          className="bg-green-50 text-gray-700 p-2 border border-gray-300 rounded w-32 focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-        <input
-          type="number"
-          placeholder="Weight"
-          value={weight}
-          onChange={(e) => setWeight(e.target.value)}
-          className="bg-green-50 text-gray-700 p-2 border border-gray-300 rounded w-32 focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-        <input
-          type="number"
-          placeholder="Low Stock Threshold Qty"
-          value={lowStockThresholdQty}
-          onChange={(e) => setLowStockThresholdQty(e.target.value)}
-          className="bg-green-50 text-gray-700 p-2 border border-gray-300 rounded w-32 focus:outline-none focus:ring-2 focus:ring-red-800"
-        />
-
-        <input
-          type="number"
-          placeholder="Low Stock Threshold Weight"
-          value={lowStockThresholdWeight}
-          onChange={(e) => setLowStockThresholdWeight(e.target.value)}
-          className="bg-green-50 text-gray-700 p-2 border border-gray-300 rounded w-32 focus:outline-none focus:ring-2 focus:ring-red-800"
+          placeholder="Search by barcode, product name or outlet ID"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="p-2 border w-74  border-gray-300 text-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
         />
         <Button
-          onClick={handleAddStock}
-          className="bg-green-900 hover:bg-green-700 text-white px-4 rounded"
+          onClick={() => setFormOpen(true)}
+          className="absolute right-0 bg-green-900 hover:bg-green-700 text-white px-4 rounded"
         >
           Add Stock
         </Button>
-        {/* <AddStockForm /> */}
+      </div>
+
+      {/* Add Stock */}
+      <div className="rounded mb-6 flex gap-2 flex-wrap">
+        <StockForm
+          onClose={() => {
+            setFormOpen(false);
+            setTimeout(() => {
+              inputRef.current?.focus();
+            }, 0);
+          }}
+          onAddSuccess={() => loadStock()}
+          isOpen={formOpen}
+          heading="Add New Stock"
+        />
       </div>
 
       {/* Stock Table */}
-      <table className="w-fit border text-xs">
+      <table className="w-full border border-gray-300 text-xs">
         <thead>
-          <tr>
-            <th className=" border-gray-800 text-left text-red-900 w-40 p-2">
-              Barcode
-            </th>
-            <th className=" border-gray-800 text-left text-red-900 w-90 p-2">
-              Product
-            </th>
-            <th className=" border-gray-800 text-center text-red-900 w-40 p-2">
-              Quantity
-            </th>
-            <th className=" border-gray-800 text-center text-red-900 w-30 p-2 mx-auto">
+          <tr className="bg-red-50">
+            <th className="text-left text-red-900 w-30 p-2">Barcode</th>
+            <th className="text-left text-red-900 w-90 p-2">Product</th>
+            <th className="text-center text-red-900 w-30 p-2">Quantity</th>
+            <th className="text-center text-red-900 w-30 p-2 mx-auto">
               Weight
             </th>
-            <th className=" border-gray-800 text-center text-red-900 p-2 w-60">
-              Outlet
-            </th>
-            <th className=" border-gray-800 text-center text-red-900 w-30 p-2 mx-auto">
+            <th className="text-center text-red-900 p-2 w-30">Outlet</th>
+            <th className="text-center text-red-900 w-30 p-2 mx-auto">
               Low Stock Threshold Qty
             </th>
-            <th className=" border-gray-800 text-center text-red-900 w-30 p-2 mx-auto">
+            <th className="text-center text-red-900 w-40 p-2 mx-auto">
               Low Stock Threshold Weight
             </th>
 
-            <th className=" border-gray-800 text-center text-red-900 w-30 p-2 mx-auto">
-              Action
-            </th>
+            <th className="text-center text-red-900 w-20 p-2">Action</th>
           </tr>
         </thead>
 
@@ -261,17 +178,17 @@ export default function StockPage() {
           {filteredStock.map((item) => (
             <tr
               key={item.id}
-              className={`${item.quantity < 5 ? "bg-red-100" : ""} odd:bg-blue-50 even:bg-white`}
+              className={`${item.weight < item.lowStockThresholdWeight ? "bg-red-300" : ""} ${item.quantity < item.lowStockThresholdQty ? "bg-red-300" : ""} border border-gray-300`}
             >
-              <td className="text-left border-gray-800 text-gray-900 font-medium p-2">
+              <td className="text-left text-gray-800 font-medium p-2">
                 {item.barcode}
               </td>
-              <td className=" border-gray-800 text-gray-900 font-medium p-2">
+              <td className=" text-gray-800 font-medium p-2">
                 {item.productName}
               </td>
 
               {/* Editable Quantity */}
-              <td className=" border-gray-800 p-2">
+              <td className="border-gray-800 p-2">
                 <div
                   onClick={() => {
                     if (!item.weighted) {
@@ -280,14 +197,14 @@ export default function StockPage() {
                   }}
                   className={`text-center px-3 py-1 rounded font-semibold ${
                     item.weighted
-                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                      : "bg-red-200 hover:bg-red-100 cursor-pointer text-red-900"
+                      ? " text-gray-800 cursor-not-allowed"
+                      : "bg-blue-200 hover:bg-blue-100 cursor-pointer text-blue-900"
                   }`}
                 >
                   {item.quantity ? item.quantity : "N/A"}
                 </div>
               </td>
-              <td className=" border-gray-800 p-2">
+              <td className="p-2">
                 <div
                   onClick={() => {
                     if (item.weighted) {
@@ -296,30 +213,30 @@ export default function StockPage() {
                   }}
                   className={`text-center px-3 py-1 rounded font-semibold ${
                     item.weighted
-                      ? "bg-red-200 hover:bg-red-100 cursor-pointer text-red-900"
-                      : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                      ? "bg-blue-200 hover:bg-blue-100 cursor-pointer text-blue-900"
+                      : " text-gray-800 cursor-not-allowed"
                   }`}
                 >
                   {item.weight ? item.weight.toFixed(2) : "N/A"}
                 </div>
               </td>
 
-              <td className=" border-gray-800 text-center text-gray-900 font-medium w-60 p-2">
+              <td className="  text-center text-gray-800 font-medium p-2">
                 {item.outletId}
               </td>
-              <td className=" border-gray-800 text-center text-gray-900 font-medium w-30 p-2">
+              <td className="  text-center text-gray-800 font-medium p-2">
                 {item.lowStockThresholdQty ? item.lowStockThresholdQty : "N/A"}
               </td>
-              <td className=" border-gray-800 text-center text-gray-900 font-medium w-30 p-2">
+              <td className="  text-center text-gray-800 font-medium  p-2">
                 {item.lowStockThresholdWeight
                   ? item.lowStockThresholdWeight.toFixed(2)
                   : "N/A"}
               </td>
 
-              <td className=" border-gray-800 w-30 p-2">
+              <td className="  p-2">
                 <Button
                   onClick={() => handleDelete(item.id)}
-                  className="bg-red-800 text-white px-2 py-1 ml-4 rounded hover:bg-red-700"
+                  className=" bg-red-800 text-white  rounded hover:bg-red-700"
                 >
                   Delete
                 </Button>
@@ -363,22 +280,6 @@ export default function StockPage() {
       ) : (
         ""
       )}
-      {/* <QuantityModal
-        isOpen={modalOpen}
-        onClose={() => {
-          setModalOpen(false);
-          setSelectedStock(null);
-        }}
-        onConfirm={handleConfirmValue}
-        initialQty={null}
-        productName={
-          selectedStock
-            ? selectedStock.weighted
-              ? `${selectedStock.productName} (Enter Weight)`
-              : `${selectedStock.productName} (Enter Quantity)`
-            : ""
-        }
-      /> */}
     </div>
   );
 }

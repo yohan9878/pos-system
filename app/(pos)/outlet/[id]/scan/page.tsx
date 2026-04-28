@@ -189,26 +189,26 @@ export default function ScanPage() {
         discountType={discountType}
       />
 
-      <div className="mt-4">
+      <div className="mt-4 ">
         <Button
           onClick={() => {
             if (cart.length === 0 || loading) return;
             handlePay();
           }}
-          className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded disabled:bg-gray-400"
+          className="bg-blue-600 hover:bg-blue-500 text-white mr-3  rounded disabled:bg-gray-400"
         >
           {loading ? "Processing..." : "Pay"}
         </Button>
 
         <Button
           onClick={() => setDiscountModalOpen(true)}
-          className=" mr-3 mt-4 px-4 py-2 bg-amber-500 hover:bg-amber-400 rounded text-white"
+          className=" mr-3 mt-4 bg-amber-500 hover:bg-amber-400 rounded text-white"
         >
           Discount
         </Button>
         <Button
           onClick={() => window.print()}
-          className="mt-4 px-4 py-2 bg-green-800 hover:bg-green-700 text-white print:hidden"
+          className="mt-4 mr-3 bg-green-800 hover:bg-green-700 text-white print:hidden"
         >
           Print Invoice
         </Button>

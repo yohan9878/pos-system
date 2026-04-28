@@ -1,16 +1,22 @@
 const BASE_URL = "http://localhost:8080/api/reports";
 
-export interface reportData{
-    date: string,
-    outletId: string,
-    totalSales: number,
-    totalTransactions: number
+export interface reportData {
+  date: string;
+  outletId: string;
+  discountAmount: number,
+  totalSales: number;
+  totalTransactions: number;
 }
 
-export const getDailyReport = async (
-  date: string,
-  outletId?: string
-) => {
+export interface SoldItemReport {
+  barcode: string;
+  itemName: string;
+  saleQty: number;
+  salePrice: number;
+  saleValue: number;
+}
+
+export const getDailyReport = async (date: string, outletId?: string) => {
   let url = `${BASE_URL}/daily?date=${date}`;
 
   if (outletId && outletId !== "") {
@@ -21,6 +27,25 @@ export const getDailyReport = async (
 
   if (!res.ok) {
     throw new Error("Failed to fetch report");
+  }
+
+  return res.json();
+};
+
+export const getSoldItems = async (
+  date: string,
+  outletId: string,
+): Promise<SoldItemReport[]> => {
+  let url = `${BASE_URL}/items?date=${date}`;
+
+  if (outletId && outletId !== "") {
+    url += `&outletId=${outletId}`;
+  }
+
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch sold items");
   }
 
   return res.json();

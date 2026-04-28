@@ -25,7 +25,7 @@ export default function OfficeLayout({ children }: Props) {
       children: [
         { name: "Stock List", path: "/stock" },
         { name: "Stock Update History", path: "/stock/history" },
-        { name: "Stock Sales History", path: "/stock/saleHistory" },
+        { name: "Stock Sales History" , path: "/stock/saleHistory" },
       ],
     },
     { name: "Reports", path: "/reports" },
@@ -34,7 +34,7 @@ export default function OfficeLayout({ children }: Props) {
   return (
     <div className="min-h-screen text-sm flex">
       {/* Sidebar */}
-      <aside className="w-50 bg-white drop-shadow-gray-400  drop-shadow-xl/50">
+      <aside className="w-50 bg-white drop-shadow-gray-400  drop-shadow-xl/50 fixed h-screen">
         <div className="grid bg-red-800 text-white p-2 font-bold text-sm ">
           <Image
             src="/weehenaLogo.png"
@@ -109,7 +109,7 @@ export default function OfficeLayout({ children }: Props) {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 bg-red-50 p-6">
+      <main className="flex-1 bg-red-50 ml-50 p-6">
         <div className="bg-white p-6 rounded-lg shadow-2xl">{children}</div>
       </main>
     </div>
