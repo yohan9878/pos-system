@@ -64,7 +64,7 @@ export default function HistoryPage() {
             <th className="border-gray-800 text-left text-red-900 w-20 p-2">
               User
             </th>
-            <th className="border-gray-800 text-left text-red-900 w-34 p-2">
+            <th className="border-gray-800 text-left text-red-900 w-36 p-2">
               Date
             </th>
           </tr>
