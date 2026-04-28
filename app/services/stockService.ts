@@ -35,21 +35,30 @@ export interface StockRequest {
 
 export interface StockUpdateRequest {
   value: number;
-  user: string; // later from login
+  user: string;
 }
 
 // Get all stock
 export const getStock = async (): Promise<StockItem[]> => {
-  const res = await fetch(API_URL);
+  const token = localStorage.getItem("token");
+  const res = await fetch(API_URL, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   if (!res.ok) throw new Error("Failed to fetch stock");
   return res.json();
 };
 
 // Add stock Omit<StockItem, "id"
 export const addStock = async (stock: StockRequest) => {
+  const token = localStorage.getItem("token");
   const res = await fetch(API_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify(stock),
   });
   if (!res.ok) throw new Error("Failed to add stock");
@@ -57,10 +66,12 @@ export const addStock = async (stock: StockRequest) => {
 };
 
 export const updateStock = async (id: number, body: StockUpdateRequest) => {
+  const token = localStorage.getItem("token");
   const res = await fetch(`http://localhost:8080/api/stock/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(body),
   });
@@ -70,6 +81,12 @@ export const updateStock = async (id: number, body: StockUpdateRequest) => {
 
 // Delete stock
 export const deleteStock = async (id: number) => {
-  const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_URL}/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   if (!res.ok) throw new Error("Failed to delete stock");
 };

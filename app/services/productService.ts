@@ -25,16 +25,25 @@ export interface ProductRequest {
 
 // Get all products
 export const getProducts = async (): Promise<ProductItems[]> => {
-  const res = await fetch(BASE_URL);
+  const token = localStorage.getItem("token");
+  const res = await fetch(BASE_URL, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   if (!res.ok) throw new Error("Failed to fetch product");
   return res.json();
 };
 
 // Add product
 export const addProduct = async (product: ProductRequest) => {
+  const token = localStorage.getItem("token");
   const res = await fetch(BASE_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify(product),
   });
   if (!res.ok) throw new Error("Failed to add product");
@@ -43,14 +52,25 @@ export const addProduct = async (product: ProductRequest) => {
 
 // Delete product
 export const deleteProduct = async (id: number) => {
-  const res = await fetch(`${BASE_URL}/${id}`, { method: "DELETE" });
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${BASE_URL}/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   if (!res.ok) throw new Error("Failed to delete product");
 };
 
 // Fetch product by barcode
 export const fetchProduct = async (barcode: string): Promise<Product> => {
   try {
-    const res = await fetch(`${BASE_URL}/${barcode}`);
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${BASE_URL}/${barcode}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     if (!res.ok) throw new Error("Product not found");
 
