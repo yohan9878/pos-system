@@ -34,12 +34,13 @@ export default function HistoryPage() {
         Stock Update History
       </h1>
       <input
+        id="search"
         type="text"
         placeholder="Search by barcode or product name"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className="mb-4 font-medium p-2 border h-8 border-gray-300 rounded w-60 focus:outline-none focus:ring-2 focus:ring-red-800 text-xs text-gray-700"
-      />  
+      />
       <table className="w-full border border-gray-200 text-xs">
         <thead>
           <tr>

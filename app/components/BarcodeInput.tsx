@@ -20,13 +20,14 @@ export default function BarcodeInput({
   }, []);
   return (
     <input
+      id="barcode"
       type="text"
       ref={inputRef}
       value={barcode}
       onChange={(e) => setBarcode(e.target.value)}
       onKeyDown={(e) => e.key === "Enter" && handleAdd()}
       placeholder="Scan or enter barcode"
-      className="w-72 p-3 text-gray-700 text-lg border bg-red-100 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
+      className="w-72 p-3 text-gray-700 text-md border bg-red-100 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
     />
   );
 }

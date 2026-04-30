@@ -10,6 +10,7 @@ interface Props {
 export default function Button({ onClick, children, className }: Props) {
   return (
     <button
+      type="button"
       onClick={onClick}
       className={`px-5 py-2 text-white rounded transition ${className}`}
     >

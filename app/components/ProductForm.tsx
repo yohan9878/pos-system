@@ -194,6 +194,7 @@ export default function ProductForm({
               placeholder="Product Name"
               value={formData.name}
               onChange={handleChange}
+              autoComplete="false"
               className="w-full bg-red-50 p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
             />
 

@@ -18,7 +18,7 @@ export default function QuantityModal({
   onConfirm,
   initialQty,
   productName,
-  heading
+  heading,
 }: Props) {
   const [qty, setQty] = useState<number | null>(initialQty);
   const [isClient, setIsClient] = useState(false);
@@ -58,6 +58,7 @@ export default function QuantityModal({
           <p className="mb-2 text-gray-900">{productName}</p>
 
           <input
+            id="quantity"
             type="number"
             value={qty !== null ? qty : ""}
             onChange={(e) => {
@@ -94,7 +95,7 @@ export default function QuantityModal({
                 onConfirm(qty);
                 onClose();
               }}
-              className="px-4 py-2 bg-blue-500 text-white rounded"
+              className="px-4 py-2 hover:bg-blue-600 bg-blue-500 text-white rounded"
             >
               Update
             </Button>

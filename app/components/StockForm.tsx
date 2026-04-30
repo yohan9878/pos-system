@@ -93,7 +93,7 @@ export default function ProductForm({
       setProductError("");
 
       // only fetch when barcode looks valid
-      if (value.length >= 4) {
+      if (value.length >= 13) {
         loadProduct(value);
       }
     }
@@ -196,7 +196,7 @@ export default function ProductForm({
               </p>
             )}
             {/* Outlet Id */}
-            <label htmlFor="outletId">Outlet Id *</label>
+            {/* <label htmlFor="outletId">Outlet Id *</label>
             <input
               id="outletId"
               name="outletId"
@@ -204,7 +204,19 @@ export default function ProductForm({
               value={formData.outletId}
               onChange={handleChange}
               className="w-full bg-red-50 p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-            />
+            /> */}
+            <label htmlFor="outletId">Select Outlet*</label>
+            <select
+              id="outletId"
+              name="outletId"
+              value={formData.outletId === "" ? "" : String(formData.outletId)}
+              onChange={handleChange}
+              className="w-full bg-red-50 p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
+            >
+              <option value="" hidden>Select Outlet</option>
+              <option value="Katunayake">Katunayake</option>
+              {/* <option value="outlet2">Outlet 2</option> */}
+            </select>
             {/* Quantity */}
             <label htmlFor="quantity">Quantity *</label>
             <input

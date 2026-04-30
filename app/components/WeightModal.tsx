@@ -53,13 +53,12 @@ export default function WeightModal({
           className="bg-white p-6 rounded-lg shadow-lg w-80"
           onClick={(e) => e.stopPropagation()}
         >
-          <h2 className="text-black text-xl font-bold mb-4">
-            {heading}
-          </h2>
+          <h2 className="text-black text-xl font-bold mb-4">{heading}</h2>
 
           <p className="mb-2 text-gray-900">{productName}</p>
 
           <input
+            id="weight"
             type="number"
             step="0.1"
             min="1"
@@ -97,7 +96,7 @@ export default function WeightModal({
                 onConfirm(weight);
                 onClose();
               }}
-              className="px-4 py-2 bg-blue-500 text-white rounded"
+              className="px-4 py-2 hover:bg-blue-600 bg-blue-500 text-white rounded"
             >
               Update
             </Button>
