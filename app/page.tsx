@@ -48,13 +48,14 @@ export default function Home() {
       </div>
 
       <div className="flex flex-col gap-4 mt-6 mx-auto items-center">
-        <label className="text-md text-gray-800 font-sans font-medium">
+        <label htmlFor="outletId" className="text-md text-gray-800 font-sans font-medium">
           Select your outlet to start selling
         </label>
         <select
+          id="outletId"
           value={outletId}
           onChange={(e) => setOutletId(e.target.value)}
-          className="shadow drop-shadow-md shadow-gray-500 p-2 text-normal text-left text-white bg-red-700 rounded-xl w-56 focus:outline-none focus:ring-2 focus:ring-red-800 transition"
+          className="shadow drop-shadow-md shadow-gray-500 p-2 text-sm font-medium text-center text-white bg-red-700 rounded-xl w-56 focus:outline-none focus:ring-2 focus:ring-red-800 transition"
         >
           {outlets.map((id) => (
             <option key={id} value={id} className="bg-red-50 text-gray-800">
