@@ -78,8 +78,6 @@ export const fetchProduct = async (barcode: string): Promise<Product> => {
     return data;
   } catch (error) {
     console.error("Error fetching product:", error);
-
-    alert("Product not found");
     throw new Error("Failed to fetch product");
   }
 };
