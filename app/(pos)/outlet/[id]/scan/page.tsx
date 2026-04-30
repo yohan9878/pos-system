@@ -67,13 +67,6 @@ export default function ScanPage() {
     setBarcode("");
   };
 
-  // const handlePay = () => {
-  //   const newInvoice = generateInvoiceNumber();
-  //   setInvoiceNo(newInvoice);
-
-  //   alert(`Payment Done\nInvoice: ${newInvoice}`);
-  // };
-
   // Quantity Hnadler
   const handleConfirmQty = (qty: number) => {
     if (!selectedProduct) return;
@@ -113,7 +106,7 @@ export default function ScanPage() {
       setCart(
         cart.map((item) =>
           item.barcode === selectedProduct.barcode
-            ? { ...item, value: item.value + weight } // 👈 reuse qty field as value
+            ? { ...item, value: item.value + weight } 
             : item,
         ),
       );
