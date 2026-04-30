@@ -17,7 +17,7 @@ export default function BarcodeInput({
 }: BarcodeInputProps) {
   useEffect(() => {
     inputRef.current?.focus();
-  }, []);
+  }, );
   return (
     <input
       id="barcode"
