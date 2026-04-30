@@ -51,10 +51,6 @@ export default function ReportPage() {
     (sum, item) => sum + (item.saleValue || 0),
     0,
   );
-  const totalPrice = salesItems.reduce(
-    (sum, item) => sum + (item.salePrice || 0),
-    0,
-  );
 
   return (
     <div className="text-black ">
