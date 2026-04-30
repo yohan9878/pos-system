@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import Button from "@/app/components/Button";
 import { getUser } from "@/app/services/authService";
 
 export default function LoginPage() {
@@ -27,13 +26,13 @@ export default function LoginPage() {
         <Image
           src="/weehenaLogo.png"
           alt="Weehena Farm Shop Logo"
-          width={50}
-          height={50}
-          className="mx-auto mb-2 size-10 bg-white rounded-full"
+          width={100}
+          height={100}
+          className="mx-auto mb-2 size-16 bg-white rounded-full"
         />
 
-        <h1 className="text-xl text-center text-red-900 font-semibold mb-4">
-          Office Login
+        <h1 className="text-xl text-center text-red-700 font-semibold mb-4">
+          Weehena Farm Shop
         </h1>
 
         <form
@@ -42,22 +41,23 @@ export default function LoginPage() {
         >
           <label
             htmlFor="username"
-            className="font-medium text-sm text-red-950"
+            className="font-medium text-sm text-gray-800"
           >
             Username
           </label>
           <input
             type="text"
             id="username"
-            placeholder="Username"
-            className="border rounded text-sm text-gray-800 w-full mb-2 p-2"
+            placeholder="Enter username"
+            className="border-0 bg-gray-200 rounded  text-sm text-gray-800 w-full mb-2 p-2"
             onChange={(e) => setUsername(e.target.value)}
             autoComplete="true"
+
           />
 
           <label
             htmlFor="password"
-            className="font-medium text-sm text-red-950"
+            className="font-medium text-sm text-gray-800"
           >
             Password
           </label>
@@ -65,23 +65,24 @@ export default function LoginPage() {
             type="password"
             id="password"
             name="password"
-            placeholder="Password"
-            className="border rounded text-sm text-gray-800 w-full mb-4 p-2"
+            placeholder="Enter password"
+            className="border-0 bg-gray-200 rounded text-sm text-gray-800 w-full mb-4 p-2"
             onChange={(e) => setPassword(e.target.value)}
           />
-          <div className="mx-auto w-fit flex flex-col gap-1">
+          <div className="mx-auto text-sm w-full flex flex-col gap-1">
             <button
               type="submit"
-              className="bg-blue-900 hover:bg-blue-700 rounded-lg text-white w-40 py-2"
+              className="bg-red-700 hover:bg-red-600 rounded-lg font-semibold text-white w-full py-2"
             >
               Login
             </button>
-            <Button
+            <button
+              type="button"
               onClick={() => router.push("/")}
-              className="bg-red-700 hover:bg-red-500 text-gray-800 w-40 py-2 mt-2 rounded-lg"
+              className="hover:text-red-700 hover:bg-red-50 text-red-600 font-semibold w-full py-2 mt-2 rounded-lg"
             >
-              Cancel
-            </Button>
+              back to home
+            </button>
           </div>
         </form>
       </div>
