@@ -67,7 +67,7 @@ export const addStock = async (stock: StockRequest) => {
 
 export const updateStock = async (id: number, body: StockUpdateRequest) => {
   const token = localStorage.getItem("token");
-  const res = await fetch(`http://localhost:8080/api/stock/${id}`, {
+  const res = await fetch(`${API_URL}/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
