@@ -51,6 +51,10 @@ export default function ReportPage() {
     (sum, item) => sum + (item.saleValue || 0),
     0,
   );
+  const totalPrice = salesItems.reduce(
+    (sum, item) => sum + (item.salePrice || 0),
+    0,
+  );
 
   return (
     <div className="text-black ">
@@ -59,6 +63,7 @@ export default function ReportPage() {
       {/* Controls */}
       <div className="flex gap-2 mb-10">
         <input
+          id="date"
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
@@ -66,6 +71,7 @@ export default function ReportPage() {
         />
 
         <select
+          id="outletId"
           value={outlet}
           onChange={(e) => setOutlet(e.target.value)}
           className="border-2 border-red-900 text-red-900 font-medium rounded p-2 "
@@ -135,7 +141,7 @@ export default function ReportPage() {
                     {item.itemName}
                   </td>
                   <td className="border text-center border-gray-800 text-gray-900 font-medium w-30 p-2">
-                    {item.saleQty}
+                    {item.saleQty?.toFixed(2)}
                   </td>
                   <td className="border text-right border-gray-800 text-gray-900 font-medium w-30 p-2">
                     {item.salePrice?.toFixed(2)}
@@ -151,48 +157,53 @@ export default function ReportPage() {
           <div className="text-gray-800 mt-6  font-semibold">
             <h1 className="text-lg">Sales Summary</h1>
           </div>
- 
 
-         
-            {reports.map((r, i) => (
-              <div
-                key={i}
-                className="w-fit p-4 rounded text-sm text-gray-900 font-medium mt-4"
-              >
-                <div className="grid grid-cols-2 gap-y-3 gap-x-6 text-sm">
-                  <span className="text-gray-700 font-semibold">Date :</span>
-                  <span className="text-gray-900 font-medium text-right">
-                    {r.date}
-                  </span>
+          {reports.map((r, i) => (
+            <div
+              key={i}
+              className="w-fit p-4 rounded text-sm text-gray-900 font-medium mt-4"
+            >
+              <div className="grid grid-cols-2 gap-y-3 gap-x-6 text-sm">
+                <span className="text-gray-700 font-semibold">Date :</span>
+                <span className="text-gray-900 font-medium text-right">
+                  {r.date}
+                </span>
 
-                  <span className="text-gray-700 font-semibold">Outlet :</span>
-                  <span className="text-gray-900 font-medium text-right">
-                    {r.outletId}
-                  </span>
+                <span className="text-gray-700 font-semibold">Outlet :</span>
+                <span className="text-gray-900 font-medium text-right">
+                  {r.outletId}
+                </span>
 
-                  <span className="text-gray-700 font-semibold">Transactions :</span>
-                  <span className="text-gray-900 font-medium text-right">
-                    {r.totalTransactions}
-                  </span>
+                <span className="text-gray-700 font-semibold">
+                  Transactions :
+                </span>
+                <span className="text-gray-900 font-medium text-right">
+                  {r.totalTransactions}
+                </span>
 
-                  <span className="text-gray-700 font-semibold">Total Sales (LKR) :</span>
-                  <span className="text-gray-900 font-medium text-right">
-                    {totalValue.toFixed(2)}
-                  </span>
+                <span className="text-gray-700 font-semibold">
+                  Total Sale Value (LKR) :
+                </span>
+                <span className="text-gray-900 font-medium text-right">
+                  {totalValue.toFixed(2)}
+                </span>
 
-                  <span className="text-gray-700 font-semibold">Discount (LKR) :</span>
-                  <span className="text-gray-900 font-medium text-right">
-                    {r.discountAmount?.toFixed(2)}
-                  </span>
+                <span className="text-gray-700 font-semibold">
+                  Discount (LKR) :
+                </span>
+                <span className="text-gray-900 font-medium text-right">
+                  {r.discountAmount?.toFixed(2)}
+                </span>
 
-                  <span className="text-gray-700 font-semibold">Net Sales (LKR) :</span>
-                  <span className="text-gray-900 font-medium text-right">
-                    {r.totalSales?.toFixed(2)}
-                  </span>
-                </div>
+                <span className="text-gray-700 font-semibold">
+                  Net Sales (LKR) :
+                </span>
+                <span className="text-gray-900 font-medium text-right">
+                  {r.totalSales?.toFixed(2)}
+                </span>
               </div>
-            ))}
-          
+            </div>
+          ))}
         </div>
       )}
 
