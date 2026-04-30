@@ -14,7 +14,6 @@ export default function AuthGuard({ children }: AuthGuardProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       const token = localStorage.getItem("token");
-      // const user = localStorage.getItem("user");
 
       if (!token) {
         router.push("/auth/login");
@@ -27,7 +26,13 @@ export default function AuthGuard({ children }: AuthGuardProps) {
   }, [router]); // The dependency array includes router to ensure the effect runs when the component mounts and when the router changes.
 
   if (loading) {
-    return <p className="text-center mt-10">Checking authentication...</p>;
+    return (
+      <div className="flex h-screen items-center justify-center bg-white">
+        <p className="text-center font-semibold text-red-900 ">
+          Checking authentication...
+        </p>
+      </div>
+    );
   }
   return children;
 }
