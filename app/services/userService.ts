@@ -1,0 +1,25 @@
+import { jwtDecode } from "jwt-decode";
+
+type JwtPayload = {
+  sub?: string;     // username (Spring default)
+  username?: string;
+  role?: string;
+  roles?: string[];
+};
+
+export const getUserFromToken = () => {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+
+  try {
+    const decoded = jwtDecode<JwtPayload>(token);
+
+    return {
+      username: decoded.sub || decoded.username,
+      role: decoded.role || decoded.roles?.[0],
+    };
+  } catch (err) {
+    console.error("Invalid token", err);
+    return null;
+  }
+};
