@@ -13,10 +13,12 @@ export interface SaleData {
 }
 
 export const processSale = async (saleData: SaleData) => {
+  const token = localStorage.getItem("token");
   const response = await fetch(`${BASE_URL}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(saleData),
   });

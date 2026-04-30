@@ -62,6 +62,7 @@ export default function DiscountModal({ isOpen, onClose, onApply }: Props) {
 
         <div className="flex gap-2 mb-4">
           <input
+            id="discount"
             type="number"
             value={discount}
             onChange={(e) => setDiscount(e.target.value)}
@@ -74,6 +75,7 @@ export default function DiscountModal({ isOpen, onClose, onApply }: Props) {
           />
 
           <select
+            id="discountType"
             value={type}
             onChange={(e) => setType(e.target.value as "percentage" | "fixed")}
             className="p-2 border rounded"
@@ -84,11 +86,15 @@ export default function DiscountModal({ isOpen, onClose, onApply }: Props) {
         </div>
 
         <div className="flex justify-end gap-2">
-          <Button onClick={onClose} className="bg-red-500 hover:bg-red-600 rounded">
+          <Button
+            onClick={onClose}
+            className="bg-red-500 hover:bg-red-600 rounded"
+          >
             Cancel
           </Button>
 
           <button
+            type="button"
             onClick={handleApply}
             className="px-4 py-2 bg-yellow-500 hover:bg-amber-400 text-white rounded"
           >

@@ -12,7 +12,7 @@ interface Props {
 export default async function ScanLayout ({ children, params }: Props) {
   const { id } = await params;
   return (
-    <div className="min-h-full">
+    <div className="min-h-full w-full">
       {/* Optional Header */}
       <div className="flex gap-2 bg-red-700 text-xl text-white p-4 font-semibold">
         <Link href="/" className="flex items-center gap-2">

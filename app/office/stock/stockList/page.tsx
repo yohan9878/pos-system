@@ -11,19 +11,15 @@ import QuantityModal from "@/app/components/QuantityModal";
 import Button from "@/app/components/Button";
 import WeightModal from "@/app/components/WeightModal";
 import StockForm from "@/app/components/StockForm";
+import { getUserFromToken } from "@/app/services/userService";
 
 export default function StockPage() {
   const [stockList, setStockList] = useState<StockItem[]>([]);
   const [search, setSearch] = useState("");
-
   const [formOpen, setFormOpen] = useState(false);
-
   const [selectedStock, setSelectedStock] = useState<StockItem | null>(null);
-
   const [modalOpen, setModalOpen] = useState(false);
-
   const [weightModalOpen, setWeightModalOpen] = useState(false);
-
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Load stock from backend
@@ -86,9 +82,16 @@ export default function StockPage() {
     if (!selectedStock) return;
 
     try {
+      const user = getUserFromToken();
+
+      if (!user || !user.role) {
+        alert("User not logged in");
+        return;
+      }
+
       await updateStock(selectedStock.id, {
         value: value,
-        user: "admin",// later from login
+        user: user.role,
       });
 
       setModalOpen(false);
@@ -103,9 +106,16 @@ export default function StockPage() {
     if (!selectedStock) return;
 
     try {
+      const user = getUserFromToken();
+
+      if (!user || !user.role) {
+        alert("User not logged in");
+        return;
+      }
+
       await updateStock(selectedStock.id, {
         value: value,
-        user: "admin",
+        user: user.role,
       });
 
       setWeightModalOpen(false);
@@ -124,6 +134,7 @@ export default function StockPage() {
       <div className="">
         {/* Search */}
         <input
+          id="search"
           placeholder="Search by barcode, product name or outlet ID"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -156,7 +167,9 @@ export default function StockPage() {
       <table className="w-full border border-gray-300 text-xs">
         <thead>
           <tr className="bg-red-50">
-            <th className="text-left text-red-900 w-30 p-2">Barcode</th>
+            <th className="text-left text-red-900 w-40 p-2">
+              Barcode
+            </th>
             <th className="text-left text-red-900 w-90 p-2">Product</th>
             <th className="text-center text-red-900 w-30 p-2">Quantity</th>
             <th className="text-center text-red-900 w-30 p-2 mx-auto">
@@ -180,15 +193,15 @@ export default function StockPage() {
               key={item.id}
               className={`${item.weight < item.lowStockThresholdWeight ? "bg-red-300" : ""} ${item.quantity < item.lowStockThresholdQty ? "bg-red-300" : ""} border border-gray-300`}
             >
-              <td className="text-left text-gray-800 font-medium p-2">
+              <td className="text-left text-gray-800 font-medium p-2 w-40">
                 {item.barcode}
               </td>
-              <td className=" text-gray-800 font-medium p-2">
+              <td className=" text-gray-800 font-medium p-2 w-90">
                 {item.productName}
               </td>
 
               {/* Editable Quantity */}
-              <td className="border-gray-800 p-2">
+              <td className="border-gray-800 p-2 w-30">
                 <div
                   onClick={() => {
                     if (!item.weighted) {
@@ -204,7 +217,7 @@ export default function StockPage() {
                   {item.quantity ? item.quantity : "N/A"}
                 </div>
               </td>
-              <td className="p-2">
+              <td className="p-2 w-30">
                 <div
                   onClick={() => {
                     if (item.weighted) {
@@ -221,19 +234,19 @@ export default function StockPage() {
                 </div>
               </td>
 
-              <td className="  text-center text-gray-800 font-medium p-2">
+              <td className="  text-center text-gray-800 font-medium p-2 w-30">
                 {item.outletId}
               </td>
-              <td className="  text-center text-gray-800 font-medium p-2">
+              <td className="  text-center text-gray-800 font-medium p-2 w-40">
                 {item.lowStockThresholdQty ? item.lowStockThresholdQty : "N/A"}
               </td>
-              <td className="  text-center text-gray-800 font-medium  p-2">
+              <td className="  text-center text-gray-800 font-medium  p-2 w-40">
                 {item.lowStockThresholdWeight
                   ? item.lowStockThresholdWeight.toFixed(2)
                   : "N/A"}
               </td>
 
-              <td className="  p-2">
+              <td className="w-20  p-2">
                 <Button
                   onClick={() => handleDelete(item.id)}
                   className=" bg-red-800 text-white  rounded hover:bg-red-700"

@@ -103,7 +103,7 @@ export default function ProductPage() {
             <th className="text-red-900 text-right p-2 w-30">Retail Price</th>
             <th className="text-red-900 text-right p-2 w-30">Pack Price</th>
             <th className="text-red-900 text-right p-2 w-30">Price per Kg</th>
-            <th className="text-red-900 p-2 w-38">Action</th>
+            <th className="text-red-900 p-2 w-fit ">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -123,10 +123,10 @@ export default function ProductPage() {
               <td className="text-gray-950 font-medium p-2 text-right">
                 {p.pricePerKg ? p.pricePerKg.toFixed(2) : "N/A"}
               </td>
-              <td className="text-gray-950 font-medium p-2 text-center w-fit">
+              <td className="text-gray-950 font-medium p-2 text-right">
                 <Button
                   onClick={() => handleDelete(p.id)}
-                  className="bg-red-900 hover:bg-red-700 text-white ml-4"
+                  className=" bg-red-900 hover:bg-red-700 text-white rounded"
                 >
                   Delete
                 </Button>

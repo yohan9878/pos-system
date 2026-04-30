@@ -23,7 +23,12 @@ export const getDailyReport = async (date: string, outletId?: string) => {
     url += `&outletId=${outletId}`;
   }
 
-  const res = await fetch(url);
+  const token = localStorage.getItem("token");
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   if (!res.ok) {
     throw new Error("Failed to fetch report");
@@ -42,7 +47,12 @@ export const getSoldItems = async (
     url += `&outletId=${outletId}`;
   }
 
-  const res = await fetch(url);
+  const token = localStorage.getItem("token");
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   if (!res.ok) {
     throw new Error("Failed to fetch sold items");

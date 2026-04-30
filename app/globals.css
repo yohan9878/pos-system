@@ -10,7 +10,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-poppins:  Poppins, sans-serif;;
+  --font-poppins: Poppins, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -25,7 +25,8 @@
     visibility: hidden;
   }
 
-  #invoice, #invoice * {
+  #invoice,
+  #invoice * {
     visibility: visible;
   }
 
@@ -36,9 +37,9 @@
     width: 80mm;
   }
 
-   @page {
-    size: 80mm auto;
-    margin:0;
+  @page {
+    size: 80mm;
+    margin: 0;
   }
 }
 
@@ -47,7 +48,8 @@
     visibility: hidden;
   }
 
-  #report, #report * {
+  #report,
+  #report * {
     visibility: visible;
   }
 
@@ -68,5 +70,4 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: poppins;
-
 }
