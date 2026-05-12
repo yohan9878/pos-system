@@ -31,6 +31,7 @@ export interface StockRequest {
   outletId: string;
   quantity: number | "";
   weight: number | "";
+  user:string
 }
 
 export interface StockUpdateRequest {

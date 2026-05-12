@@ -5,6 +5,7 @@ import Form from "next/form";
 import Button from "./Button";
 import { addStock, StockRequest } from "../services/stockService";
 import { fetchProduct } from "../services/productService";
+import { getUserFromToken } from "../services/userService";
 
 export default function ProductForm({
   isOpen,
@@ -24,6 +25,7 @@ export default function ProductForm({
     outletId: "",
     quantity: "",
     weight: "",
+    user: "",
   });
 
   const [product, setProduct] = useState<{
@@ -100,6 +102,12 @@ export default function ProductForm({
   };
 
   const handleAddStock = async (data: FormData) => {
+    const user = getUserFromToken();
+
+    if (!user || !user.role) {
+      alert("User not logged in");
+      return;
+    }
     const stock: StockRequest = {
       barcode: data.get("barcode") as number | "",
       lowStockThresholdQty:
@@ -109,6 +117,7 @@ export default function ProductForm({
       outletId: (data.get("outletId") as string) || "",
       quantity: parseFloat(data.get("quantity") as string) || 0,
       weight: parseFloat(data.get("weight") as string) || 0,
+      user: user.role,
     };
     if (!stock.barcode || !stock.outletId) {
       alert("Please fill in all required fields with valid values.");
@@ -122,6 +131,7 @@ export default function ProductForm({
       outletId: stock.outletId,
       quantity: stock.quantity,
       weight: stock.weight,
+      user: stock.user,
     };
 
     try {
@@ -134,6 +144,7 @@ export default function ProductForm({
         outletId: "",
         quantity: 0,
         weight: 0,
+        user: stock.user,
       });
       alert("Stock added successfully!");
       onAddSuccess?.();
@@ -154,6 +165,7 @@ export default function ProductForm({
         outletId: "",
         quantity: "",
         weight: "",
+        user: "",
       });
   }, [isOpen]);
 
@@ -213,7 +225,9 @@ export default function ProductForm({
               onChange={handleChange}
               className="w-full bg-red-50 p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
             >
-              <option value="" hidden>Select Outlet</option>
+              <option value="" hidden>
+                Select Outlet
+              </option>
               <option value="Katunayake">Katunayake</option>
               {/* <option value="outlet2">Outlet 2</option> */}
             </select>
