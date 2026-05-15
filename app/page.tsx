@@ -69,8 +69,12 @@ export default function Home() {
             outletId ? "hover:bg-red-600" : "cursor-not-allowed opacity-50"
           }`}
         >
-          {outletId ? `Go to POS (${outletId})` : "No outlet available"}
+          {outletId ? `Go to Shop (${outletId})` : "No outlet available"}
         </Link>
+
+        <label htmlFor="outletId" className="text-md mt-10 text-gray-800 font-sans font-medium">
+          Log in to office dashboard
+        </label>
         <Link
           href="/office/products"
           className="w-56 text-center shadow drop-shadow-lg shadow-gray-600 bg-red-700 text-sm hover:bg-red-600 font-medium text-white px-6 py-3 rounded-xl"

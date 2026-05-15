@@ -27,7 +27,7 @@ export default function OfficeLayout({ children }: Props) {
       children: [
         { name: "Stock List", path: "/stock/stockList" },
         { name: "Stock Update History", path: "/stock/history" },
-        { name: "Stock Sales History", path: "/stock/saleHistory" },
+        { name: "Stock Update On Sale", path: "/stock/saleHistory" },
       ],
     },
     { name: "Reports", path: "/reports" },
