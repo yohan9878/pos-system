@@ -78,7 +78,7 @@ export default function StockPage() {
       item.outletId?.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const handleConfirmValue = async (value: number) => {
+  const handleConfirmValueForQty = async (value: number) => {
     if (!selectedStock) return;
 
     try {
@@ -246,10 +246,10 @@ export default function StockPage() {
                   : "N/A"}
               </td>
 
-              <td className="w-20  p-2">
+              <td className="w-20 p-2">
                 <Button
                   onClick={() => handleDelete(item.id)}
-                  className=" bg-red-800 text-white  rounded hover:bg-red-700"
+                  className=" bg-red-800 text-white mx-auto  rounded hover:bg-red-700"
                 >
                   Delete
                 </Button>
@@ -284,7 +284,7 @@ export default function StockPage() {
                 inputRef.current?.focus();
               }, 0);
             }}
-            onConfirm={handleConfirmValue}
+            onConfirm={handleConfirmValueForQty}
             initialQty={null}
             productName={selectedStock ? selectedStock.productName : ""}
             heading="Update Stock Quantity"
