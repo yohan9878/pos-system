@@ -36,7 +36,7 @@ export default function Receipt({
   return (
     isClient && (
       <div
-        id="invoice"
+        id="receipt-print"
         className="receipt mx-auto bg-white w-75.5 max-w-sm text-black text-[12px] font-mono font-stretch-condensed p-4 border shadow"
       >
         {/* Header */}
@@ -94,7 +94,7 @@ export default function Receipt({
         {/* Footer */}
         <div className="text-center font-bold">
           <p>Thank You!</p>
-          <p>Come Again 🙏</p>
+          <p>Come Again</p>
         </div>
       </div>
     )
