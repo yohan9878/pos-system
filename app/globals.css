@@ -25,35 +25,31 @@
     visibility: hidden;
   }
 
-  #invoice,
-  #invoice * {
+  body.printing-receipt #receipt-print,
+  body.printing-receipt #receipt-print * {
     visibility: visible;
   }
 
-  #invoice {
+  body.printing-receipt #receipt-print {
     position: absolute;
     left: 0;
     top: 0;
-    width: 80mm;
+    bottom: 0;
+    width:100%;
+    
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
   }
 
-  @page {
-    size: 80mm;
-    margin: 0;
-  }
-}
-
-@media print {
-  body * {
-    visibility: hidden;
-  }
-
-  #report,
-  #report * {
+  body.printing-report #report-print,
+  body.printing-report #report-print * {
     visibility: visible;
   }
 
-  #report {
+  body.printing-report #report-print {
     position: absolute;
     left: 0;
     top: 0;
