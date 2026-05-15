@@ -1,20 +1,22 @@
+import { SoldItemReport } from "../types/Report";
+
 const BASE_URL = "http://localhost:8080/api/reports";
 
-export interface reportData {
-  date: string;
-  outletId: string;
-  discountAmount: number,
-  totalSales: number;
-  totalTransactions: number;
-}
+// export interface reportData {
+//   date: string;
+//   outletId: string;
+//   discountAmount: number,
+//   totalSales: number;
+//   totalTransactions: number;
+// }
 
-export interface SoldItemReport {
-  barcode: string;
-  itemName: string;
-  saleQty: number;
-  salePrice: number;
-  saleValue: number;
-}
+// export interface SoldItemReport {
+//   barcode: string;
+//   itemName: string;
+//   saleQty: number;
+//   salePrice: number;
+//   saleValue: number;
+// }
 
 export const getDailyReport = async (date: string, outletId?: string) => {
   let url = `${BASE_URL}/daily?date=${date}`;
