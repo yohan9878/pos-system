@@ -3,9 +3,10 @@
 import { useEffect, useEffectEvent, useState } from "react";
 import Form from "next/form";
 import Button from "./Button";
-import { addStock, StockRequest } from "../services/stockService";
+import { addStock } from "../services/stockService";
 import { fetchProduct } from "../services/productService";
 import { getUserFromToken } from "../services/userService";
+import { StockRequest } from "../types/Stock";
 
 export default function ProductForm({
   isOpen,
@@ -293,7 +294,7 @@ export default function ProductForm({
             <div className="flex justify-center gap-2 mt-4">
               <button
                 type="submit"
-                className="px-8 py-2 w-1/2 text-white rounded transition bg-green-900 hover:bg-green-700"
+                className="px-8 py-2 w-1/2 text-white rounded transition bg-green-900 hover:bg-green-800"
               >
                 Add
               </button>
@@ -303,7 +304,7 @@ export default function ProductForm({
                   setProductError("");
                   onClose();
                 }}
-                className="w-1/2 bg-red-500 hover:bg-red-600 rounded"
+                className="w-1/2 bg-red-600 hover:bg-red-500 rounded"
               >
                 Cancel
               </Button>
