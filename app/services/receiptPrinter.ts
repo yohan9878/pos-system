@@ -1,21 +1,6 @@
 import qz, { CreatePrinterInput } from "qz-tray";
 import { ReceiptData } from "../types/Receipt";
-
-// interface CartItem {
-//   name: string;
-//   value: number;
-//   weighted: boolean;
-//   pricePerKg: number;
-//   packPrice: number;
-// }
-
-// interface ReceiptData {
-//   cart: CartItem[];
-//   subtotal: number;
-//   discountAmount: number;
-//   total: number;
-//   invoiceNo: string;
-// }
+import { getUserFromToken } from "./userService";
 
 function normalizePrinterName(rawPrinterName: string | CreatePrinterInput) {
   if (Array.isArray(rawPrinterName)) {
@@ -28,6 +13,7 @@ export async function printReceipt(
   data: ReceiptData,
   rawPrinterName: string | CreatePrinterInput,
 ) {
+  const user = getUserFromToken();
   try {
     // connect to QZ
     if (!qz.websocket.isActive()) {
@@ -67,7 +53,7 @@ export async function printReceipt(
     receipt += CENTER;
     receipt += BOLD_ON;
     receipt += "\n\n\n";
-   
+
     receipt += GS + "!" + "\x10";
     receipt += "WEEHENA FARM SHOP\n";
     receipt += BOLD_OFF;
@@ -76,13 +62,13 @@ export async function printReceipt(
 
     receipt += "Katunayake\n";
     receipt += "Tel: 077-1234567\n\n\n";
-    
 
     // Invoice
     receipt += "------------------------------------------------\n\n";
     receipt += LEFT;
     receipt += `Invoice: ${data.invoiceNo}\n\n`;
     receipt += `Date: ${date}\n\n`;
+    receipt += `Cashier : ${user?.username}\n\n`;
     receipt += "------------------------------------------------\n\n\n\n";
 
     receipt += "ITEM                     QTY     PRICE   TOTAL\n";
@@ -119,17 +105,14 @@ export async function printReceipt(
     receipt += LEFT;
 
     receipt +=
-      "SUBTOTAL".padEnd(13) +
-      data.subtotal.toFixed(2).padStart(10) +
-      "\n";
+      "SUBTOTAL".padEnd(13) + data.subtotal.toFixed(2).padStart(10) + "\n";
 
     receipt +=
       "DISCOUNT".padEnd(13) +
       data.discountAmount.toFixed(2).padStart(10) +
       "\n";
 
-    receipt +=
-      "TOTAL".padEnd(13) + data.total.toFixed(2).padStart(10) + "\n\n";
+    receipt += "TOTAL".padEnd(13) + data.total.toFixed(2).padStart(10) + "\n\n";
 
     receipt += GS + "!" + "\x00";
     receipt += "------------------------------------------------\n\n\n";
@@ -143,10 +126,44 @@ export async function printReceipt(
     // Cut
     receipt += CUT;
 
-    await qz.print(config, [receipt]);
+    // const logo: PrintData = {
+    //   type: "pixel",
+    //   format: "image",
+    //   flavor: "base64",
+    //   data: await imageToBase64("/weehenaLogo.png"),
+    //   options: {
+    //     language: "ESCPOS" as const,
+    //     dotDensity: "double" as const,
+    //   },
+    // };
+
+    // const textData: PrintData = {
+    //   type: "raw",
+    //   format: "command",
+    //   flavor: "plain",
+    //   data: receipt,
+    // };
+    // await qz.print(config, [logo, textData]);
+
+    await qz.print(config,[receipt]);
 
     console.log("Printed successfully");
   } catch (error) {
     console.error(error);
   }
 }
+
+// async function imageToBase64(path: string): Promise<string> {
+//   const response = await fetch(path);
+//   const blob = await response.blob();
+
+//   return new Promise((resolve) => {
+//     const reader = new FileReader();
+
+//     reader.onloadend = () => {
+//       resolve(reader.result as string);
+//     };
+
+//     reader.readAsDataURL(blob);
+//   });
+// }
