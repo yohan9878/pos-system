@@ -8,10 +8,12 @@ export interface JwtPayload {
 }
 
 export const getUserFromToken = () => {
-  const token = localStorage.getItem("token");
-  if (!token) return null;
-
   try {
+    if (typeof window === "undefined") {
+      return null;
+    }
+    const token = localStorage.getItem("token");
+    if (!token) return null;
     const decoded = jwtDecode<JwtPayload>(token);
     // return jwtDecode<JwtPayload>(token);
     return {
