@@ -1,16 +1,18 @@
+import { SaleData } from "../types/Sale";
+
 const BASE_URL = "http://localhost:8080/api/sales";
 
-export interface SaleData {
-  date: string;
-  invoiceNo: string;
-  outletId: string;
-  discountAmount: number;
-  items: {
-    barcode: string;
-    value: number;
-    priceType: string;
-  }[];
-}
+// export interface SaleData {
+//   date: string;
+//   invoiceNo:string;
+//   outletId: string;
+//   discountAmount: number;
+//   items: {
+//     barcode: string;
+//     value: number;
+//     priceType: string;
+//   }[];
+// }
 
 export const processSale = async (saleData: SaleData) => {
   const token = localStorage.getItem("token");

@@ -1,27 +1,28 @@
 import { Product } from "../types";
+import { ProductItems, ProductRequest } from "../types/Product";
 
 const BASE_URL = "http://localhost:8080/api/products";
 
-export interface ProductItems {
-  id: number;
-  name: string;
-  barcode: number;
-  bulkPrice: number;
-  retailPrice: number;
-  packPrice: number;
-  pricePerKg: number;
-  weighted: boolean;
-}
+// export interface ProductItems {
+//   id: number;
+//   name: string;
+//   barcode: number;
+//   bulkPrice: number;
+//   retailPrice: number;
+//   packPrice: number;
+//   pricePerKg: number;
+//   weighted: boolean;
+// }
 
-export interface ProductRequest {
-  name: string;
-  barcode: number | "";
-  bulkPrice: number | "";
-  retailPrice: number | "";
-  packPrice: number | "";
-  pricePerKg: number | "";
-  weighted: boolean | "";
-}
+// export interface ProductRequest {
+//   name: string;
+//   barcode: number | "";
+//   bulkPrice: number | "";
+//   retailPrice: number | "";
+//   packPrice: number | "";
+//   pricePerKg: number | "";
+//   weighted: boolean | "";
+// }
 
 // Get all products
 export const getProducts = async (): Promise<ProductItems[]> => {

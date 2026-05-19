@@ -1,19 +1,21 @@
 import { jwtDecode } from "jwt-decode";
 
-type JwtPayload = {
-  sub?: string;     // username (Spring default)
+export interface JwtPayload {
+  sub?: string; // username (Spring default)
   username?: string;
   role?: string;
   roles?: string[];
-};
+}
 
 export const getUserFromToken = () => {
-  const token = localStorage.getItem("token");
-  if (!token) return null;
-
   try {
+    if (typeof window === "undefined") {
+      return null;
+    }
+    const token = localStorage.getItem("token");
+    if (!token) return null;
     const decoded = jwtDecode<JwtPayload>(token);
-
+    // return jwtDecode<JwtPayload>(token);
     return {
       username: decoded.sub || decoded.username,
       role: decoded.role || decoded.roles?.[0],
@@ -23,3 +25,7 @@ export const getUserFromToken = () => {
     return null;
   }
 };
+
+// export const logout = () => {
+//   localStorage.removeItem("token");
+// };

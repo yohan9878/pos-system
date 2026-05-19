@@ -1,14 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  getDailyReport,
-  getSoldItems,
-  reportData,
-  SoldItemReport,
-} from "@/app/services/reportService";
+import { getDailyReport, getSoldItems } from "@/app/services/reportService";
 import Button from "@/app/components/Button";
 import { getStock } from "@/app/services/stockService";
+import { reportData, SoldItemReport } from "@/app/types/Report";
 
 export default function ReportPage() {
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
@@ -52,6 +48,12 @@ export default function ReportPage() {
     0,
   );
 
+  const printReport = () => {
+    document.body.classList.add("printing-report");
+    window.print();
+    document.body.classList.remove("printing-report");
+  };
+
   return (
     <div className="text-black ">
       <h1 className="text-xl text-red-950 font-bold mb-4">Daily Reports</h1>
@@ -92,7 +94,7 @@ export default function ReportPage() {
 
       {/* Table */}
       {!loading && reports.length > 0 && salesItems.length > 0 && (
-        <div id="report" className="mx-auto rounded">
+        <div id="report-print" className="mx-auto rounded">
           <div className="text-gray-800 my-5 font-semibold">
             <h1 className="text-2xl">
               Sales Report of {outlet || "All Outlets"}
@@ -211,7 +213,7 @@ export default function ReportPage() {
       {/* Print */}
       {reports.length > 0 && salesItems.length > 0 && (
         <Button
-          onClick={() => window.print()}
+          onClick={printReport}
           className="mt-4 print:hidden bg-green-800 hover:bg-green-700 text-white px-4 py-2"
         >
           Print Report

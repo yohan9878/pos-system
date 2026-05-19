@@ -5,8 +5,8 @@ import ProductForm from "@/app/components/ProductForm";
 import {
   deleteProduct,
   getProducts,
-  ProductItems,
 } from "@/app/services/productService";
+import { ProductItems } from "@/app/types/Product";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 
 export default function ProductPage() {

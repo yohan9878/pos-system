@@ -72,7 +72,6 @@ export default function QuantityModal({
                 onClose();
               }
 
-              // Optional: ESC to close
               if (e.key === "Escape") {
                 onClose();
               }

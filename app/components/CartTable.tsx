@@ -28,7 +28,7 @@ export default function CartTable({ cart, onDelete }: Props) {
               Barcode
             </th>
             <th className="border text-sm font-medium border-gray-400 p-2 w-100">
-               Item Name
+              Item Name
             </th>
             <th className="border text-sm font-medium border-gray-400 p-2 w-40">Qty</th>
             <th className="border text-sm font-medium border-gray-400 p-2 w-40">
@@ -65,7 +65,6 @@ export default function CartTable({ cart, onDelete }: Props) {
                 {item.weighted
                   ? (item.pricePerKg * item.value).toFixed(2)
                   : (item.packPrice * item.value).toFixed(2)}
-                {/* {(item.packPrice * item.value).toFixed(2)} */}
               </td>
               <td className="border text-sm text-gray-700 border-gray-400 p-2 text-center">
                 <button

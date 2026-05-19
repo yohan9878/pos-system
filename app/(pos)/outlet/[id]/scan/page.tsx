@@ -16,6 +16,7 @@ import generateInvoiceNumber from "@/app/utils/generateInvoiceNumber";
 import { processSale } from "@/app/services/saleService";
 import { useParams } from "next/navigation";
 import WeightModal from "@/app/components/WeightModal";
+import { printReceipt } from "@/app/services/receiptPrinter";
 
 export default function ScanPage() {
   const [barcode, setBarcode] = useState<string>("");
@@ -106,7 +107,7 @@ export default function ScanPage() {
       setCart(
         cart.map((item) =>
           item.barcode === selectedProduct.barcode
-            ? { ...item, value: item.value + weight } 
+            ? { ...item, value: item.value + weight }
             : item,
         ),
       );
@@ -130,10 +131,10 @@ export default function ScanPage() {
 
   const buildSaleRequest = () => {
     return {
-      invoiceNo: `INV-${Date.now()}`,
+      invoiceNo: generateInvoiceNumber(),
       outletId: outletId,
       date: new Date().toLocaleDateString(),
-      discountAmount:discountAmount,
+      discountAmount: discountAmount,
       items: cart.map((item) => ({
         barcode: item.barcode,
         value: item.value,
@@ -152,9 +153,20 @@ export default function ScanPage() {
 
       await processSale(saleData);
 
-      const newInvoice = generateInvoiceNumber();
+      const newInvoice = saleData.invoiceNo;
       setInvoiceNo(newInvoice);
+      console.log(invoiceNo)
       alert(`Payment Done\nInvoice: ${newInvoice}`);
+      await printReceipt(
+        {
+          cart,
+          subtotal,
+          discountAmount,
+          total,
+          invoiceNo: saleData.invoiceNo,
+        },
+        "BIXOLON SPP-R310",
+      );
     } catch (error: unknown) {
       console.error(error);
       alert("Payment Failed ❌ " + (error as Error).message);
@@ -163,8 +175,14 @@ export default function ScanPage() {
     }
   };
 
+  // const printInvoice = () => {
+  //   document.body.classList.add("printing-receipt");
+  //   window.print();
+  //   document.body.classList.remove("printing-receipt");
+  // };
+
   return (
-    <div className="p-6 max-w-4xl mx-auto font-poppins">
+    <div className="not-print p-6 max-w-4xl mx-auto font-poppins">
       <BarcodeInput
         barcode={barcode}
         setBarcode={setBarcode}
@@ -199,12 +217,12 @@ export default function ScanPage() {
         >
           Discount
         </Button>
-        <Button
-          onClick={() => window.print()}
+        {/* <Button
+          onClick={printInvoice}
           className="mt-4 mr-3 bg-green-800 hover:bg-green-700 text-white print:hidden"
         >
           Print Invoice
-        </Button>
+        </Button> */}
         <Button
           onClick={() => {
             setCart([]);
@@ -251,8 +269,10 @@ export default function ScanPage() {
         onClose={() => setDiscountModalOpen(false)}
         onApply={handleApplyDiscount}
       />
-
-      <div className=" flex flex-col items-center invoice-print">
+      <div
+        id="receipt-print"
+        className="flex flex-col items-center receipt-print"
+      >
         <Receipt
           cart={cart}
           invoiceNo={invoiceNo}

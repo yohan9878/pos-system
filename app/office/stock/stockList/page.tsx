@@ -5,13 +5,13 @@ import {
   getStock,
   updateStock,
   deleteStock,
-  StockItem,
 } from "@/app/services/stockService";
 import QuantityModal from "@/app/components/QuantityModal";
 import Button from "@/app/components/Button";
 import WeightModal from "@/app/components/WeightModal";
 import StockForm from "@/app/components/StockForm";
 import { getUserFromToken } from "@/app/services/userService";
+import { StockItem } from "@/app/types/Stock";
 
 export default function StockPage() {
   const [stockList, setStockList] = useState<StockItem[]>([]);
@@ -78,7 +78,7 @@ export default function StockPage() {
       item.outletId?.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const handleConfirmValue = async (value: number) => {
+  const handleConfirmValueForQty = async (value: number) => {
     if (!selectedStock) return;
 
     try {
@@ -246,10 +246,10 @@ export default function StockPage() {
                   : "N/A"}
               </td>
 
-              <td className="w-20  p-2">
+              <td className="w-20 p-2">
                 <Button
                   onClick={() => handleDelete(item.id)}
-                  className=" bg-red-800 text-white  rounded hover:bg-red-700"
+                  className=" bg-red-800 text-white mx-auto  rounded hover:bg-red-700"
                 >
                   Delete
                 </Button>
@@ -284,7 +284,7 @@ export default function StockPage() {
                 inputRef.current?.focus();
               }, 0);
             }}
-            onConfirm={handleConfirmValue}
+            onConfirm={handleConfirmValueForQty}
             initialQty={null}
             productName={selectedStock ? selectedStock.productName : ""}
             heading="Update Stock Quantity"

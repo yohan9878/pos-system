@@ -1,6 +1,6 @@
 "use client";
 
-import { StockHistoryItem } from "@/app/services/stockService";
+import { StockHistoryItem } from "@/app/types/Stock";
 import { useEffect, useEffectEvent, useState } from "react";
 
 export default function HistoryPage() {
@@ -65,7 +65,7 @@ export default function HistoryPage() {
             <th className="border-gray-800 text-left text-red-900 w-20 p-2">
               User
             </th>
-            <th className="border-gray-800 text-left text-red-900 w-36 p-2">
+            <th className="border-gray-800 text-left text-red-900 w-40 p-2">
               Date
             </th>
           </tr>

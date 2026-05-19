@@ -2,8 +2,9 @@
 
 import { useEffect, useEffectEvent, useState } from "react";
 import Form from "next/form";
-import { addProduct, ProductRequest } from "../services/productService";
+import { addProduct } from "../services/productService";
 import Button from "./Button";
+import { ProductRequest } from "../types/Product";
 
 export default function ProductForm({
   isOpen,
