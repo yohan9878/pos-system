@@ -5,13 +5,13 @@ import {
   getStock,
   updateStock,
   deleteStock,
-  StockItem,
 } from "@/app/services/stockService";
 import QuantityModal from "@/app/components/QuantityModal";
 import Button from "@/app/components/Button";
 import WeightModal from "@/app/components/WeightModal";
 import StockForm from "@/app/components/StockForm";
 import { getUserFromToken } from "@/app/services/userService";
+import { StockItem } from "@/app/types/Stock";
 
 export default function StockPage() {
   const [stockList, setStockList] = useState<StockItem[]>([]);
