@@ -1,22 +1,10 @@
 import { SaleData } from "../types/Sale";
 
-const BASE_URL = "http://localhost:8080/api/sales";
-
-// export interface SaleData {
-//   date: string;
-//   invoiceNo:string;
-//   outletId: string;
-//   discountAmount: number;
-//   items: {
-//     barcode: string;
-//     value: number;
-//     priceType: string;
-//   }[];
-// }
+const API_URL = "http://localhost:8080/api/sales";
 
 export const processSale = async (saleData: SaleData) => {
   const token = localStorage.getItem("token");
-  const response = await fetch(`${BASE_URL}`, {
+  const response = await fetch(`${API_URL}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -31,4 +19,17 @@ export const processSale = async (saleData: SaleData) => {
   }
 
   return response.text();
+};
+
+export const cancelLastSale = async () => {
+  const res = await fetch(`${API_URL}/cancel-last-sale`, {
+    method: "PUT",
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(errorText || "Failed to cancel sale");
+  }
+
+  return res.json();
 };
