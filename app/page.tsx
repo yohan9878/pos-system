@@ -13,7 +13,7 @@ export default function Home() {
   const [time, setTime] = useState("");
   const [outletId, setOutletId] = useState("");
   const [outlets, setOutlets] = useState<string[]>([]);
-  
+
   const user = getUserFromToken();
 
   useEffect(() => {

@@ -31,13 +31,13 @@ export default function Receipt({
     updateIsClient(true);
   }, []);
 
-  const date = new Date().toLocaleString();
+  // const date = new Date().toLocaleString();
 
   return (
     isClient && (
       <div
         id="receipt-print"
-        className="receipt mx-auto bg-white w-75.5 max-w-sm text-black text-[12px] font-mono font-stretch-condensed p-4 border shadow"
+        className="receipt bg-white w-75.5 max-w-sm text-black text-[12px]  p-4 border shadow"
       >
         {/* Header */}
         <div className="text-center">
@@ -51,7 +51,7 @@ export default function Receipt({
         {/* Invoice Info */}
         <div className="flex flex-col">
           <p>Invoice: {invoiceNo}</p>
-          <p>Date: {date}</p>
+          {/* <p>Date: {date}</p> */}
         </div>
 
         <div className="border-t border-dashed my-2" />
@@ -80,21 +80,13 @@ export default function Receipt({
         <div className="border-t border-dashed my-2" />
 
         {/* Total */}
-        <div className="grid grid-cols-2 justify-between">
+        <div className="grid font-semibold grid-cols-2 justify-between">
           <span className="text-left">SUBTOTAL Rs.</span>
           <span className="text-right"> {subtotal.toFixed(2)}</span>
           <span className="text-left">DISCOUNT Rs.</span>
           <span className="text-right"> {discountAmount.toFixed(2)}</span>
           <span className="text-left">TOTAL Rs.</span>
           <span className="text-right"> {total.toFixed(2)}</span>
-        </div>
-
-        <div className="border-t border-dashed my-2" />
-
-        {/* Footer */}
-        <div className="text-center font-bold">
-          <p>Thank You!</p>
-          <p>Come Again</p>
         </div>
       </div>
     )
