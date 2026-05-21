@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useContext, useRef } from "react";
+import { useState, useContext, useRef} from "react";
 import { CartContext } from "@/app/context/CartContext";
 import BarcodeInput from "@/app/components/BarcodeInput";
 import CartTable from "@/app/components/CartTable";
@@ -13,7 +13,7 @@ import Receipt from "@/app/components/Receipt";
 import DiscountModal from "@/app/components/DiscountModal";
 import { calculateTotal } from "@/app/utils/calculateTotal";
 import generateInvoiceNumber from "@/app/utils/generateInvoiceNumber";
-import { processSale } from "@/app/services/saleService";
+import { cancelLastSale, processSale } from "@/app/services/saleService";
 import { useParams } from "next/navigation";
 import WeightModal from "@/app/components/WeightModal";
 import { printReceipt } from "@/app/services/receiptPrinter";
@@ -33,7 +33,7 @@ export default function ScanPage() {
     "percentage",
   );
 
-  // Weight Modal State (for future use)
+  // Weight Modal State
   const [weightModalOpen, setWeightModalOpen] = useState(false);
 
   // Invoice State
@@ -155,7 +155,6 @@ export default function ScanPage() {
 
       const newInvoice = saleData.invoiceNo;
       setInvoiceNo(newInvoice);
-      console.log(invoiceNo)
       alert(`Payment Done\nInvoice: ${newInvoice}`);
       await printReceipt(
         {
@@ -175,11 +174,18 @@ export default function ScanPage() {
     }
   };
 
-  // const printInvoice = () => {
-  //   document.body.classList.add("printing-receipt");
-  //   window.print();
-  //   document.body.classList.remove("printing-receipt");
-  // };
+  const handleCancelLastSale = async () => {
+    const confirmed = confirm("Are you sure you want to cancel the last sale?");
+
+    if (!confirmed) return;
+
+    try {
+      const sale = await cancelLastSale();
+      alert(`Sale ${sale.invoiceNo} cancelled successfully`);
+    } catch (err: unknown) {
+      alert("Faild to cancel sale" + (err as Error).message);
+    }
+  };
 
   return (
     <div className="not-print p-6 max-w-4xl mx-auto font-poppins">
@@ -217,12 +223,6 @@ export default function ScanPage() {
         >
           Discount
         </Button>
-        {/* <Button
-          onClick={printInvoice}
-          className="mt-4 mr-3 bg-green-800 hover:bg-green-700 text-white print:hidden"
-        >
-          Print Invoice
-        </Button> */}
         <Button
           onClick={() => {
             setCart([]);
@@ -234,7 +234,7 @@ export default function ScanPage() {
           Clear Cart
         </Button>
       </div>
-      <div className="flex items-center my-10 border-t">
+      <div className="flex items-center my-10">
         <QuantityModal
           isOpen={modalOpen}
           onClose={() => {
@@ -249,7 +249,7 @@ export default function ScanPage() {
           heading="Enter Quantity"
         />
       </div>
-      <div className="flex items-center my-10 border-t">
+      <div className="flex items-center my-10">
         <WeightModal
           isOpen={weightModalOpen}
           onClose={() => {
@@ -271,7 +271,7 @@ export default function ScanPage() {
       />
       <div
         id="receipt-print"
-        className="flex flex-col items-center receipt-print"
+        className="flex flex-col items-start receipt-print"
       >
         <Receipt
           cart={cart}
@@ -282,6 +282,12 @@ export default function ScanPage() {
           discountAmount={discountAmount}
           total={total}
         />
+        <button
+          onClick={handleCancelLastSale}
+          className="hover:bg-red-200 bg-red-100 text-sm  font-semibold mt-5 text-red-800 px-4 py-2 rounded-lg"
+        >
+          Cancel Last Sale
+        </button>
       </div>
     </div>
   );

@@ -66,7 +66,7 @@ export default function OfficeLayout({ children }: Props) {
                       }
                       className={`px-5 py-2 w-42 ml-4 rounded-md text-smd text-left cursor-pointer transition ${
                         isActive
-                          ? "bg-red-200 text-red-600 font-semibold"
+                          ? "bg-red-100 text-red-600 font-semibold"
                           : "hover:bg-gray-100 text-red-900 font-semibold"
                       }`}
                     >

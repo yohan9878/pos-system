@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useEffectEvent, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import Button from "./Button";
 
 interface Props {
@@ -36,9 +36,16 @@ export default function WeightModal({
     setWeight(val);
   });
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   // reset when modal opens
   useEffect(() => {
     if (isOpen) updateWeight(initialWeight);
+
+    setTimeout(() => {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }, 0);
   }, [isOpen, initialWeight]);
 
   if (!isOpen) return null;
@@ -58,6 +65,7 @@ export default function WeightModal({
           <p className="mb-2 text-gray-900">{productName}</p>
 
           <input
+            ref={inputRef}
             id="weight"
             type="number"
             step="0.1"

@@ -1,25 +1,9 @@
 import { SoldItemReport } from "../types/Report";
 
-const BASE_URL = "http://localhost:8080/api/reports";
+const API_URL = "http://localhost:8080/api/reports";
 
-// export interface reportData {
-//   date: string;
-//   outletId: string;
-//   discountAmount: number,
-//   totalSales: number;
-//   totalTransactions: number;
-// }
-
-// export interface SoldItemReport {
-//   barcode: string;
-//   itemName: string;
-//   saleQty: number;
-//   salePrice: number;
-//   saleValue: number;
-// }
-
-export const getDailyReport = async (date: string, outletId?: string) => {
-  let url = `${BASE_URL}/daily?date=${date}`;
+export const getDailyReport = async (date: string, outletId: string) => {
+  let url = `${API_URL}/daily?date=${date}&outletId=${outletId}`;
 
   if (outletId && outletId !== "") {
     url += `&outletId=${outletId}`;
@@ -43,7 +27,7 @@ export const getSoldItems = async (
   date: string,
   outletId: string,
 ): Promise<SoldItemReport[]> => {
-  let url = `${BASE_URL}/items?date=${date}`;
+  let url = `${API_URL}/items?date=${date}`;
 
   if (outletId && outletId !== "") {
     url += `&outletId=${outletId}`;
@@ -58,6 +42,28 @@ export const getSoldItems = async (
 
   if (!res.ok) {
     throw new Error("Failed to fetch sold items");
+  }
+
+  return res.json();
+};
+
+//Day End Stock Report
+export const getDayEndStockReport = async (date: string, outletId: string) => {
+  let url = `${API_URL}/day-end-stock?date=${date}`;
+
+  if (outletId && outletId !== "") {
+    url += `&outletId=${outletId}`;
+  }
+
+  const token = localStorage.getItem("token");
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch day-end stock report");
   }
 
   return res.json();

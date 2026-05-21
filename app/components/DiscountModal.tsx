@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useEffectEvent } from "react";
+import { useState, useEffect, useEffectEvent, useRef } from "react";
 import Button from "./Button";
 
 interface Props {
@@ -11,22 +11,30 @@ interface Props {
 
 export default function DiscountModal({ isOpen, onClose, onApply }: Props) {
   const [discount, setDiscount] = useState<string>("0");
-  const [type, setType] = useState<"percentage" | "fixed">("percentage");
+  const [type, setType] = useState<"percentage" | "fixed">("fixed");
 
   const updateDiscount = useEffectEvent((discount: string) => {
     setDiscount(discount);
   });
 
-  const updateType = useEffectEvent((type: "percentage" | "fixed") => {
+  const updateType = useEffectEvent((type: "fixed"| "percentage" ) => {
     setType(type);
   });
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Reset when open
   useEffect(() => {
     if (isOpen) {
       updateDiscount("0");
-      updateType("percentage");
+      updateType("fixed");
     }
+
+    // focus input
+    setTimeout(() => {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }, 0);
   }, [isOpen]);
 
   // ESC to close
@@ -62,6 +70,7 @@ export default function DiscountModal({ isOpen, onClose, onApply }: Props) {
 
         <div className="flex gap-2 mb-4">
           <input
+            ref={inputRef}
             id="discount"
             type="number"
             value={discount}
@@ -77,7 +86,7 @@ export default function DiscountModal({ isOpen, onClose, onApply }: Props) {
           <select
             id="discountType"
             value={type}
-            onChange={(e) => setType(e.target.value as "percentage" | "fixed")}
+            onChange={(e) => setType(e.target.value as "fixed" | "percentage")}
             className="p-2 border rounded"
           >
             <option value="percentage">%</option>

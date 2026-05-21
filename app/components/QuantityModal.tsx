@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useEffectEvent, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import Button from "./Button";
 
 interface Props {
@@ -36,9 +36,16 @@ export default function QuantityModal({
     setQty(initialQty);
   });
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   // Reset qty when modal opens
   useEffect(() => {
     if (isOpen) updateQty(initialQty);
+
+    setTimeout(() => {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }, 0);
   }, [isOpen, initialQty]);
 
   if (!isOpen) return null;
@@ -58,6 +65,7 @@ export default function QuantityModal({
           <p className="mb-2 text-gray-900">{productName}</p>
 
           <input
+            ref={inputRef}
             id="quantity"
             type="number"
             value={qty !== null ? qty : ""}

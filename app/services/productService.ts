@@ -1,33 +1,12 @@
 import { Product } from "../types";
 import { ProductItems, ProductRequest } from "../types/Product";
 
-const BASE_URL = "http://localhost:8080/api/products";
-
-// export interface ProductItems {
-//   id: number;
-//   name: string;
-//   barcode: number;
-//   bulkPrice: number;
-//   retailPrice: number;
-//   packPrice: number;
-//   pricePerKg: number;
-//   weighted: boolean;
-// }
-
-// export interface ProductRequest {
-//   name: string;
-//   barcode: number | "";
-//   bulkPrice: number | "";
-//   retailPrice: number | "";
-//   packPrice: number | "";
-//   pricePerKg: number | "";
-//   weighted: boolean | "";
-// }
+const API_URL = "http://localhost:8080/api/products";
 
 // Get all products
 export const getProducts = async (): Promise<ProductItems[]> => {
   const token = localStorage.getItem("token");
-  const res = await fetch(BASE_URL, {
+  const res = await fetch(API_URL, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -39,7 +18,7 @@ export const getProducts = async (): Promise<ProductItems[]> => {
 // Add product
 export const addProduct = async (product: ProductRequest) => {
   const token = localStorage.getItem("token");
-  const res = await fetch(BASE_URL, {
+  const res = await fetch(API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -54,7 +33,7 @@ export const addProduct = async (product: ProductRequest) => {
 // Delete product
 export const deleteProduct = async (id: number) => {
   const token = localStorage.getItem("token");
-  const res = await fetch(`${BASE_URL}/${id}`, {
+  const res = await fetch(`${API_URL}/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -67,7 +46,7 @@ export const deleteProduct = async (id: number) => {
 export const fetchProduct = async (barcode: string): Promise<Product> => {
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`${BASE_URL}/${barcode}`, {
+    const res = await fetch(`${API_URL}/${barcode}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
