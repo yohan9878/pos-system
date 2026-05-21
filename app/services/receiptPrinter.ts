@@ -1,12 +1,24 @@
-import qz, { CreatePrinterInput } from "qz-tray";
+import qz, { CreatePrinterInput} from "qz-tray";
 import { ReceiptData } from "../types/Receipt";
 import { getUserFromToken } from "./userService";
+import logoImage from "../../public/weehenaLogo.png"
 
 function normalizePrinterName(rawPrinterName: string | CreatePrinterInput) {
   if (Array.isArray(rawPrinterName)) {
     return rawPrinterName[0];
   }
   return rawPrinterName;
+}
+
+// Wrap long item names
+function wrapText(text: string, width: number) {
+  const lines: string[] = [];
+
+  for (let i = 0; i < text.length; i += width) {
+    lines.push(text.substring(i, i + width));
+  }
+
+  return lines;
 }
 
 export async function printReceipt(
@@ -25,9 +37,6 @@ export async function printReceipt(
     if (!printerName) {
       throw new Error("Printer name is required");
     }
-
-    // const printers = await qz.printers.find();
-    // console.log("Available printers:", printers);
 
     let printer = await qz.printers.find(printerName);
 
@@ -52,24 +61,26 @@ export async function printReceipt(
     // Header
     receipt += CENTER;
     receipt += BOLD_ON;
-    receipt += "\n\n\n";
+    receipt += "\n\n";
 
     receipt += GS + "!" + "\x10";
     receipt += "WEEHENA FARM SHOP\n";
-    receipt += BOLD_OFF;
 
     receipt += GS + "!" + "\x00";
+    receipt += BOLD_OFF;
 
     receipt += "Katunayake\n";
-    receipt += "Tel: 077-1234567\n\n\n";
+    receipt += "Tel: 077-1234567\n\n";
 
     // Invoice
-    receipt += "------------------------------------------------\n\n";
+    receipt += "------------------------------------------------\n";
     receipt += LEFT;
-    receipt += `Invoice: ${data.invoiceNo}\n\n`;
-    receipt += `Date: ${date}\n\n`;
-    receipt += `Cashier : ${user?.username}\n\n`;
-    receipt += "------------------------------------------------\n\n\n\n";
+
+    receipt += `Invoice : ${data.invoiceNo}\n`;
+    receipt += `Date    : ${date}\n`;
+    receipt += `Cashier : ${user?.username}\n`;
+
+    receipt += "------------------------------------------------\n";
 
     receipt += "ITEM                     QTY     PRICE   TOTAL\n";
     receipt += "------------------------------------------------\n\n";
@@ -88,21 +99,32 @@ export async function printReceipt(
         ? item.pricePerKg * item.value
         : item.packPrice * item.value;
 
-      // column widths
-      const itemCol = item.name.substring(0, 22).padEnd(22);
-      const qtyCol = qty.padStart(7);
-      const priceCol = price.padStart(9);
-      const totalCol = lineTotal.toFixed(2).padStart(9);
+      const ITEM_WIDTH = 22;
 
-      receipt += `${itemCol}${qtyCol}${priceCol}${totalCol}\n\n`;
+      // Split long item names
+      const itemLines = wrapText(item.name, ITEM_WIDTH);
+
+      itemLines.forEach((line, index) => {
+        const itemCol = line.padEnd(ITEM_WIDTH);
+
+        // show values only on first line
+        const qtyCol = index === 0 ? qty.padStart(7) : "".padStart(7);
+
+        const priceCol = index === 0 ? price.padStart(9) : "".padStart(9);
+
+        const totalCol =
+          index === 0 ? lineTotal.toFixed(2).padStart(9) : "".padStart(9);
+
+        receipt += `${itemCol}${qtyCol}${priceCol}${totalCol}\n`;
+      });
+
+      receipt += "\n";
     });
 
-    receipt += "------------------------------------------------\n\n";
+    receipt += "------------------------------------------------\n";
 
     // Totals
     receipt += GS + "!" + "\x10";
-
-    receipt += LEFT;
 
     receipt +=
       "SUBTOTAL".padEnd(13) + data.subtotal.toFixed(2).padStart(10) + "\n";
@@ -112,58 +134,28 @@ export async function printReceipt(
       data.discountAmount.toFixed(2).padStart(10) +
       "\n";
 
-    receipt += "TOTAL".padEnd(13) + data.total.toFixed(2).padStart(10) + "\n\n";
+    receipt += "TOTAL".padEnd(13) + data.total.toFixed(2).padStart(10) + "\n";
 
     receipt += GS + "!" + "\x00";
-    receipt += "------------------------------------------------\n\n\n";
+
+    receipt += "------------------------------------------------\n";
 
     // Footer
-    receipt += GS + "!" + "\x01";
     receipt += CENTER;
+
+    receipt += GS + "!" + "\x01";
     receipt += "Thank You!\n";
-    receipt += "Come Again\n\n\n\n\n";
+    receipt += "Come Again\n\n\n\n";
 
     // Cut
     receipt += CUT;
 
-    // const logo: PrintData = {
-    //   type: "pixel",
-    //   format: "image",
-    //   flavor: "base64",
-    //   data: await imageToBase64("/weehenaLogo.png"),
-    //   options: {
-    //     language: "ESCPOS" as const,
-    //     dotDensity: "double" as const,
-    //   },
-    // };
-
-    // const textData: PrintData = {
-    //   type: "raw",
-    //   format: "command",
-    //   flavor: "plain",
-    //   data: receipt,
-    // };
-    // await qz.print(config, [logo, textData]);
-
-    await qz.print(config,[receipt]);
+    await qz.print(config, [receipt]).catch(function (e) {
+      console.error(e);
+    });
 
     console.log("Printed successfully");
   } catch (error) {
     console.error(error);
   }
 }
-
-// async function imageToBase64(path: string): Promise<string> {
-//   const response = await fetch(path);
-//   const blob = await response.blob();
-
-//   return new Promise((resolve) => {
-//     const reader = new FileReader();
-
-//     reader.onloadend = () => {
-//       resolve(reader.result as string);
-//     };
-
-//     reader.readAsDataURL(blob);
-//   });
-// }
