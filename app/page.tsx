@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { getStock } from "./services/stockService";
 import { useRouter } from "next/navigation";
 import AuthGuard from "./components/AuthGuard";
-import { getUserFromToken } from "./services/userService";
+import { getUserFromToken, logout } from "./services/userService";
 
 export default function Home() {
   const router = useRouter();
@@ -109,7 +109,7 @@ export default function Home() {
         </div>
         <button
           onClick={() => {
-            localStorage.removeItem("token");
+            logout();
             router.push("/auth/login");
           }}
           className="text-center text-sm font-bold w-56 mt-4 left-4 text-red-800  px-6 py-3 rounded-xl hover:bg-red-100"
