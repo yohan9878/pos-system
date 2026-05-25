@@ -138,14 +138,17 @@ export async function printReceipt(
 
     receipt += GS + "!" + "\x00";
 
-    receipt += "------------------------------------------------\n";
+    receipt += "------------------------------------------------\n\n";
 
     // Footer
     receipt += CENTER;
 
     receipt += GS + "!" + "\x01";
-    receipt += "Thank You!\n";
-    receipt += "Come Again\n\n\n\n";
+    receipt += "Thank You! Come Again\n\n";
+
+
+    receipt += GS + "!" + "\x00";
+    receipt += "www.weehena.lk | 0322254209\n\n\n\n";
 
     // Cut
     receipt += CUT;

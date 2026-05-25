@@ -9,3 +9,13 @@ export interface SaleData {
     priceType: string;
   }[];
 }
+
+export interface ProductSaleData {
+  productName: string;
+  invoiceNo: string;
+  saleStatus: string;
+  saleDate: string;
+  saleQty: number;
+  salePrice: number;
+  saleValue: number;
+}
