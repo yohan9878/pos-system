@@ -31,7 +31,7 @@ export default function Receipt({
     updateIsClient(true);
   }, []);
 
-  // const date = new Date().toLocaleString();
+  const date = new Date().toLocaleString();
 
   return (
     isClient && (
@@ -51,7 +51,7 @@ export default function Receipt({
         {/* Invoice Info */}
         <div className="flex flex-col">
           <p>Invoice: {invoiceNo}</p>
-          {/* <p>Date: {date}</p> */}
+          <p>Date: {date}</p>
         </div>
 
         <div className="border-t border-dashed my-2" />
