@@ -36,6 +36,7 @@ export default function ReportPage() {
   useEffect(() => {
     async function loadOutlets() {
       const stock = await getStock();
+      
       const unique = Array.from(new Set(stock.map((item) => item.outletId)));
       setOutlets(unique);
       setOutlet(unique[0] ?? "");
@@ -197,7 +198,7 @@ export default function ReportPage() {
                   Net Sales (LKR) :
                 </span>
                 <span className="text-gray-900 font-medium text-right">
-                  {r.totalSales?.toFixed(2)}
+                  {r.totalSales.toFixed(2)}
                 </span>
               </div>
             </div>
