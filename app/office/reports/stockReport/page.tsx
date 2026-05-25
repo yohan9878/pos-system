@@ -46,6 +46,13 @@ export default function StockReportPage() {
 
   const printReport = () => {
     document.body.classList.add("printing-report");
+
+    const now = new Date();
+
+    const formattedDate = now.toISOString().split("T")[0];
+
+    document.title = `Day-End Stock Report of ${outlet} (${formattedDate})`;
+
     window.print();
     document.body.classList.remove("printing-report");
   };

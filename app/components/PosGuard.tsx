@@ -10,8 +10,7 @@ export default function PosGuard({ children }: { children: ReactNode }) {
   useEffect(() => {
     const user = getUserFromToken();
 
-    if (!user ||(user.role !== "ADMIN" && user.role !== "MANAGER" && user.role !== "CASHIER")
-    ) {
+    if (!user || (user.role !== "MANAGER" && user.role !== "CASHIER")) {
       router.push("/auth/login");
     }
   }, [router]);

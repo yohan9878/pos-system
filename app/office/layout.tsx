@@ -5,6 +5,7 @@ import { ReactNode, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import AdminGuard from "../components/AdminGuard";
+import { logout } from "../services/userService";
 
 interface Props {
   children: ReactNode;
@@ -119,7 +120,7 @@ export default function OfficeLayout({ children }: Props) {
             </button>
             <button
               onClick={() => {
-                localStorage.removeItem("token");
+                logout();
                 router.push("/auth/login");
               }}
               className="text-center w-42 bottom-4 left-4 text-red-700 font-semibold px-4 py-2 rounded-md hover:bg-red-100"

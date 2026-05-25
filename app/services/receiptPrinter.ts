@@ -1,7 +1,6 @@
 import qz, { CreatePrinterInput} from "qz-tray";
 import { ReceiptData } from "../types/Receipt";
 import { getUserFromToken } from "./userService";
-import logoImage from "../../public/weehenaLogo.png"
 
 function normalizePrinterName(rawPrinterName: string | CreatePrinterInput) {
   if (Array.isArray(rawPrinterName)) {
@@ -143,11 +142,8 @@ export async function printReceipt(
     // Footer
     receipt += CENTER;
 
-    receipt += GS + "!" + "\x01";
-    receipt += "Thank You! Come Again\n\n";
-
-
     receipt += GS + "!" + "\x00";
+    receipt += "Thank You! Come Again\n\n";
     receipt += "www.weehena.lk | 0322254209\n\n\n\n";
 
     // Cut
