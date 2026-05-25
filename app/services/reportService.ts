@@ -23,11 +23,11 @@ export const getSoldItems = async (
   date: string,
   outletId: string,
 ): Promise<SoldItemReport[]> => {
-  let url = `${API_URL}/items?date=${date}`;
+  const url = `${API_URL}/items?date=${date}&outletId=${outletId}`;
 
-  if (outletId && outletId !== "") {
-    url += `&outletId=${outletId}`;
-  }
+  // if (outletId && outletId !== "") {
+  //   url += `&outletId=${outletId}`;
+  // }
 
   const token = localStorage.getItem("token");
   const res = await fetch(url, {
