@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getUser } from "@/app/services/authService";
@@ -10,12 +10,22 @@ import { JwtPayload } from "@/app/services/userService";
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [time, setTime] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+      const updateTime = () => {
+        const now = new Date();
+        setTime(now.toLocaleTimeString("en-US", { timeStyle: "medium" }));
+      };
+      updateTime();
+      const interval = setInterval(updateTime, 1000);
+      return () => clearInterval(interval);
+    }, []);
 
   const handleLogin = async () => {
     try {
       await getUser(username, password);
-
 
       const token = localStorage.getItem("token");
       if (!token) return;
@@ -36,19 +46,27 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-red-50">
+    <div className="flex h-screen items-center justify-center bg-red-800">
       <div className="bg-white p-6 rounded-xl shadow-2xl w-80">
         <Image
           src="/weehenaLogo.png"
           alt="Weehena Farm Shop Logo"
           width={100}
           height={100}
-          className="mx-auto mb-5 mt-5 size-16 bg-white rounded-full"
+          className="mx-auto mb-2 mt-5 size-16 bg-white rounded-full"
         />
 
-        <h1 className="text-xl text-center text-black font-semibold mb-4">
-          Weehena Farm Shop
-        </h1>
+        <div className="text-center ">
+          <h1 className="text-xl text-center text-black font-semibold">
+            Weehena Farm Shop
+          </h1>
+          <p className="text-sm text-gray-800 font-sans font-normal">
+            {new Date().toLocaleDateString("en-US", { dateStyle: "full" })}
+          </p>
+          <p className="text-sm text-gray-800 font-sans font-normal">
+            {time}
+          </p>
+        </div>
 
         <form
           action={handleLogin}
@@ -90,13 +108,6 @@ export default function LoginPage() {
             >
               Login
             </button>
-            {/* <button
-              type="button"
-              onClick={() => router.push("/")}
-              className="hover:text-red-700 hover:bg-red-50 text-red-600 font-semibold w-full py-2 mt-2 rounded-lg"
-            >
-              back to home
-            </button> */}
           </div>
         </form>
       </div>
