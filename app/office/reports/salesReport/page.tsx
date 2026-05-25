@@ -36,7 +36,6 @@ export default function ReportPage() {
   useEffect(() => {
     async function loadOutlets() {
       const stock = await getStock();
-      
       const unique = Array.from(new Set(stock.map((item) => item.outletId)));
       setOutlets(unique);
       setOutlet(unique[0] ?? "");
@@ -51,6 +50,13 @@ export default function ReportPage() {
 
   const printReport = () => {
     document.body.classList.add("printing-report");
+
+    const now = new Date();
+
+    const formattedDate = now.toISOString().split("T")[0];
+
+    document.title = `Daily Sales Report of ${outlet} (${formattedDate})`;
+
     window.print();
     document.body.classList.remove("printing-report");
   };
