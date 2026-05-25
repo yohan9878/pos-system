@@ -12,4 +12,15 @@ export interface SoldItemReport {
   saleQty: number;
   salePrice: number;
   saleValue: number;
+  invoiceNo: string;
+  status: string;
+}
+
+export interface DayEndStockReport {
+  barcode: string;
+  productName: string;
+  openingStock: number;
+  stockIn: number;
+  stockOut: number;
+  closingStock: number;
 }
