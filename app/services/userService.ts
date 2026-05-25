@@ -26,6 +26,7 @@ export const getUserFromToken = () => {
   }
 };
 
-// export const logout = () => {
-//   localStorage.removeItem("token");
-// };
+export const logout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("username");
+};
