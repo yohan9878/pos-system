@@ -35,7 +35,7 @@ export default function LoginPage() {
       if (decoded.role === "ADMIN" || decoded.role === "MANAGER") {
         router.push("/");
       } else if (decoded.role === "STAFF" || decoded.role === "CASHIER") {
-        router.push("/"); // or POS page
+        router.push("/"); 
       } else {
         alert("Unauthorized role");
       }

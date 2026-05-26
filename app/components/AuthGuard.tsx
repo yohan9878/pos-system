@@ -23,7 +23,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [router]); // The dependency array includes router to ensure the effect runs when the component mounts and when the router changes.
+  }, [router]);
 
   if (loading) {
     return (
