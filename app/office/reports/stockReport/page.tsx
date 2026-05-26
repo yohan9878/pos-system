@@ -124,22 +124,22 @@ export default function StockReportPage() {
           <table className="w-full text-sm  mt-2 print:w-full">
             <thead>
               <tr>
-                <th className="border border-gray-800 text-left text-gray-900 w-40 p-2">
+                <th className="bg-gray-200 border border-gray-800 text-left text-gray-900 w-40 p-2">
                   Barcode
                 </th>
-                <th className="border border-gray-800 text-left text-gray-900 w-100 p-2">
+                <th className="bg-gray-200 border border-gray-800 text-left text-gray-900 w-100 p-2">
                   Product Name
                 </th>
-                <th className="border border-gray-800 text-center text-gray-900 w-30 p-2">
+                <th className="bg-gray-200 border border-gray-800 text-center text-gray-900 w-40 p-2">
                   Opening Stock
                 </th>
-                <th className="border border-gray-800 text-center text-gray-900 w-30 p-2">
+                <th className="bg-gray-200 border border-gray-800 text-center text-gray-900 w-30 p-2">
                   Stock In
                 </th>
-                <th className="border border-gray-800 text-center text-gray-900 w-30 p-2">
+                <th className="bg-gray-200 border border-gray-800 text-center text-gray-900 w-30 p-2">
                   Stock Out
                 </th>
-                <th className="border border-gray-800 text-center text-gray-900 w-30 p-2">
+                <th className="bg-gray-200 border border-gray-800 text-center text-gray-900 w-30 p-2">
                   Closing Stock
                 </th>
               </tr>

@@ -116,22 +116,22 @@ export default function ReportPage() {
             <h1 className="text-lg">Sales Items</h1>
           </div>
 
-          <table className="w-fit text-sm  mt-2 print:w-full">
+          <table className="w-full border border-gray-300 text-sm  mt-2 print:w-full">
             <thead>
               <tr>
-                <th className="border border-gray-800 text-left text-gray-900 w-40 p-2">
+                <th className="bg-gray-200 border border-gray-800 text-left text-gray-950 w-40 p-2">
                   Barcode
                 </th>
-                <th className="border border-gray-800 text-left text-gray-900 w-50 p-2">
+                <th className="bg-gray-200 border border-gray-800 text-left text-gray-950 w-50 p-2">
                   Item Name
                 </th>
-                <th className="border border-gray-800 text-center text-gray-900 w-30 p-2">
+                <th className="bg-gray-200 border border-gray-800 text-center text-gray-950 w-30 p-2">
                   Qty
                 </th>
-                <th className="border border-gray-800 text-right text-gray-900 w-30 p-2">
+                <th className="bg-gray-200 border border-gray-800 text-right text-gray-950 w-30 p-2">
                   Sale Price
                 </th>
-                <th className="border border-gray-800 text-right text-gray-900 w-30 p-2">
+                <th className="bg-gray-200 border border-gray-800 text-right text-gray-950 w-30 p-2">
                   Sale Value
                 </th>
               </tr>

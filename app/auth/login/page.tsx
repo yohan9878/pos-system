@@ -14,14 +14,14 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
-      const updateTime = () => {
-        const now = new Date();
-        setTime(now.toLocaleTimeString("en-US", { timeStyle: "medium" }));
-      };
-      updateTime();
-      const interval = setInterval(updateTime, 1000);
-      return () => clearInterval(interval);
-    }, []);
+    const updateTime = () => {
+      const now = new Date();
+      setTime(now.toLocaleTimeString("en-US", { timeStyle: "medium" }));
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogin = async () => {
     try {
@@ -35,7 +35,7 @@ export default function LoginPage() {
       if (decoded.role === "ADMIN" || decoded.role === "MANAGER") {
         router.push("/");
       } else if (decoded.role === "STAFF" || decoded.role === "CASHIER") {
-        router.push("/"); // or POS page
+        router.push("/"); 
       } else {
         alert("Unauthorized role");
       }
@@ -46,28 +46,25 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-red-800">
-      <div className="bg-white p-6 rounded-xl shadow-2xl w-80">
+    <div className="flex flex-col h-screen items-center justify-center bg-red-800">
+      <div className="text-center text-white mb-8">
         <Image
           src="/weehenaLogo.png"
           alt="Weehena Farm Shop Logo"
-          width={100}
-          height={100}
-          className="mx-auto mb-2 mt-5 size-16 bg-white rounded-full"
+          width={120}
+          height={120}
+          className="mx-auto mb-2 mt-5 size-22 bg-white rounded-full"
         />
+        <h1 className="text-2xl text-center font-semibold">
+          Weehena Farm Shop
+        </h1>
+        <p className="text-md font-sans font-normal">
+          {new Date().toLocaleDateString("en-US", { dateStyle: "full" })}
+        </p>
+        <p className="text-md font-sans font-normal">{time}</p>
+      </div>
 
-        <div className="text-center ">
-          <h1 className="text-xl text-center text-black font-semibold">
-            Weehena Farm Shop
-          </h1>
-          <p className="text-sm text-gray-800 font-sans font-normal">
-            {new Date().toLocaleDateString("en-US", { dateStyle: "full" })}
-          </p>
-          <p className="text-sm text-gray-800 font-sans font-normal">
-            {time}
-          </p>
-        </div>
-
+      <div className="bg-white p-4 rounded-xl shadow-2xl w-80">
         <form
           action={handleLogin}
           className="flex flex-col px-4 my-4 gap-3  text-xs"
@@ -104,7 +101,7 @@ export default function LoginPage() {
           <div className="mx-auto text-sm w-full flex flex-col gap-1">
             <button
               type="submit"
-              className="mx-auto mt-4 bg-red-700 hover:bg-red-600 rounded-lg font-semibold text-white w-48 py-2"
+              className="mx-auto bg-red-700 hover:bg-red-600 rounded-lg font-semibold text-white w-48 py-2"
             >
               Login
             </button>
