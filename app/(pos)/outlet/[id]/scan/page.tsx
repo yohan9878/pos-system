@@ -176,7 +176,7 @@ export default function ScanPage() {
   };
 
   const handleCancelLastSale = async () => {
-    const confirmed = confirm("Are you sure you want to cancel the last sale?");
+    const confirmed = confirm(`Are you sure you want to cancel the last sale: ${invoiceNo} ? `);
 
     if (!confirmed) return;
 
