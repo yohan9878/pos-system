@@ -1,6 +1,78 @@
-import qz, { CreatePrinterInput} from "qz-tray";
+import qz, { CreatePrinterInput, PrintData } from "qz-tray";
 import { ReceiptData } from "../types/Receipt";
 import { getUserFromToken } from "./userService";
+
+/** 80mm thermal printers are usually ~384 dots wide at 203 DPI. */
+export const DEFAULT_LOGO_URL = "/weehena300px.png";
+
+export type LogoSize = {
+  width: number;
+  /** Omit to keep aspect ratio from the source image. */
+  height?: number;
+};
+
+export const DEFAULT_LOGO_SIZE: LogoSize = {
+  width: 50,
+  height: 80,
+};
+
+/** Blank lines between logo and header text (0 = tight). */
+export const DEFAULT_LOGO_MARGIN_LINES = 1;
+
+/** Fine-tune gap in dots after the logo (0–255). Added after margin lines. */
+export const DEFAULT_LOGO_MARGIN_DOTS = 0;
+
+function feedLines(count: number): string {
+  return "\n".repeat(Math.max(0, count));
+}
+
+/** ESC/POS print-and-feed: advances paper by `dots` without a full line. */
+function feedDots(dots: number): string {
+  const clamped = Math.min(255, Math.max(0, Math.round(dots)));
+  return "\x1B\x4A" + String.fromCharCode(clamped);
+}
+
+function logoToHeaderGap(
+  marginLines: number,
+  marginDots: number,
+): string {
+  const dots = marginDots > 0 ? feedDots(marginDots) : "";
+  return feedLines(marginLines) + dots;
+}
+
+async function loadImageDataUrl(
+  url: string,
+  size: LogoSize = DEFAULT_LOGO_SIZE,
+): Promise<string> {
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Logo not found at ${url}`);
+  }
+
+  const blob = await res.blob();
+  const bitmap = await createImageBitmap(blob);
+
+  const targetWidth = size.width;
+  const targetHeight =
+    size.height ?? Math.round((bitmap.height / bitmap.width) * targetWidth);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = targetWidth;
+  canvas.height = targetHeight;
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    bitmap.close();
+    throw new Error("Could not create canvas for logo resize");
+  }
+
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, targetWidth, targetHeight);
+  ctx.drawImage(bitmap, 0, 0, targetWidth, targetHeight);
+  bitmap.close();
+
+  return canvas.toDataURL("image/png");
+}
 
 function normalizePrinterName(rawPrinterName: string | CreatePrinterInput) {
   if (Array.isArray(rawPrinterName)) {
@@ -20,9 +92,46 @@ function wrapText(text: string, width: number) {
   return lines;
 }
 
+async function getLogoPrintData(
+  url: string = DEFAULT_LOGO_URL,
+  size: LogoSize = DEFAULT_LOGO_SIZE,
+): Promise<PrintData> {
+  const dataUrl = await loadImageDataUrl(url, size);
+
+  return {
+    type: "raw",
+    format: "image",
+    flavor: "base64",
+    data: dataUrl,
+    options: {
+      language: "ESCPOS",
+      dotDensity: "single",
+    },
+  };
+}
+
+function rawCommand(data: string): PrintData {
+  return {
+    type: "raw",
+    format: "command",
+    flavor: "plain",
+    data,
+  };
+}
+
+export type LogoPrintOptions = {
+  url?: string;
+  size?: LogoSize;
+  /** Blank lines after logo (default: DEFAULT_LOGO_MARGIN_LINES). */
+  marginLines?: number;
+  /** Extra dot feed after margin lines (default: DEFAULT_LOGO_MARGIN_DOTS). */
+  marginDots?: number;
+};
+
 export async function printReceipt(
   data: ReceiptData,
   rawPrinterName: string | CreatePrinterInput,
+  logoOptions?: LogoPrintOptions,
 ) {
   const user = getUserFromToken();
   try {
@@ -50,17 +159,18 @@ export async function printReceipt(
     const LEFT = ESC + "a" + "\x00";
     const BOLD_ON = ESC + "E" + "\x01";
     const BOLD_OFF = ESC + "E" + "\x00";
-    const CUT = "\x1D\x56\x41";
+    // GS V 0 = full cut. Do NOT use \x41 — that byte is ASCII "A" and many
+    // printers print it when the cut mode is unsupported.
+    const CUT = "\x1D\x56\x00";
     const GS = "\x1D";
 
     const date = new Date().toLocaleString();
 
     let receipt = "";
 
-    // Header
+    // Header (gap after logo is controlled by logoToHeaderGap, not extra \n here)
     receipt += CENTER;
     receipt += BOLD_ON;
-    receipt += "\n\n";
 
     receipt += GS + "!" + "\x10";
     receipt += "WEEHENA FARM SHOP\n";
@@ -144,14 +254,26 @@ export async function printReceipt(
 
     receipt += GS + "!" + "\x00";
     receipt += "Thank You! Come Again\n\n";
-    receipt += "www.weehena.lk | 0322254209\n\n\n\n";
+    receipt += "www.weehena.lk | 0322254209\n\n\n\n\n\n\n\n";
 
     // Cut
     receipt += CUT;
 
-    await qz.print(config, [receipt]).catch(function (e) {
-      console.error(e);
-    });
+    const logo = await getLogoPrintData(
+      logoOptions?.url,
+      logoOptions?.size,
+    );
+
+    const marginLines =
+      logoOptions?.marginLines ?? DEFAULT_LOGO_MARGIN_LINES;
+    const marginDots = logoOptions?.marginDots ?? DEFAULT_LOGO_MARGIN_DOTS;
+    const afterLogo = logoToHeaderGap(marginLines, marginDots);
+
+    const printData: PrintData[] = [
+      logo,
+      rawCommand("\x1B\x40" + afterLogo + receipt),
+    ];
+    await qz.print(config, printData);
 
     console.log("Printed successfully");
   } catch (error) {
