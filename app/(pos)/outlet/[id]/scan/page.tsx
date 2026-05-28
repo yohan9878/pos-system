@@ -164,7 +164,8 @@ export default function ScanPage() {
           total,
           invoiceNo: saleData.invoiceNo,
         },
-        "BIXOLON SPP-R310",
+        // "BIXOLON SPP-R310",
+        "XP-80C",
       );
     } catch (error: unknown) {
       console.error(error);
