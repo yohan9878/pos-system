@@ -134,7 +134,7 @@ export default function ReportPage() {
       {!loading && reports.length > 0 && salesItems.length > 0 && (
         <div id="report-print" className="mx-auto rounded min-w-0">
           <div className="text-gray-800 my-5 font-semibold">
-            <h1 className="text-xl sm:text-2xl break-words">
+            <h1 className="text-xl sm:text-2xl wrap-break-word">
               Sales Report of {outlet || "All Outlets"}
             </h1>
             <h4 className="text-gray-800 text-base sm:text-lg">{date}</h4>
