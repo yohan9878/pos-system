@@ -108,12 +108,12 @@ export default function ProductPage() {
   ];
 
   return (
-    <div className="min-w-0">
-      <h1 className="text-lg sm:text-xl text-red-950 font-bold mb-4">
+    <div className="flex flex-col h-full min-h-0 min-w-0">
+      <h1 className="text-lg sm:text-xl text-red-950 font-bold mb-4 shrink-0">
         Product Management
       </h1>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4 text-xs">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4 text-xs shrink-0">
         <input
           id="search"
           placeholder="Search by barcode or product name"
@@ -141,12 +141,15 @@ export default function ProductPage() {
         />
       </div>
 
-      <ResponsiveDataView
-        data={filteredProducts}
-        columns={productColumns}
-        getRowKey={(p) => p.id}
-        emptyMessage="No products match your search"
-      />
+      <div className="flex-1 min-h-0">
+        <ResponsiveDataView
+          data={filteredProducts}
+          columns={productColumns}
+          getRowKey={(p) => p.id}
+          emptyMessage="No products match your search"
+          scrollable
+        />
+      </div>
     </div>
   );
 }

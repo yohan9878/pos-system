@@ -217,12 +217,12 @@ export default function StockPage() {
   };
 
   return (
-    <div className="min-w-0 text-xs">
-      <h1 className="text-lg sm:text-xl text-red-950 font-bold mb-4">
+    <div className="flex flex-col h-full min-h-0 min-w-0 text-xs">
+      <h1 className="text-lg sm:text-xl text-red-950 font-bold mb-4 shrink-0">
         Stock Management
       </h1>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4 shrink-0">
         <input
           id="search"
           placeholder="Search by barcode, product name or outlet ID"
@@ -238,7 +238,7 @@ export default function StockPage() {
         </Button>
       </div>
 
-      <div className="rounded mb-6 flex gap-2 flex-wrap">
+      <div className="rounded mb-6 flex gap-2 flex-wrap shrink-0">
         <StockForm
           onClose={() => {
             setFormOpen(false);
@@ -252,13 +252,16 @@ export default function StockPage() {
         />
       </div>
 
-      <ResponsiveDataView
-        data={filteredStock}
-        columns={stockColumns}
-        getRowKey={(item) => item.id}
-        getRowClassName={stockRowClass}
-        emptyMessage="No stock items match your search"
-      />
+      <div className="flex-1 min-h-0">
+        <ResponsiveDataView
+          data={filteredStock}
+          columns={stockColumns}
+          getRowKey={(item) => item.id}
+          getRowClassName={stockRowClass}
+          emptyMessage="No stock items match your search"
+          scrollable
+        />
+      </div>
       {selectedStock ? (
         selectedStock.weighted ? (
           <WeightModal

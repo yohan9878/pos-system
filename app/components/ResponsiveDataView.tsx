@@ -21,6 +21,8 @@ interface ResponsiveDataViewProps<T> {
   getRowClassName?: (row: T) => string;
   emptyMessage?: string;
   striped?: boolean;
+  /** When true, table/cards scroll inside the parent instead of growing the page */
+  scrollable?: boolean;
 }
 
 const alignClass = {
@@ -38,6 +40,7 @@ export default function ResponsiveDataView<T>({
   getRowClassName,
   emptyMessage = "No records found",
   striped = true,
+  scrollable = false,
 }: ResponsiveDataViewProps<T>) {
   if (data.length === 0) {
     return (
@@ -51,10 +54,20 @@ export default function ResponsiveDataView<T>({
     (c) => c.cardRole !== "title" && c.cardRole !== "actions",
   );
 
+  const scrollClass = scrollable
+    ? "flex-1 min-h-0 overflow-auto overscroll-contain print:overflow-visible print:max-h-none print:h-auto"
+    : "";
+
   return (
-    <>
+    <div
+      className={
+        scrollable ? "flex flex-col h-full min-h-0" : "contents"
+      }
+    >
       {/* Mobile / tablet cards */}
-      <div className="lg:hidden print:hidden space-y-3">
+      <div
+        className={`lg:hidden print:hidden space-y-3 ${scrollClass}`}
+      >
         {data.map((row, index) => {
           const rowClass = getRowClassName?.(row) ?? "";
           return (
@@ -104,14 +117,16 @@ export default function ResponsiveDataView<T>({
       </div>
 
       {/* Desktop table */}
-      <div className="hidden lg:block print:block overflow-x-auto">
+      <div
+        className={`hidden lg:block print:block ${scrollable ? scrollClass : "overflow-x-auto"}`}
+      >
         <table className={`${tableClassName} print:w-full`}>
-          <thead>
+          <thead className={scrollable ? "sticky top-0 z-10" : undefined}>
             <tr className={headerRowClassName}>
               {columns.map((col) => (
                 <th
                   key={col.header}
-                  className={`p-2 ${alignClass[col.align ?? "left"]} ${col.headerClassName ?? "text-red-900"}`}
+                  className={`p-2 ${alignClass[col.align ?? "left"]} ${col.headerClassName ?? "text-red-900 bg-red-50"}`}
                 >
                   {col.header}
                 </th>
@@ -137,6 +152,6 @@ export default function ResponsiveDataView<T>({
           </tbody>
         </table>
       </div>
-    </>
+    </div>
   );
 }

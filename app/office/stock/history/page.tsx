@@ -77,8 +77,8 @@ export default function HistoryPage() {
   ];
 
   return (
-    <div className="min-w-0">
-      <h1 className="text-lg sm:text-xl text-red-950 font-bold mb-4">
+    <div className="flex flex-col h-full min-h-0 min-w-0">
+      <h1 className="text-lg sm:text-xl text-red-950 font-bold mb-4 shrink-0">
         Stock Update History
       </h1>
       <input
@@ -87,15 +87,18 @@ export default function HistoryPage() {
         placeholder="Search by barcode or product name"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="mb-4 font-medium p-2 border h-8 border-gray-300 rounded w-full sm:max-w-xs focus:outline-none focus:ring-2 focus:ring-red-800 text-xs text-gray-700"
+        className="mb-4 font-medium p-2 border h-8 border-gray-300 rounded w-full sm:max-w-xs focus:outline-none focus:ring-2 focus:ring-red-800 text-xs text-gray-700 shrink-0"
       />
-      <ResponsiveDataView
-        data={filteredStockHistory}
-        columns={historyColumns}
-        getRowKey={(h) => h.id}
-        tableClassName="w-full border border-gray-200 text-xs"
-        emptyMessage="No history records match your search"
-      />
+      <div className="flex-1 min-h-0">
+        <ResponsiveDataView
+          data={filteredStockHistory}
+          columns={historyColumns}
+          getRowKey={(h) => h.id}
+          tableClassName="w-full border border-gray-200 text-xs"
+          emptyMessage="No history records match your search"
+          scrollable
+        />
+      </div>
     </div>
   );
 }

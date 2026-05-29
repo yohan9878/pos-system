@@ -72,9 +72,11 @@ export default function OfficeLayout({ children }: Props) {
 
   const closeSidebar = () => setSidebarOpen(false);
 
+  const isReportPage = pathname.startsWith("/office/reports");
+
   return (
     <AdminGuard>
-      <div className="min-h-screen text-sm flex flex-col lg:flex-row overflow-x-hidden">
+      <div className="h-dvh text-sm flex flex-col lg:flex-row overflow-hidden">
         {/* Mobile header */}
         <header className="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center gap-3 bg-red-800 text-white px-3 py-2.5 shadow-md">
           <button
@@ -263,8 +265,18 @@ export default function OfficeLayout({ children }: Props) {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 w-full min-w-0 bg-red-50 pt-14 lg:pt-0 lg:pl-64 p-3 sm:p-4 md:p-6">
-          <div className="bg-white p-3 sm:p-4 md:p-6 rounded-lg shadow-2xl min-w-0 overflow-hidden">
+        <main
+          className={`flex-1 w-full min-w-0 min-h-0 bg-red-50 pt-14 lg:pt-0 lg:pl-64 p-3 sm:p-4 md:p-6 flex flex-col ${
+            isReportPage ? "overflow-y-auto" : "overflow-hidden"
+          }`}
+        >
+          <div
+            className={`bg-white p-3 sm:p-4 md:p-6 rounded-lg shadow-2xl min-w-0 ${
+              isReportPage
+                ? ""
+                : "flex-1 flex flex-col min-h-0 overflow-hidden"
+            }`}
+          >
             {children}
           </div>
         </main>
