@@ -260,6 +260,7 @@ export default function StockPage() {
           getRowClassName={stockRowClass}
           emptyMessage="No stock items match your search"
           scrollable
+          hideHeader={modalOpen || weightModalOpen}
         />
       </div>
       {selectedStock ? (

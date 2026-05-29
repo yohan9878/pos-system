@@ -23,6 +23,8 @@ interface ResponsiveDataViewProps<T> {
   striped?: boolean;
   /** When true, table/cards scroll inside the parent instead of growing the page */
   scrollable?: boolean;
+  /** When true, hides the desktop table header row */
+  hideHeader?: boolean;
 }
 
 const alignClass = {
@@ -41,6 +43,7 @@ export default function ResponsiveDataView<T>({
   emptyMessage = "No records found",
   striped = true,
   scrollable = false,
+  hideHeader = false,
 }: ResponsiveDataViewProps<T>) {
   if (data.length === 0) {
     return (
@@ -121,18 +124,20 @@ export default function ResponsiveDataView<T>({
         className={`hidden lg:block print:block ${scrollable ? scrollClass : "overflow-x-auto"}`}
       >
         <table className={`${tableClassName} print:w-full`}>
-          <thead className={scrollable ? "sticky top-0 z-10" : undefined}>
-            <tr className={headerRowClassName}>
-              {columns.map((col) => (
-                <th
-                  key={col.header}
-                  className={`p-2 ${alignClass[col.align ?? "left"]} ${col.headerClassName ?? "text-red-900 bg-red-50"}`}
-                >
-                  {col.header}
-                </th>
-              ))}
-            </tr>
-          </thead>
+          {!hideHeader && (
+            <thead className={scrollable ? "sticky top-0 z-10" : undefined}>
+              <tr className={headerRowClassName}>
+                {columns.map((col) => (
+                  <th
+                    key={col.header}
+                    className={`p-2 ${alignClass[col.align ?? "left"]} ${col.headerClassName ?? "text-red-900 bg-red-50"}`}
+                  >
+                    {col.header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+          )}
           <tbody>
             {data.map((row, index) => (
               <tr
