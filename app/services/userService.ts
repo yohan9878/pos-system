@@ -1,4 +1,7 @@
 import { jwtDecode } from "jwt-decode";
+import { UserRequest } from "../types/User";
+
+const API_URL = "http://localhost:8080/api/users";
 
 export interface JwtPayload {
   sub?: string; // username (Spring default)
@@ -24,6 +27,39 @@ export const getUserFromToken = () => {
     console.error("Invalid token", err);
     return null;
   }
+};
+
+// export const getRoleFromToken = () => {
+//   try {
+//     if (typeof window === "undefined") {
+//       return null;
+//     }
+//     const token = localStorage.getItem("token");
+//     if (!token) return null;
+//     const decoded = jwtDecode<JwtPayload>(token);
+//     // return jwtDecode<JwtPayload>(token);
+//     return {
+//       username: decoded.sub || decoded.username,
+//       role: decoded.role || decoded.roles?.[0],
+//     };
+//   } catch (err) {
+//     console.error("Invalid token", err);
+//     return null;
+//   }
+// };
+
+export const register = async (data: UserRequest) => {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_URL}/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to register user");
+   return await res.text();
 };
 
 export const logout = () => {
