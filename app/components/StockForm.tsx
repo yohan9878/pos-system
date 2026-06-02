@@ -313,7 +313,7 @@ export default function ProductForm({
               onChange={handleChange}
               className={`w-full ${disableWeight ? "bg-gray-200" : "bg-red-50"} p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800`}
             />
-            <div className="flex justify-center gap-2 mt-4">
+            <div className="flex flex-col items-center  sm:flex-row  md:items-center sm:items-center justify-center gap-2 mt-4">
               <button
                 type="submit"
                 className="px-8 py-2 w-1/2 text-white rounded transition bg-green-900 hover:bg-green-800"
