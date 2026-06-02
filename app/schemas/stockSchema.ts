@@ -1,38 +1,3 @@
-// import { z } from "zod";
-
-// export const stockSchema = z.object({
-//   barcode: z.catch
-//     .string()
-//     .int({ message: "Barcode must be an integer" })
-//     .length(13, { message: "Barcode must be exactly 13 characters" })
-//     .min(1000000000000, { message: "Barcode must be exactly 13 characters" })
-//     .max(9999999999999, { message: "Barcode must be exactly 13 characters" }),
-
-//   outletId: z
-//     .string({ message: "Please select an outlet" })
-//     .min(1, { message: "You must choose a valid option" }),
-
-//   quantity: z.coerce
-//     .number({ message: "Quantity must be a number" })
-//     .int("Quantity must be an integer")
-//     .positive("Quantity must be greater than zero"),
-
-//   weight: z.coerce
-//     .number({ message: "Weight must be a number" })
-//     .positive("Weight must be greater than zero"),
-
-//   lowStockThresholdQty: z.coerce
-//     .number({ message: "Low stock threshold must be a number" })
-//     .int("Low stock threshold must be an integer")
-//     .positive("Low stock threshold must be greater than zero"),
-
-//   lowStockThresholdWeight: z.coerce
-//     .number({ message: "Low stock threshold weight must be a number" })
-//     .positive("Low stock threshold weight must be greater than zero"),
-
-// });
-// export type StockSchema = z.infer<typeof stockSchema>;
-
 import { z } from "zod";
 
 export const stockSchema = z
