@@ -7,6 +7,16 @@ import { addStock } from "../services/stockService";
 import { fetchProduct } from "../services/productService";
 import { getUserFromToken } from "../services/userService";
 import { StockRequest } from "../types/Stock";
+import { StockSchema, stockSchema } from "../schemas/stockSchema";
+
+type StockFormErrors = {
+  barcode: string;
+  lowStockThresholdQty: string;
+  lowStockThresholdWeight: string;
+  outletId: string;
+  quantity: string;
+  weight: string;
+};
 
 export default function ProductForm({
   isOpen,
@@ -38,6 +48,14 @@ export default function ProductForm({
 
   const [loadingProduct, setLoadingProduct] = useState(false);
   const [productError, setProductError] = useState("");
+  const [errors, setErrors] = useState({
+    barcode: "",
+    lowStockThresholdQty: "",
+    lowStockThresholdWeight: "",
+    outletId: "",
+    quantity: "",
+    weight: "",
+  });
   const fetchRequestId = useRef(0);
   const barcodeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -59,6 +77,10 @@ export default function ProductForm({
 
   const updateFormData = useEffectEvent((data: StockRequest) => {
     setFormData(data);
+  });
+
+  const updateErrors = useEffectEvent((errors: StockFormErrors) => {
+    setErrors(errors);
   });
 
   const loadProduct = async (barcode: string) => {
@@ -100,6 +122,12 @@ export default function ProductForm({
       [id]: value,
     }));
 
+    //Clear Errors While Typing
+    setErrors((prev) => ({
+      ...prev,
+      [id]: "",
+    }));
+
     if (id === "barcode") {
       setProduct(null);
       setProductError("");
@@ -125,7 +153,7 @@ export default function ProductForm({
       return;
     }
     const stock: StockRequest = {
-      barcode: data.get("barcode") as number | "",
+      barcode: data.get("barcode") as number | "" ,
       lowStockThresholdQty:
         parseInt(data.get("lowStockThresholdQty") as string) || 0,
       lowStockThresholdWeight:
@@ -135,10 +163,10 @@ export default function ProductForm({
       weight: parseFloat(data.get("weight") as string) || 0,
       user: user.role,
     };
-    if (!stock.barcode || !stock.outletId) {
-      alert("Please fill in all required fields with valid values.");
-      return;
-    }
+    // if (!stock.barcode || !stock.outletId) {
+    //   alert("Please fill in all required fields with valid values.");
+    //   return;
+    // }
 
     const newStock = {
       barcode: stock.barcode,
@@ -150,22 +178,57 @@ export default function ProductForm({
       user: stock.user,
     };
 
+    const result = stockSchema.safeParse({
+      barcode: formData.barcode,
+      outletId: formData.outletId,
+      quantity: Number(formData.quantity),
+      weight: Number(formData.weight),
+      lowStockThresholdQty: Number(formData.lowStockThresholdQty),
+      lowStockThresholdWeight: Number(formData.lowStockThresholdWeight),
+      weighted: product?.weighted ?? false,
+    });
+
+    if (!result.success) {
+      console.log(result.error.flatten());
+
+      const errors = result.error.flatten().fieldErrors;
+
+      setErrors({
+        barcode: errors.barcode?.[0] || "",
+        lowStockThresholdQty: errors.lowStockThresholdQty?.[0] || "",
+        lowStockThresholdWeight: errors.lowStockThresholdWeight?.[0] || "",
+        outletId: errors.outletId?.[0] || "",
+        quantity: errors.quantity?.[0] || "",
+        weight: errors.weight?.[0] || "",
+      });
+
+      return;
+    }
+
     try {
       await addStock(newStock);
 
       setFormData({
         barcode: "",
-        lowStockThresholdQty: 0,
-        lowStockThresholdWeight: 0,
+        lowStockThresholdQty: "",
+        lowStockThresholdWeight: "",
         outletId: "",
-        quantity: 0,
-        weight: 0,
+        quantity: "",
+        weight: "",
         user: stock.user,
       });
       alert("Stock added successfully!");
       onAddSuccess?.();
       setProduct(null);
       setProductError("");
+      // setErrors({
+      //   barcode: "",
+      //   lowStockThresholdQty: "",
+      //   lowStockThresholdWeight: "",
+      //   outletId: "",
+      //   quantity: "",
+      //   weight: "",
+      // });
       onClose();
     } catch (err) {
       console.error("Failed to add stock:", err);
@@ -183,6 +246,14 @@ export default function ProductForm({
         weight: "",
         user: "",
       });
+    updateErrors({
+      barcode: "",
+      lowStockThresholdQty: "",
+      lowStockThresholdWeight: "",
+      outletId: "",
+      quantity: "",
+      weight: "",
+    });
   }, [isOpen]);
 
   useEffect(() => {
@@ -219,6 +290,9 @@ export default function ProductForm({
               onChange={handleChange}
               className="w-full bg-red-50 p-2 text-md text-gray-700 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
             />
+            {errors.barcode && (
+              <p className="text-red-500 text-xs">{errors.barcode}</p>
+            )}
             {loadingProduct && (
               <p className="text-blue-500 text-xs">Loading product info...</p>
             )}
@@ -230,16 +304,6 @@ export default function ProductForm({
                 {product.name} ({product.weighted ? "Weighted" : "Unit"})
               </p>
             )}
-            {/* Outlet Id */}
-            {/* <label htmlFor="outletId">Outlet Id *</label>
-            <input
-              id="outletId"
-              name="outletId"
-              placeholder="Outlet Id"
-              value={formData.outletId}
-              onChange={handleChange}
-              className="w-full bg-red-50 p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
-            /> */}
             <label htmlFor="outletId">Select Outlet*</label>
             <select
               id="outletId"
@@ -263,10 +327,14 @@ export default function ProductForm({
               placeholder="Quantity"
               disabled={disableQty}
               value={formData.quantity}
-              min={0}
+              // min={0}
               onChange={handleChange}
               className={`w-full ${disableQty ? "bg-gray-200" : "bg-red-50"} p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800`}
             />
+            {errors.quantity && (
+              <p className="text-red-500 text-xs">{errors.quantity}</p>
+            )}
+
             {/* Weight */}
             <label htmlFor="weight">Weight *</label>
             <input
@@ -281,6 +349,10 @@ export default function ProductForm({
               onChange={handleChange}
               className={`w-full ${disableWeight ? "bg-gray-200" : "bg-red-50"} p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800`}
             />
+            {errors.weight && (
+              <p className="text-red-500 text-xs">{errors.weight}</p>
+            )}
+
             {/* Low Stock Threshold (Qty) */}
             <label htmlFor="lowStockThresholdQty">
               Low Stock Threshold (Qty) *
@@ -291,12 +363,17 @@ export default function ProductForm({
               name="lowStockThresholdQty"
               placeholder="Low Stock Threshold (Qty)"
               disabled={disableQty}
-              step={0.01}
-              min={0}
+              min={20}
               value={formData.lowStockThresholdQty}
               onChange={handleChange}
               className={`w-full ${disableQty ? "bg-gray-200" : "bg-red-50"} p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800`}
             />
+            {errors.lowStockThresholdQty && (
+              <p className="text-red-500 text-xs">
+                {errors.lowStockThresholdQty}
+              </p>
+            )}
+
             {/* Low Stock Threshold (Weight) */}
             <label htmlFor="lowStockThresholdWeight">
               Low Stock Threshold (Weight) *
@@ -307,12 +384,17 @@ export default function ProductForm({
               name="lowStockThresholdWeight"
               placeholder="Low Stock Threshold (Weight)"
               step={0.01}
-              min={0}
+              min={20}
               value={formData.lowStockThresholdWeight}
               disabled={disableWeight}
               onChange={handleChange}
               className={`w-full ${disableWeight ? "bg-gray-200" : "bg-red-50"} p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800`}
             />
+            {errors.lowStockThresholdWeight && (
+              <p className="text-red-500 text-xs">
+                {errors.lowStockThresholdWeight}
+              </p>
+            )}
             <div className="flex flex-col items-center  sm:flex-row  md:items-center sm:items-center justify-center gap-2 mt-4">
               <button
                 type="submit"
