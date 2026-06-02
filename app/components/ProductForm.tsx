@@ -81,16 +81,16 @@ export default function ProductForm({
     });
   };
 
-  const handleAddProduct = async (formDataFromForm: FormData) => {
+  const handleAddProduct = async (data: FormData) => {
     const product: ProductRequest = {
-      barcode: formDataFromForm.get("barcode") as number | "",
-      name: formDataFromForm.get("name") as string,
-      bulkPrice: parseFloat(formDataFromForm.get("bulkPrice") as string) || 0,
+      barcode: data.get("barcode") as number | "",
+      name: data.get("name") as string,
+      bulkPrice: parseFloat(data.get("bulkPrice") as string) || 0,
       retailPrice:
-        parseFloat(formDataFromForm.get("retailPrice") as string) || 0,
-      packPrice: parseFloat(formDataFromForm.get("packPrice") as string) || 0,
-      pricePerKg: parseFloat(formDataFromForm.get("pricePerKg") as string) || 0,
-      weighted: (formDataFromForm.get("weighted") as string) === "true",
+        parseFloat(data.get("retailPrice") as string) || 0,
+      packPrice: parseFloat(data.get("packPrice") as string) || 0,
+      pricePerKg: parseFloat(data.get("pricePerKg") as string) || 0,
+      weighted: (data.get("weighted") as string) === "true",
     };
     if (
       !product.name ||
