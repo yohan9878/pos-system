@@ -5,6 +5,7 @@ import Form from "next/form";
 import { register } from "../services/userService";
 import { UserRequest } from "../types/User";
 import Button from "./Button";
+import { RegisterSchema, registerSchema } from "../schemas/registerSchema";
 
 export default function Register({
   isOpen,
@@ -23,6 +24,12 @@ export default function Register({
   const [isClient, setIsClient] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState({
+    username: "",
+    password: "",
+    confirmPassword: "",
+    role: "",
+  });
 
   // hydration fix
   const updateIsClient = useEffectEvent((val: boolean) => {
@@ -38,24 +45,50 @@ export default function Register({
     setConfirmPassword("");
   });
 
-  const handleCreate = async (data: FormData) => {
-    if (data.get("password") !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
-    const userData: UserRequest = {
-      username: data.get("username") as string,
-      password: data.get("password") as string,
-      role: data.get("role") as "ADMIN" | "MANAGER" | "CASHIER",
-    };
+  const updateErrors = useEffectEvent((errors: RegisterSchema) => {
+    setErrors(errors);
+  });
 
-    if (!userData.username || !userData.password) {
-      alert("Please fill in all required fields");
+  const handleCreate = async () => {
+    // if (data.get("password") !== confirmPassword) {
+    //   alert("Passwords do not match");
+    //   return;
+    // }
+    // const userData: UserRequest = {
+    //   username: data.get("username") as string,
+    //   password: data.get("password") as string,
+    //   role: data.get("role") as "ADMIN" | "MANAGER" | "CASHIER",
+    // };
+
+    // if (!userData.username || !userData.password) {
+    //   alert("Please fill in all required fields");
+    //   return;
+    // }
+
+    const result = registerSchema.safeParse({
+      username: formData.username,
+      password: formData.password,
+      role: formData.role,
+      confirmPassword,
+    });
+
+    if (!result.success) {
+      console.log(result.error.flatten());
+
+      const errors = result.error.flatten().fieldErrors;
+
+      setErrors({
+        username: errors.username?.[0] || "",
+        password: errors.password?.[0] || "",
+        confirmPassword: errors.confirmPassword?.[0] || "",
+        role: errors.role?.[0] || "",
+      });
+
       return;
     }
 
     try {
-      await register(userData);
+      await register(formData);
       alert("User created successfully");
       setFormData({
         username: "",
@@ -63,6 +96,12 @@ export default function Register({
         role: "CASHIER",
       });
       setConfirmPassword("");
+      setErrors({
+        username: "",
+        password: "",
+        confirmPassword: "",
+        role: "",
+      });
       onClose();
     } catch (error) {
       console.error("Error creating user:", error);
@@ -77,7 +116,12 @@ export default function Register({
         password: "",
         role: "CASHIER",
       });
-      
+    updateErrors({
+      username: "",
+      password: "",
+      confirmPassword: "",
+      role: "CASHIER",
+    });
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -94,7 +138,7 @@ export default function Register({
             action={handleCreate}
             className="flex rounded font-medium text-red-950 flex-col gap-2 flex-wrap text-xs"
           >
-            <label htmlFor="username">User Name *</label>
+            <label htmlFor="username" className="mt-1">Username *</label>
             <input
               id="username"
               name="username"
@@ -105,9 +149,12 @@ export default function Register({
                 setFormData({ ...formData, username: e.target.value })
               }
             />
+            {errors.username && (
+              <p className="text-red-500 text-xs mt-1">{errors.username}</p>
+            )}
 
-            <label htmlFor="password">Password *</label>
-            <div className="relative mb-2">
+            <label htmlFor="password" className="mt-1">Password *</label>
+            <div className="relative">
               <input
                 id="password"
                 name="password"
@@ -159,9 +206,12 @@ export default function Register({
                 )}
               </button>
             </div>
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+            )}
 
-            <label htmlFor="confirmPassword">Confirm Password *</label>
-            <div className="relative b-2">
+            <label htmlFor="confirmPassword" className="mt-1">Confirm Password *</label>
+            <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 id="confirmPassword"
@@ -211,8 +261,13 @@ export default function Register({
                 )}
               </button>
             </div>
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.confirmPassword}
+              </p>
+            )}
 
-            <label htmlFor="role">Role *</label>
+            <label htmlFor="role" className="mt-1">Role *</label>
             <select
               id="role"
               name="role"
