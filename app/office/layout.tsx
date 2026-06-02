@@ -29,6 +29,7 @@ const navItems = [
       { name: "Day-End Stock Report", path: "/reports/stockReport" },
     ],
   },
+  { name: "Users", path: "/users" },
 ];
 
 function getActiveParentMenu(pathname: string): string | null {
