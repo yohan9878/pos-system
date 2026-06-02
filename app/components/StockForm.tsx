@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useEffectEvent, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import Form from "next/form";
 import Button from "./Button";
 import { addStock } from "../services/stockService";
@@ -38,6 +38,8 @@ export default function ProductForm({
 
   const [loadingProduct, setLoadingProduct] = useState(false);
   const [productError, setProductError] = useState("");
+  const fetchRequestId = useRef(0);
+  const barcodeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   //Determine if barcode is enterd, if product is weighted
   const isBarcodeEntered = formData.barcode !== "";
@@ -60,24 +62,31 @@ export default function ProductForm({
   });
 
   const loadProduct = async (barcode: string) => {
-    if (!barcode) return;
+    if (!barcode || barcode.length < 13) return;
+
+    const requestId = ++fetchRequestId.current;
 
     try {
       setLoadingProduct(true);
       setProductError("");
-      setProduct(null); // reset product info while fetching new data
+      setProduct(null);
       const data = await fetchProduct(barcode);
+
+      if (requestId !== fetchRequestId.current) return;
 
       setProduct({
         name: data.name,
         weighted: data.weighted,
       });
     } catch (err) {
+      if (requestId !== fetchRequestId.current) return;
       console.error(err);
       setProductError("Product not found");
       setProduct(null);
     } finally {
-      setLoadingProduct(false);
+      if (requestId === fetchRequestId.current) {
+        setLoadingProduct(false);
+      }
     }
   };
 
@@ -94,10 +103,16 @@ export default function ProductForm({
     if (id === "barcode") {
       setProduct(null);
       setProductError("");
+      fetchRequestId.current++;
 
-      // only fetch when barcode looks valid
+      if (barcodeDebounceRef.current) {
+        clearTimeout(barcodeDebounceRef.current);
+      }
+
       if (value.length >= 13) {
-        loadProduct(value);
+        barcodeDebounceRef.current = setTimeout(() => {
+          loadProduct(value);
+        }, 400);
       }
     }
   };
@@ -170,15 +185,23 @@ export default function ProductForm({
       });
   }, [isOpen]);
 
+  useEffect(() => {
+    return () => {
+      if (barcodeDebounceRef.current) {
+        clearTimeout(barcodeDebounceRef.current);
+      }
+    };
+  }, []);
+
   if (!isOpen) {
     return null;
   }
 
   return (
     isClient && (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center">
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div
-          className="bg-white px-6 py-4 rounded-lg shadow-lg w-100"
+          className="bg-white px-4 sm:px-6 py-4 rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           <h2 className="text-red-950 text-xl font-bold mb-4">{heading}</h2>
@@ -194,7 +217,6 @@ export default function ProductForm({
               placeholder="Barcode"
               value={formData.barcode}
               onChange={handleChange}
-              onBlur={(e) => loadProduct(e.target.value)}
               className="w-full bg-red-50 p-2 text-md text-gray-700 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
             />
             {loadingProduct && (

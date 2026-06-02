@@ -151,9 +151,9 @@ export default function ProductForm({
 
   return (
     isClient && (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center">
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div
-          className="bg-white px-6 py-4 rounded-lg shadow-lg w-100"
+          className="bg-white px-4 sm:px-6 py-4 rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           <h2 className="text-red-950 text-xl font-bold mb-4">{heading}</h2>
