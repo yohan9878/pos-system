@@ -49,21 +49,21 @@ export default function Register({
     setErrors(errors);
   });
 
-  const handleCreate = async () => {
+  const handleRegister = async () => {
     // if (data.get("password") !== confirmPassword) {
     //   alert("Passwords do not match");
     //   return;
     // }
-    // const userData: UserRequest = {
-    //   username: data.get("username") as string,
-    //   password: data.get("password") as string,
-    //   role: data.get("role") as "ADMIN" | "MANAGER" | "CASHIER",
-    // };
+    const userData: UserRequest = {
+     username: formData.username,
+     password: formData.password,
+     role: formData.role as "ADMIN" | "MANAGER" | "CASHIER",
+    };
 
-    // if (!userData.username || !userData.password) {
-    //   alert("Please fill in all required fields");
-    //   return;
-    // }
+    if (!userData.username || !userData.password) {
+      alert("Please fill in all required fields");
+      return;
+    }
 
     const result = registerSchema.safeParse({
       username: formData.username,
@@ -88,7 +88,7 @@ export default function Register({
     }
 
     try {
-      await register(formData);
+      await register(userData);
       alert("User created successfully");
       setFormData({
         username: "",
@@ -135,7 +135,7 @@ export default function Register({
         >
           <h2 className="text-red-950 text-xl font-bold mb-4">{heading}</h2>
           <Form
-            action={handleCreate}
+            action={handleRegister}
             className="flex rounded font-medium text-red-950 flex-col gap-2 flex-wrap text-xs"
           >
             <label htmlFor="username" className="mt-1">Username *</label>
