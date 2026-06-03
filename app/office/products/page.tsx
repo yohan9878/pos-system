@@ -5,10 +5,7 @@ import ProductForm from "@/app/components/ProductForm";
 import ResponsiveDataView, {
   ColumnDef,
 } from "@/app/components/ResponsiveDataView";
-import {
-  deleteProduct,
-  getProducts,
-} from "@/app/services/productService";
+import { deleteProduct, getProducts } from "@/app/services/productService";
 import { ProductItems } from "@/app/types/Product";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 
@@ -64,13 +61,13 @@ export default function ProductPage() {
 
   const productColumns: ColumnDef<ProductItems>[] = [
     {
+      header: "Barcode",
+      render: (p) => p.barcode,
+    },
+    {
       header: "Product Name",
       render: (p) => p.name,
       cardRole: "title",
-    },
-    {
-      header: "Barcode",
-      render: (p) => p.barcode,
     },
     {
       header: "Bulk Price",
