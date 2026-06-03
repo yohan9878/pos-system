@@ -24,7 +24,7 @@ export const stockSchema = z
 
       if (!data.weight || data.weight <= 0) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           path: ["weight"],
           message: "Weight must be greater than zero",
         });
@@ -32,7 +32,7 @@ export const stockSchema = z
 
       if (!data.lowStockThresholdWeight || data.lowStockThresholdWeight <= 0) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           path: ["lowStockThresholdWeight"],
           message: "Low stock threshold weight must be greater than zero",
         });
@@ -42,7 +42,7 @@ export const stockSchema = z
 
       if (!data.quantity || data.quantity <= 0) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           path: ["quantity"],
           message: "Quantity must be greater than zero",
         });
@@ -50,7 +50,7 @@ export const stockSchema = z
 
       if (!Number.isInteger(data.quantity)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           path: ["quantity"],
           message: "Quantity must be an integer",
         });
@@ -58,7 +58,7 @@ export const stockSchema = z
 
       if (!data.lowStockThresholdQty || data.lowStockThresholdQty <= 0) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           path: ["lowStockThresholdQty"],
           message: "Low stock threshold quantity must be greater than zero",
         });
@@ -69,7 +69,7 @@ export const stockSchema = z
         !Number.isInteger(data.lowStockThresholdQty)
       ) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           path: ["lowStockThresholdQty"],
           message: "Low stock threshold quantity must be an integer",
         });

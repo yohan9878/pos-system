@@ -7,7 +7,7 @@ import { addStock } from "../services/stockService";
 import { fetchProduct } from "../services/productService";
 import { getUserFromToken } from "../services/userService";
 import { StockRequest } from "../types/Stock";
-import { StockSchema, stockSchema } from "../schemas/stockSchema";
+import { stockSchema } from "../schemas/stockSchema";
 
 type StockFormErrors = {
   barcode: string;
@@ -153,7 +153,7 @@ export default function ProductForm({
       return;
     }
     const stock: StockRequest = {
-      barcode: data.get("barcode") as number | "" ,
+      barcode: data.get("barcode") as number | "",
       lowStockThresholdQty:
         parseInt(data.get("lowStockThresholdQty") as string) || 0,
       lowStockThresholdWeight:
@@ -318,6 +318,10 @@ export default function ProductForm({
               <option value="Katunayake">Katunayake</option>
               {/* <option value="outlet2">Outlet 2</option> */}
             </select>
+            {errors.outletId && (
+              <p className="text-red-500 text-xs">{errors.outletId}</p>
+            )}
+
             {/* Quantity */}
             <label htmlFor="quantity">Quantity *</label>
             <input
