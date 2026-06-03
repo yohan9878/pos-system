@@ -5,6 +5,18 @@ import Form from "next/form";
 import { addProduct } from "../services/productService";
 import Button from "./Button";
 import { ProductRequest } from "../types/Product";
+import { productSchema, ProductSchema } from "../schemas/productSchema";
+import z from "zod/v4";
+
+type ProductFormErrors = {
+  barcode: string;
+  name: string;
+  weighted: string;
+  bulkPrice: string;
+  retailPrice: string;
+  packPrice: string;
+  pricePerKg: string;
+};
 
 export default function ProductForm({
   isOpen,
@@ -27,6 +39,9 @@ export default function ProductForm({
     weighted: "",
   });
   const [isClient, setIsClient] = useState(false);
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof ProductSchema, string>>
+  >({});
 
   // Determine if product type is selected and if it's weighted
   const isTypeSelected = formData.weighted !== "";
@@ -43,6 +58,10 @@ export default function ProductForm({
 
   const updateFormData = useEffectEvent((data: ProductRequest) => {
     setFormData(data);
+  });
+
+  const updateErrors = useEffectEvent((errors: ProductFormErrors) => {
+    setErrors(errors);
   });
 
   const handleChange = (
@@ -62,6 +81,12 @@ export default function ProductForm({
           pricePerKg: "",
         };
       }
+
+      //Clear Errors While Typing
+      setErrors((prev) => ({
+        ...prev,
+        [id]: "",
+      }));
 
       // Handle price fields
       if (
@@ -86,22 +111,20 @@ export default function ProductForm({
       barcode: data.get("barcode") as number | "",
       name: data.get("name") as string,
       bulkPrice: parseFloat(data.get("bulkPrice") as string) || 0,
-      retailPrice:
-        parseFloat(data.get("retailPrice") as string) || 0,
+      retailPrice: parseFloat(data.get("retailPrice") as string) || 0,
       packPrice: parseFloat(data.get("packPrice") as string) || 0,
       pricePerKg: parseFloat(data.get("pricePerKg") as string) || 0,
       weighted: (data.get("weighted") as string) === "true",
     };
-    if (
-      !product.name ||
-      !product.barcode ||
-      !product.bulkPrice ||
-      !product.retailPrice
-
-    ) {
-      alert("Please fill in all required fields with valid values.");
-      return;
-    }
+    // if (
+    //   !product.name ||
+    //   !product.barcode ||
+    //   !product.bulkPrice ||
+    //   !product.retailPrice
+    // ) {
+    //   alert("Please fill in all required fields with valid values.");
+    //   return;
+    // }
 
     const newProduct = {
       name: product.name,
@@ -113,6 +136,34 @@ export default function ProductForm({
       pricePerKg: product.pricePerKg,
       weighted: product.weighted,
     };
+
+    const result = productSchema.safeParse({
+      barcode: data.get("barcode"),
+      name: data.get("name"),
+      weighted:
+        data.get("weighted") === "" ? "" : data.get("weighted") === "true",
+      bulkPrice: data.get("bulkPrice"),
+      retailPrice: data.get("retailPrice"),
+      packPrice: data.get("packPrice"),
+      pricePerKg: data.get("pricePerKg"),
+    });
+
+    if (!result.success) {
+
+      const { fieldErrors } = z.flattenError(result.error);
+
+      setErrors({
+        barcode: fieldErrors.barcode?.[0] || "",
+        name: fieldErrors.name?.[0] || "",
+        weighted: fieldErrors.weighted?.[0] || "",
+        bulkPrice: fieldErrors.bulkPrice?.[0] || "",
+        retailPrice: fieldErrors.retailPrice?.[0] || "",
+        packPrice: fieldErrors.packPrice?.[0] || "",
+        pricePerKg: fieldErrors.pricePerKg?.[0] || "",
+      });
+
+      return;
+    }
 
     try {
       await addProduct(newProduct);
@@ -145,6 +196,15 @@ export default function ProductForm({
         pricePerKg: "",
         weighted: "",
       });
+    updateErrors({
+      barcode: "",
+      name: "",
+      weighted: "",
+      bulkPrice: "",
+      retailPrice: "",
+      packPrice: "",
+      pricePerKg: "",
+    });
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -173,6 +233,9 @@ export default function ProductForm({
               <option value="false">Sausage Product</option>
               <option value="true">Chicken Product</option>
             </select>
+            {errors.weighted && (
+              <p className="text-red-500 text-xs">{errors.weighted}</p>
+            )}
 
             {/* barcode */}
             <label htmlFor="barcode">Barcode *</label>
@@ -185,6 +248,9 @@ export default function ProductForm({
               onChange={handleChange}
               className="w-full bg-red-50 p-2 text-md text-gray-700 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
             />
+            {errors.barcode && (
+              <p className="text-red-500 text-xs">{errors.barcode}</p>
+            )}
 
             {/* Product name */}
             <label htmlFor="name">Product Name *</label>
@@ -198,6 +264,9 @@ export default function ProductForm({
               autoComplete="false"
               className="w-full bg-red-50 p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
             />
+            {errors.name && (
+              <p className="text-red-500 text-xs">{errors.name}</p>
+            )}
 
             {/* Bulk Price */}
             <label htmlFor="bulkPrice">Bulk Price (LKR) *</label>
@@ -208,11 +277,14 @@ export default function ProductForm({
               placeholder="Bulk Price"
               disabled={!isTypeSelected}
               step={0.01}
-              min={0}
+              // min={0}
               value={formData.bulkPrice}
               onChange={handleChange}
               className={`w-full ${!isTypeSelected ? "bg-gray-200" : "bg-red-50"} p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800`}
             />
+            {errors.bulkPrice && (
+              <p className="text-red-500 text-xs">{errors.bulkPrice}</p>
+            )}
 
             {/* Retail Price */}
             <label htmlFor="retailPrice">Retail Price (LKR) *</label>
@@ -228,6 +300,9 @@ export default function ProductForm({
               onChange={handleChange}
               className={`w-full ${!isTypeSelected ? "bg-gray-200" : "bg-red-50"} p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800`}
             />
+            {errors.retailPrice && (
+              <p className="text-red-500 text-xs">{errors.retailPrice}</p>
+            )}
 
             {/* Pack Price */}
             <label htmlFor="packPrice">Pack Price (LKR) *</label>
@@ -243,6 +318,9 @@ export default function ProductForm({
               onChange={handleChange}
               className={`w-full ${!isTypeSelected || isWeighted ? "bg-gray-200" : "bg-red-50"} p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800`}
             />
+            {errors.packPrice && (
+              <p className="text-red-500 text-xs">{errors.packPrice}</p>
+            )}
 
             {/* Price Per Kg */}
             <label htmlFor="pricePerKg">Price per Kg (LKR) *</label>
@@ -258,6 +336,9 @@ export default function ProductForm({
               onChange={handleChange}
               className={`w-full ${!isTypeSelected || !isWeighted ? "bg-gray-200" : "bg-red-50"} p-2 text-gray-700 text-md border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800`}
             />
+            {errors.pricePerKg && (
+              <p className="text-red-500 text-xs">{errors.pricePerKg}</p>
+            )}
 
             <div className="flex justify-center gap-2 mt-4">
               <button
