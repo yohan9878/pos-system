@@ -49,15 +49,22 @@ export default function Register({
     setErrors(errors);
   });
 
+  const clearError = (field: keyof typeof errors) => {
+    setErrors((prev) => ({
+      ...prev,
+      [field]: "",
+    }));
+  };
+
   const handleRegister = async () => {
     // if (data.get("password") !== confirmPassword) {
     //   alert("Passwords do not match");
     //   return;
     // }
     const userData: UserRequest = {
-     username: formData.username,
-     password: formData.password,
-     role: formData.role as "ADMIN" | "MANAGER" | "CASHIER",
+      username: formData.username,
+      password: formData.password,
+      role: formData.role as "ADMIN" | "MANAGER" | "CASHIER",
     };
 
     if (!userData.username || !userData.password) {
@@ -138,22 +145,27 @@ export default function Register({
             action={handleRegister}
             className="flex rounded font-medium text-red-950 flex-col gap-2 flex-wrap text-xs"
           >
-            <label htmlFor="username" className="mt-1">Username *</label>
+            <label htmlFor="username" className="mt-1">
+              Username *
+            </label>
             <input
               id="username"
               name="username"
               className="w-full bg-red-50 p-2 text-md text-gray-700 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
               placeholder="Username"
               value={formData.username}
-              onChange={(e) =>
-                setFormData({ ...formData, username: e.target.value })
-              }
+              onChange={(e) => {
+                setFormData({ ...formData, username: e.target.value });
+                clearError("username");
+              }}
             />
             {errors.username && (
               <p className="text-red-500 text-xs mt-1">{errors.username}</p>
             )}
 
-            <label htmlFor="password" className="mt-1">Password *</label>
+            <label htmlFor="password" className="mt-1">
+              Password *
+            </label>
             <div className="relative">
               <input
                 id="password"
@@ -162,9 +174,10 @@ export default function Register({
                 className="w-full bg-red-50 p-2 text-md text-gray-700 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
                 placeholder="Password"
                 value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
+                onChange={(e) => {
+                  setFormData({ ...formData, password: e.target.value });
+                  clearError("password");
+                }}
               />
               <button
                 type="button"
@@ -210,7 +223,9 @@ export default function Register({
               <p className="text-red-500 text-xs mt-1">{errors.password}</p>
             )}
 
-            <label htmlFor="confirmPassword" className="mt-1">Confirm Password *</label>
+            <label htmlFor="confirmPassword" className="mt-1">
+              Confirm Password *
+            </label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -219,7 +234,10 @@ export default function Register({
                 className="w-full bg-red-50 p-2 text-md text-gray-700 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
                 placeholder="Confirm Password"
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  clearError("confirmPassword");
+                }}
               />
               <button
                 type="button"
@@ -267,17 +285,20 @@ export default function Register({
               </p>
             )}
 
-            <label htmlFor="role" className="mt-1">Role *</label>
+            <label htmlFor="role" className="mt-1">
+              Role *
+            </label>
             <select
               id="role"
               name="role"
               value={formData.role}
-              onChange={(e) =>
+              onChange={(e) =>{
                 setFormData({
                   ...formData,
                   role: e.target.value as "ADMIN" | "MANAGER" | "CASHIER",
                 })
-              }
+                clearError("role");
+              }}
               className="w-full bg-red-50 p-2 text-md text-gray-700 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-800"
             >
               <option value="CASHIER">Cashier</option>
