@@ -30,7 +30,7 @@ export default function UsersPage() {
               inputRef.current?.focus();
             }, 0);
         }}
-        heading="Create User"
+        heading="Register User"
       />
     </div>
   );
